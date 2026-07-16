@@ -5,10 +5,11 @@ name: Validate skins
 # presence, version/codexVerified required. No gate, no merge.
 on:
   pull_request:
-    paths: ["skins/**", "studio/**"]
+    paths: ["skins/**", "studio/**", "scripts/**", ".github/workflows/**"]
   push:
     branches: [main]
-    paths: ["skins/**", "studio/**"]
+    paths: ["skins/**", "studio/**", "scripts/**", ".github/workflows/**"]
+  workflow_dispatch:
 
 permissions:
   contents: read
