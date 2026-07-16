@@ -1,0 +1,1038 @@
+/* ============================================================
+   SEELE Mark.06 Kaworu Terminal — asset-based theme for Codex
+   All selectors are scoped to html.codex-theme-studio so the
+   whole theme is reversible by removing that class + style tag.
+   Dark-first: Terminal Dogma under moonlight is the dark shell;
+   the light shell is a cool-silver observation report over the
+   same wall art under a pale veil.
+   ============================================================ */
+
+html.codex-theme-studio {
+  color-scheme: light !important;
+}
+
+html.codex-theme-studio[data-cts-shell="dark"] {
+  color-scheme: dark !important;
+}
+
+/* Wall art on the body itself: every route — Settings included — sits on
+   the NERV command-center wall even before surface rules kick in.
+   Light shell: heavy cool-silver veil turns the dark wall into a faint
+   armored texture (daylight report mode). */
+html.codex-theme-studio body {
+  background:
+    linear-gradient(90deg, rgba(245, 243, 249, .92) 0%, rgba(245, 243, 249, .87) 55%, rgba(245, 243, 249, .74) 100%),
+    var(--cts-asset-wall) center / cover no-repeat fixed,
+    #e8e6f0 !important;
+  color: var(--cts-color-ink) !important;
+}
+
+/* App root paints an opaque surface over the body wall — let it through. */
+html.codex-theme-studio .app-theme {
+  background: transparent !important;
+}
+
+/* Settings content pane is a DIV.main-surface (not MAIN.) — visible wall
+   with a veil, plus a faint Kaworu presence on the right. */
+html.codex-theme-studio div.main-surface {
+  position: relative !important;
+  background:
+    linear-gradient(90deg, rgba(245, 243, 249, .92) 0%, rgba(245, 243, 249, .87) 55%, rgba(245, 243, 249, .74) 100%),
+    var(--cts-asset-wall) center / cover no-repeat,
+    #efedf4 !important;
+}
+
+html.codex-theme-studio div.main-surface::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  right: clamp(-30px, -1.5vw, 0px);
+  bottom: 0;
+  width: clamp(300px, 34vw, 620px);
+  height: clamp(420px, 82vh, 900px);
+  pointer-events: none;
+  background: var(--cts-asset-kaworu) right bottom / contain no-repeat;
+  opacity: .13;
+}
+
+html.codex-theme-studio div.main-surface > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Only route content may breathe through to the wall. Codex reuses this token
+   for tool sidebars and bottom panels; making it globally transparent turns
+   those functional surfaces into holes. */
+html.codex-theme-studio [role="main"] [class~="bg-token-main-surface-primary"] {
+  background-color: transparent !important;
+}
+
+html.codex-theme-studio [role="main"] .sticky[class~="bg-token-main-surface-primary"] {
+  background: linear-gradient(180deg, rgba(245, 243, 249, .90), rgba(245, 243, 249, 0)) !important;
+  backdrop-filter: blur(6px);
+}
+
+/* ------------------------------------------------ left sidebar (SEELE graphite) */
+
+html.codex-theme-studio .app-shell-left-panel {
+  isolation: isolate;
+  position: relative !important;
+  background:
+    var(--cts-asset-sidebar-texture) center / cover no-repeat,
+    linear-gradient(180deg, rgba(11, 13, 24, .88) 0%, rgba(17, 20, 36, .94) 35%, #090b15 100%) !important;
+  border-right: 1px solid rgba(139, 216, 255, .24) !important;
+  box-shadow: inset -18px 0 34px rgba(0, 0, 0, .4) !important;
+  color: #ece9f7 !important;
+}
+
+/* Faint crest printed near the sidebar foot. */
+html.codex-theme-studio .app-shell-left-panel::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  bottom: 84px;
+  width: 118px;
+  height: 118px;
+  transform: translateX(-50%);
+  pointer-events: none;
+  background: var(--cts-asset-nerv-wing) center / contain no-repeat;
+  opacity: .1;
+  filter: hue-rotate(225deg) saturate(.75) brightness(1.35);
+}
+
+html.codex-theme-studio .app-shell-left-panel :is(nav, header, footer, div) {
+  background-color: transparent !important;
+}
+
+html.codex-theme-studio .app-shell-left-panel :is(button, a, span, p, h1, h2, h3, label, div) {
+  color: #ece9f7 !important;
+}
+
+html.codex-theme-studio .app-shell-left-panel button:hover,
+html.codex-theme-studio .app-shell-left-panel a:hover {
+  background: linear-gradient(90deg, rgba(139, 216, 255, .18), rgba(139, 216, 255, .04)) !important;
+  box-shadow: inset 2px 0 0 var(--cts-color-cyan) !important;
+}
+
+html.codex-theme-studio .app-shell-left-panel [aria-current="page"],
+html.codex-theme-studio .app-shell-left-panel [class~="bg-token-list-hover-background"] {
+  background: linear-gradient(90deg, rgba(139, 216, 255, .24), rgba(118, 86, 199, .08)) !important;
+  box-shadow: inset 3px 0 0 var(--cts-color-cyan), 0 2px 10px rgba(0, 0, 0, .35) !important;
+  border-radius: 8px !important;
+}
+
+/* Inputs sitting on the dark panel (e.g. Settings search) need a dark field. */
+html.codex-theme-studio .app-shell-left-panel :is(input, [role="searchbox"]) {
+  background: rgba(255, 255, 255, .07) !important;
+  border: 1px solid rgba(139, 216, 255, .28) !important;
+  border-radius: 8px !important;
+  color: #ece9f7 !important;
+  caret-color: var(--cts-color-cyan) !important;
+}
+
+html.codex-theme-studio .app-shell-left-panel input::placeholder {
+  color: rgba(236, 233, 247, .45) !important;
+}
+
+/* ------------------------------------------------ bitmap icon replacement */
+
+html.codex-theme-studio svg[data-cts-glyph] > * {
+  opacity: 0 !important;
+}
+
+html.codex-theme-studio svg[data-cts-glyph] {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  filter: hue-rotate(225deg) saturate(.82) brightness(1.25) drop-shadow(0 0 4px rgba(167, 139, 250, .5));
+}
+
+html.codex-theme-studio svg[data-cts-glyph="new-task"] { background-image: var(--cts-asset-icon-new-task); }
+html.codex-theme-studio svg[data-cts-glyph="scheduled"] { background-image: var(--cts-asset-icon-scheduled); }
+html.codex-theme-studio svg[data-cts-glyph="plugins"] { background-image: var(--cts-asset-icon-plugins); }
+html.codex-theme-studio svg[data-cts-glyph="sites"] { background-image: var(--cts-asset-icon-sites); }
+html.codex-theme-studio svg[data-cts-glyph="pull-request"] { background-image: var(--cts-asset-icon-pull-request); }
+html.codex-theme-studio svg[data-cts-glyph="chat"] { background-image: var(--cts-asset-icon-chat); }
+html.codex-theme-studio svg[data-cts-glyph="search"] { background-image: var(--cts-asset-icon-search); }
+html.codex-theme-studio svg[data-cts-glyph="explore"] { background-image: var(--cts-asset-icon-explore); }
+html.codex-theme-studio svg[data-cts-glyph="build"] { background-image: var(--cts-asset-icon-build); }
+html.codex-theme-studio svg[data-cts-glyph="review"] { background-image: var(--cts-asset-icon-review); }
+html.codex-theme-studio svg[data-cts-glyph="fix"] { background-image: var(--cts-asset-icon-fix); }
+html.codex-theme-studio svg[data-cts-glyph="attach"] { background-image: var(--cts-asset-icon-attach); }
+html.codex-theme-studio svg[data-cts-glyph="mic"] { background-image: var(--cts-asset-icon-mic); }
+html.codex-theme-studio svg[data-cts-glyph="model"] { background-image: var(--cts-asset-icon-model); }
+html.codex-theme-studio svg[data-cts-glyph="settings"] { background-image: var(--cts-asset-icon-settings); }
+html.codex-theme-studio svg[data-cts-glyph="folder"] { background-image: var(--cts-asset-icon-folder); }
+
+/* ------------------------------------------------ main surface: layered set */
+
+html.codex-theme-studio main.main-surface {
+  isolation: isolate;
+  position: relative !important;
+  background:
+    linear-gradient(90deg, rgba(245, 243, 249, .92) 0%, rgba(245, 243, 249, .87) 55%, rgba(245, 243, 249, .74) 100%),
+    var(--cts-asset-wall) center / cover no-repeat,
+    #f3f0f8 !important;
+  border-radius: 14px 0 0 0 !important;
+  overflow: hidden !important;
+  box-shadow: none !important;
+}
+
+/* Kaworu — anchored to the right, feet tucked behind the deck counter.
+   Full presence on home; a faint atmospheric echo on task pages. */
+html.codex-theme-studio main.main-surface::before {
+  content: "";
+  position: absolute;
+  z-index: -2;
+  right: clamp(-40px, -2vw, 0px);
+  bottom: clamp(60px, 9vh, 130px);
+  width: clamp(280px, 30vw, 560px);
+  height: clamp(420px, 76vh, 840px);
+  pointer-events: none;
+  background: var(--cts-asset-kaworu) right bottom / contain no-repeat;
+  filter: drop-shadow(-14px 18px 34px rgba(15, 14, 30, .28));
+}
+
+html.codex-theme-studio main.main-surface:not(.cts-home-shell)::before {
+  opacity: .14;
+  bottom: 64px;
+  filter: none;
+}
+
+/* Console counter strip — CSS-drawn light armor plate (light shell). */
+html.codex-theme-studio main.main-surface::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: clamp(170px, 24vh, 260px);
+  pointer-events: none;
+  background:
+    linear-gradient(180deg,
+      rgba(243, 240, 248, 0) 0%,
+      rgba(238, 234, 247, .72) 14%,
+      #e6e1ef 28%,
+      #d8d1e6 42%,
+      #c9c1da 58%,
+      #b8afca 100%);
+  border-top: 0;
+  box-shadow: inset 0 -26px 34px -22px rgba(36, 32, 50, .22);
+}
+
+/* Task pages: no counter strip (the ⌘J bottom panel shares that zone). */
+html.codex-theme-studio main.main-surface:not(.cts-home-shell)::after {
+  display: none;
+}
+
+/* Lift only the main content sibling above the scenery. Do not rewrite every
+   direct child's position or z-index: the toolbar and bottom panel own their
+   native z-30 interaction layers. */
+html.codex-theme-studio main.main-surface > header.app-header-tint + div {
+  z-index: 1;
+}
+
+/* The native toolbar ships at z-30. Keep it above the later main-content
+   sibling so the visible panel buttons remain the pointer hit targets. */
+html.codex-theme-studio main.main-surface > header.app-header-tint {
+  z-index: 30 !important;
+}
+
+/* The stock half-pixel frame separator reads as a bright gradient seam over
+   the textured wall, so the theme owns and removes that separator. */
+html.codex-theme-studio .app-shell-main-content-frame {
+  border-top: 0 !important;
+}
+
+/* Codex adds a 16px scroll-fade immediately below the toolbar. Over the EVA
+   wall it reads as a bright horizontal stripe, even though it is not a
+   border. The wall already supplies enough depth, so remove this duplicate
+   fade instead of trying to camouflage it with another gradient. */
+html.codex-theme-studio .app-shell-main-content-top-fade {
+  display: none !important;
+}
+
+/* Non-home routes: heavier veil — information first, stage stays behind. */
+html.codex-theme-studio main.main-surface:not(.cts-home-shell) {
+  background:
+    linear-gradient(90deg, rgba(245, 243, 249, .92) 0%, rgba(245, 243, 249, .87) 55%, rgba(245, 243, 249, .74) 100%),
+    var(--cts-asset-wall) center / cover no-repeat,
+    #f3f0f8 !important;
+}
+
+html.codex-theme-studio main.main-surface > header,
+html.codex-theme-studio main.main-surface > header.app-header-tint {
+  background: transparent !important;
+  border-bottom: 0 !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+html.codex-theme-studio [role="main"] {
+  background: transparent !important;
+}
+
+/* ------------------------------------------------ home hero: hand over to chrome */
+
+html.codex-theme-studio .cts-home div:has(> [data-testid="home-icon"]) > * {
+  visibility: hidden !important;
+}
+
+/* ------------------------------------------------ suggestion cards = NERV displays */
+
+html.codex-theme-studio .cts-home .group\/home-suggestions {
+  gap: 18px !important;
+}
+
+/* Lift the suggestions block above the counter strip. */
+html.codex-theme-studio div[class*="composer-suggestion-inline-inset"] {
+  z-index: 2 !important;
+}
+
+html.codex-theme-studio .cts-home .group\/home-suggestions button {
+  position: relative !important;
+  isolation: isolate;
+  border: 0 !important;
+  border-radius: 12px !important;
+  background: transparent !important;
+  color: #f2effa !important;
+  min-height: 128px;
+  padding: 40px 18px 18px !important;
+  box-shadow: 0 14px 26px rgba(12, 12, 24, .32) !important;
+  transition: transform .18s ease, box-shadow .18s ease !important;
+}
+
+html.codex-theme-studio .cts-home .group\/home-suggestions button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 12px;
+  background: 50% 50% / 100% 100% no-repeat;
+}
+
+html.codex-theme-studio .cts-home .group\/home-suggestions button::after {
+  content: "";
+  position: absolute;
+  top: 12px;
+  left: 16px;
+  font: 700 11px/1 "SF Mono", Menlo, monospace;
+  letter-spacing: .14em;
+  color: var(--cts-color-moon);
+  opacity: .92;
+}
+
+html.codex-theme-studio .cts-home .group\/home-suggestions .grid > div:nth-child(1) button::after { content: "01"; }
+html.codex-theme-studio .cts-home .group\/home-suggestions .grid > div:nth-child(2) button::after { content: "02"; }
+html.codex-theme-studio .cts-home .group\/home-suggestions .grid > div:nth-child(3) button::after { content: "03"; }
+html.codex-theme-studio .cts-home .group\/home-suggestions .grid > div:nth-child(4) button::after { content: "04"; }
+
+html.codex-theme-studio .cts-home .group\/home-suggestions .grid > div:nth-child(1) button::before { background-image: var(--cts-asset-card-moon); }
+html.codex-theme-studio .cts-home .group\/home-suggestions .grid > div:nth-child(2) button::before { background-image: var(--cts-asset-card-piano); }
+html.codex-theme-studio .cts-home .group\/home-suggestions .grid > div:nth-child(3) button::before { background-image: var(--cts-asset-card-seele); }
+html.codex-theme-studio .cts-home .group\/home-suggestions .grid > div:nth-child(4) button::before { background-image: var(--cts-asset-card-mark06); }
+
+html.codex-theme-studio .cts-home .group\/home-suggestions button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 34px rgba(12, 12, 24, .42), 0 0 0 1px rgba(139, 216, 255, .40) !important;
+}
+
+html.codex-theme-studio .cts-home .group\/home-suggestions button :is(span, p, div, h3) {
+  color: #f2effa !important;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, .85), 0 0 2px rgba(0, 0, 0, .9);
+}
+
+/* ------------------------------------------------ composer = entry-plug deck */
+
+/* The input area colour is owned by CSS; the deck asset only supplies the
+   armored frame (9-slice WITHOUT fill). */
+html.codex-theme-studio .composer-surface-chrome {
+  background: #111421 !important;
+  border: 0 !important;
+  border-radius: 8px !important;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, .45) !important;
+  color: #f0edf8 !important;
+  overflow-x: hidden !important;
+}
+
+/* Codex 26.707.9x ships a hidden text-measurement span inside the model
+   trigger (43px tall in a 28px row, absolute, top-anchored) — its overhang
+   below the composer bottom mints a 7px scroll range. Flip its anchor so it
+   overhangs UPWARD into the input area instead (measurement unaffected). */
+html.codex-theme-studio [class*="_WorkTriggerMeasurement"] {
+  top: auto !important;
+  bottom: 0 !important;
+}
+
+/* Home is a single fixed screen — the thread container must not scroll. */
+html.codex-theme-studio main.main-surface.cts-home-shell .thread-scroll-container {
+  overflow-y: hidden !important;
+}
+
+html.codex-theme-studio main.main-surface.cts-home-shell [class*="container-type"] {
+  overflow-y: hidden !important;
+}
+
+/* Deck 9-slice on the same-size wrapper (composer itself scrolls/clips).
+   slice/border-width re-measured on the final cropped asset (mark06-post). */
+html.codex-theme-studio div:has(> .composer-surface-chrome) {
+  isolation: isolate;
+}
+
+/* Generated asset 2048x768, open screen x≈180..1868 y≈90..650.
+   Thick end caps stay intact while the quiet center rails stretch. */
+html.codex-theme-studio div:has(> .composer-surface-chrome)::before {
+  content: "";
+  position: absolute;
+  inset: -18px -36px -24px -36px;
+  z-index: -1;
+  pointer-events: none;
+  border-style: solid;
+  border-width: 18px 36px 24px 36px;
+  border-image: var(--cts-asset-composer-deck) 90 180 108 180 stretch;
+  filter: drop-shadow(0 16px 26px rgba(12, 12, 24, .38));
+}
+
+/* Task pages: symmetric slim deck, low top bezel (never covers the message
+   action row above the composer). */
+/* The same symmetric frame renders with a lower bezel on task pages. */
+html.codex-theme-studio main.main-surface:not(.cts-home-shell) div:has(> .composer-surface-chrome)::before {
+  inset: -14px -32px -20px -32px;
+  border-width: 14px 32px 20px 32px;
+  border-image: var(--cts-asset-deck-slim) 90 180 108 180 stretch;
+}
+
+/* The global Mincho UI font has taller metrics and overflows the composer
+   footer row by 7px (scroll discipline!) — the input console keeps system
+   sans; the EVA serif look belongs to titles/menus, not the cockpit. */
+html.codex-theme-studio .composer-surface-chrome,
+html.codex-theme-studio .composer-surface-chrome :is(p, span, div, textarea, [contenteditable], button, label) {
+  font-family: -apple-system, "SF Pro Text", "PingFang SC", system-ui, sans-serif !important;
+}
+
+html.codex-theme-studio .composer-surface-chrome :is(textarea, [contenteditable], p, span, div) {
+  color: #f0edf8 !important;
+  caret-color: var(--cts-color-cyan) !important;
+}
+
+html.codex-theme-studio .composer-surface-chrome :is(textarea, [contenteditable])::placeholder {
+  color: rgba(240, 237, 248, .5) !important;
+}
+
+html.codex-theme-studio .composer-surface-chrome :is([class*="placeholder"], [data-placeholder]) {
+  color: rgba(240, 237, 248, .55) !important;
+}
+
+html.codex-theme-studio .composer-surface-chrome .ProseMirror [data-placeholder]::before,
+html.codex-theme-studio .composer-surface-chrome .ProseMirror p::before {
+  color: rgba(240, 237, 248, .48) !important;
+}
+
+html.codex-theme-studio .composer-surface-chrome button {
+  color: #d9d5e8 !important;
+}
+
+html.codex-theme-studio .composer-surface-chrome button:hover {
+  background: rgba(139, 216, 255, .16) !important;
+  color: var(--cts-color-moon) !important;
+}
+
+/* Send button = the Entry Plug. Native box untouched (no composer scroll);
+   the prop rides the WRAPPER's ::after, outside the scroll container.
+   States relay via :has(): glowing plug = ready, dormant plug = disabled. */
+html.codex-theme-studio .composer-surface-chrome button[class*="size-token-button-composer"] {
+  background: none !important;
+  box-shadow: none !important;
+}
+
+html.codex-theme-studio .composer-surface-chrome button[class*="size-token-button-composer"] svg {
+  opacity: 0 !important;
+}
+
+html.codex-theme-studio .composer-surface-chrome button[class*="size-token-button-composer"]:hover {
+  background: none !important;
+}
+
+html.codex-theme-studio div:has(> .composer-surface-chrome)::after {
+  content: "";
+  position: absolute;
+  right: -8px;
+  bottom: -6px;
+  width: 80px;
+  height: 80px;
+  z-index: 11;
+  pointer-events: none;
+  background: var(--cts-asset-lance) center / contain no-repeat;
+  transform: rotate(6deg);
+  filter: hue-rotate(225deg) saturate(.9) brightness(1.28) drop-shadow(0 0 6px rgba(139, 216, 255, .65)) drop-shadow(0 0 16px rgba(167, 139, 250, .4));
+  transition: transform .16s ease, filter .16s ease;
+}
+
+html.codex-theme-studio div:has(> .composer-surface-chrome:hover)::after {
+  transform: rotate(2deg) scale(1.08);
+}
+
+html.codex-theme-studio div:has(.composer-surface-chrome button[class*="size-token-button-composer"]:hover)::after {
+  transform: rotate(-4deg) scale(1.18);
+  filter: hue-rotate(225deg) saturate(.9) brightness(1.35) drop-shadow(0 0 12px rgba(139, 216, 255, .85)) drop-shadow(0 0 28px rgba(190, 170, 255, .55));
+}
+
+/* Disabled = dormant plug: lights off, nothing to inject. */
+html.codex-theme-studio div:has(.composer-surface-chrome button[class*="size-token-button-composer"]:disabled)::after {
+  background-image: var(--cts-asset-lance-off);
+  filter: hue-rotate(225deg) grayscale(.25) opacity(.72) drop-shadow(0 2px 6px rgba(0, 0, 0, .35));
+}
+
+/* ------------------------------------------------ workspace title = EVA title card */
+
+html.codex-theme-studio .app-shell-left-panel [data-cts-logo] {
+  color: transparent !important;
+  background: left center / contain no-repeat;
+  min-width: 150px;
+  min-height: 56px;
+  filter: hue-rotate(225deg) saturate(.72) brightness(1.08);
+}
+
+html.codex-theme-studio .app-shell-left-panel [data-cts-logo] :is(span, div, b, i, p) {
+  color: transparent !important;
+  text-shadow: none !important;
+}
+
+html.codex-theme-studio .app-shell-left-panel [data-cts-logo="codex"] { background-image: var(--cts-asset-logo-codex); }
+html.codex-theme-studio .app-shell-left-panel [data-cts-logo="chatgpt-work"] { background-image: var(--cts-asset-logo-chatgpt-work); }
+
+/* ------------------------------------------------ overlays: menus, dialogs, tooltips */
+
+html.codex-theme-studio :is(
+  [role="menu"],
+  [role="listbox"],
+  [data-radix-popper-content-wrapper] > div,
+  [data-radix-menu-content]
+) {
+  background: #f8f6fb !important;
+  border: 1px solid rgba(36, 32, 50, .18) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 14px 34px rgba(36, 32, 50, .22), inset 0 1px 0 rgba(255, 255, 255, .8) !important;
+  color: var(--cts-color-ink) !important;
+}
+
+html.codex-theme-studio :is([role="menu"], [role="listbox"], [data-radix-menu-content]) :is([role="menuitem"], [role="option"], button, a) {
+  color: var(--cts-color-ink) !important;
+  border-radius: 7px !important;
+}
+
+html.codex-theme-studio :is([role="menu"], [role="listbox"], [data-radix-menu-content]) :is([role="menuitem"], [role="option"]):is(:hover, [data-highlighted]) {
+  background: linear-gradient(90deg, rgba(118, 86, 199, .16), rgba(139, 216, 255, .07)) !important;
+  box-shadow: inset 2px 0 0 var(--cts-color-violet) !important;
+}
+
+html.codex-theme-studio [role="dialog"] {
+  background: #f8f6fb !important;
+  border: 1px solid rgba(36, 32, 50, .18) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 30px 70px rgba(36, 32, 50, .30) !important;
+  color: var(--cts-color-ink) !important;
+}
+
+html.codex-theme-studio [role="dialog"] :is(h1, h2, h3, p, span, label, div) {
+  color: var(--cts-color-ink) !important;
+}
+
+html.codex-theme-studio [role="dialog"] :is(input, textarea, select) {
+  background: #ffffff !important;
+  border: 1px solid rgba(36, 32, 50, .2) !important;
+  color: var(--cts-color-ink) !important;
+  border-radius: 8px !important;
+}
+
+html.codex-theme-studio [role="dialog"] [role="tablist"] button[aria-selected="true"] {
+  background: linear-gradient(90deg, rgba(118, 86, 199, .18), rgba(139, 216, 255, .08)) !important;
+  box-shadow: inset 0 -2px 0 var(--cts-color-violet) !important;
+}
+
+html.codex-theme-studio [role="tooltip"] {
+  background: #0f1120 !important;
+  color: #f0edf8 !important;
+  border: 1px solid rgba(139, 216, 255, .4) !important;
+  border-radius: 6px !important;
+}
+
+/* Native ink tokens push dark text into the dark tooltip — force light. */
+html.codex-theme-studio [role="tooltip"] :is(span, div, p, b, i, label, time, h1, h2, h3) {
+  color: #f0edf8 !important;
+}
+
+/* Floating surfaces (quick chat, bottom panel, PiP) = NERV field panels. */
+html.codex-theme-studio section[class*="_floatingSurface_"] {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .6), rgba(248, 246, 251, 0) 42px),
+    #f4f1f8 !important;
+  border: 1px solid rgba(36, 32, 50, .22) !important;
+  border-top: 2px solid var(--cts-color-cyan) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 24px 60px rgba(36, 32, 50, .30), inset 0 1px 0 rgba(255, 255, 255, .85) !important;
+}
+
+html.codex-theme-studio section[class*="_floatingSurface_"] :is(input, textarea, [contenteditable]) {
+  caret-color: var(--cts-color-cyan) !important;
+}
+
+html.codex-theme-studio [data-state="open"][class*="overlay"],
+html.codex-theme-studio [class*="DialogOverlay"] {
+  background: rgba(10, 11, 24, .5) !important;
+  backdrop-filter: blur(2px) saturate(90%) !important;
+}
+
+/* ------------------------------------------------ task pages readability */
+
+html.codex-theme-studio main.main-surface:not(.cts-home-shell) article {
+  background: rgba(250, 248, 253, .58);
+  border: 1px solid var(--cts-color-line);
+  border-radius: 10px;
+  box-shadow: 0 6px 18px rgba(36, 32, 50, .06);
+}
+
+html.codex-theme-studio main.main-surface :is(pre, code) {
+  background: #0f1120 !important;
+  color: #eeeaf8 !important;
+  border-radius: 8px;
+}
+
+/* ------------------------------------------------ scrollbars */
+
+html.codex-theme-studio ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+html.codex-theme-studio ::-webkit-scrollbar-thumb {
+  background: rgba(118, 102, 160, .45);
+  border-radius: 6px;
+  border: 2px solid transparent;
+  background-clip: content-box;
+}
+
+html.codex-theme-studio .app-shell-left-panel ::-webkit-scrollbar-thumb {
+  background: rgba(167, 139, 250, .35);
+  background-clip: content-box;
+}
+
+/* ---------------- stage layer (#cts-stage): scenery UNDER the content ----- */
+
+#cts-stage {
+  font-family: "SF Mono", Menlo, ui-monospace, monospace;
+}
+
+.cts-hero {
+  position: absolute;
+  left: 50%;
+  top: 31%;
+  transform: translateX(-50%);
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+
+#cts-stage.cts-home-shell .cts-hero { display: flex; }
+
+.cts-hero-title {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  color: rgba(76, 54, 134, .82);
+  font-family: "Hiragino Mincho ProN", "Songti SC", "Yu Mincho", serif;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .75);
+}
+
+.cts-hero-sub {
+  font-size: 13px;
+  letter-spacing: .30em;
+  color: rgba(100, 71, 170, .62);
+}
+
+/* When Codex opens its resizable right panel, the home stage still spans the
+   full main surface. Re-center the title inside the remaining left viewport
+   instead of letting the panel crop a title positioned at 50% of the whole
+   surface. The focus-area attribute is the panel's stable semantic marker. */
+html.codex-theme-studio main.main-surface:has(aside[data-app-shell-focus-area="right-panel"]) .cts-hero {
+  left: 21%;
+  top: 30%;
+  width: 38%;
+  gap: 8px;
+}
+
+html.codex-theme-studio main.main-surface:has(aside[data-app-shell-focus-area="right-panel"]) .cts-hero-title {
+  font-size: clamp(22px, 2vw, 30px);
+  letter-spacing: .08em;
+  white-space: nowrap;
+}
+
+html.codex-theme-studio main.main-surface:has(aside[data-app-shell-focus-area="right-panel"]) .cts-hero-sub {
+  font-size: 11px;
+  letter-spacing: .25em;
+}
+
+/* ---------------- moon descent: Mark.06 activation intro ---------------- */
+
+#cts-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  pointer-events: none;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% -12%, rgba(229, 226, 255, .34), transparent 30%),
+    linear-gradient(0deg, rgba(118, 86, 199, .18), transparent 55%),
+    radial-gradient(ellipse 120% 90% at 50% 100%, #241a40 0%, #111225 54%, #050711 100%);
+  animation: cts-intro-out 2.3s ease forwards;
+}
+
+/* Cruciform flash at the hard stop (pure EVA vocabulary). */
+#cts-intro::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, transparent 47.6%, rgba(230, 224, 255, .95) 49.5% 50.5%, transparent 52.4%),
+    linear-gradient(0deg, transparent 44%, rgba(190, 170, 255, .85) 49% 51%, transparent 56%);
+  opacity: 0;
+  animation: cts-intro-cross 2.3s ease forwards;
+}
+
+@keyframes cts-intro-cross {
+  0%, 62% { opacity: 0; transform: scale(.25); }
+  74% { opacity: 1; transform: scale(1); }
+  86% { opacity: .85; transform: scale(1.4); }
+  100% { opacity: 0; transform: scale(1.65); }
+}
+
+/* Launch-shaft speed lines: vertical streaks rushing DOWN = camera riding
+   the catapult up with the unit. They cut out at the hard stop. */
+.cts-intro-rays {
+  position: absolute;
+  inset: -20% 0;
+  background:
+    radial-gradient(2px 44px at 50% 50%, rgba(214, 200, 255, .55), transparent 72%) 0 0 / 9px 130px repeat,
+    radial-gradient(2.5px 62px at 50% 50%, rgba(167, 139, 250, .38), transparent 72%) 4px 65px / 14px 190px repeat,
+    radial-gradient(1.5px 30px at 50% 50%, rgba(139, 216, 255, .30), transparent 72%) 9px 30px / 19px 100px repeat;
+  animation: cts-intro-shaft 2.3s cubic-bezier(.25, .7, .35, 1) forwards;
+}
+
+@keyframes cts-intro-shaft {
+  0% { transform: translateY(-52%); opacity: 0; }
+  8% { opacity: 1; }
+  58% { transform: translateY(34%); opacity: 1; }
+  70% { transform: translateY(38%); opacity: 0; }
+  100% { transform: translateY(38%); opacity: 0; }
+}
+
+/* Mark.06 glides out of the moonlight, settles, then dissolves. */
+.cts-intro-figure {
+  width: min(76vw, 980px);
+  aspect-ratio: 3 / 2;
+  background: var(--cts-asset-intro) center / contain no-repeat;
+  filter: drop-shadow(0 0 46px rgba(139, 216, 255, .85)) drop-shadow(0 0 120px rgba(118, 86, 199, .5));
+  animation: cts-intro-launch 2.3s forwards;
+}
+
+@keyframes cts-intro-launch {
+  0% { transform: translateY(-18%) scale(.78); opacity: 0; animation-timing-function: cubic-bezier(.2, .65, .3, 1); }
+  9% { opacity: 1; }
+  56% { transform: translateY(0) scale(1); animation-timing-function: ease-out; }
+  64% { transform: translateY(1%) scale(.99); }
+  72% { transform: translateY(0) scale(1); opacity: 1; }
+  88% { transform: translateY(0) scale(1.03); opacity: 1; }
+  100% { transform: translateY(-3%) scale(1.07); opacity: 0; }
+}
+
+.cts-intro-flash {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  opacity: 0;
+  animation: cts-intro-flash 2.3s linear forwards;
+}
+
+@keyframes cts-intro-flash {
+  0%, 60% { opacity: 0; }
+  66% { opacity: .55; }   /* stop jolt */
+  72% { opacity: 0; }
+  80% { opacity: .9; }    /* cruciform peak */
+  92% { opacity: .12; }
+  100% { opacity: 0; }
+}
+
+@keyframes cts-intro-out {
+  0%, 88% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ---------------- decorative chrome overlay ------------------------------- */
+
+#cts-chrome {
+  font-family: "SF Mono", Menlo, ui-monospace, monospace;
+  color: var(--cts-color-ink);
+}
+
+/* ============================================================
+   Selector pills — armored chips (asset 9-slice), physical props:
+   violet armor is ALWAYS printed with cool-light ink, both shells.
+   ============================================================ */
+
+html.codex-theme-studio main button:has([class*="_dropdownLabel"]) {
+  position: relative !important;
+  isolation: isolate;
+  background: none !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+
+html.codex-theme-studio main button:has([class*="_dropdownLabel"])::before {
+  content: "";
+  position: absolute;
+  inset: -4px -9px;
+  z-index: -1;
+  pointer-events: none;
+  border-style: solid;
+  border-width: 15px 13px;
+  border-image: var(--cts-asset-pill-armor) 260 228 fill stretch;
+  filter: hue-rotate(225deg) saturate(.78) brightness(.95) drop-shadow(0 2px 6px rgba(0, 0, 0, .38));
+  transition: filter .15s ease;
+}
+
+html.codex-theme-studio main button:has([class*="_dropdownLabel"]),
+html.codex-theme-studio main button:has([class*="_dropdownLabel"]) * {
+  color: #f3efff !important;
+  opacity: 1 !important;
+  text-shadow: 0 1px 2px rgba(18, 15, 38, .65) !important;
+  -webkit-text-fill-color: #f3efff !important;
+}
+
+html.codex-theme-studio main button:has([class*="_dropdownLabel"]) svg {
+  color: var(--cts-color-moon) !important;
+  opacity: 1 !important;
+}
+
+html.codex-theme-studio main button:has([class*="_dropdownLabel"]):hover {
+  background: none !important;
+  border-color: transparent !important;
+}
+
+html.codex-theme-studio main button:has([class*="_dropdownLabel"]):hover::before {
+  filter: hue-rotate(225deg) saturate(.82) brightness(1.08) drop-shadow(0 0 8px rgba(139, 216, 255, .6));
+}
+
+/* Pill row's z-0 ancestor traps it under the deck bezel — lift the creator. */
+html.codex-theme-studio div.z-0:has([class*="_dropdownLabel"]) {
+  z-index: 12 !important;
+}
+
+html.codex-theme-studio div.z-0:has([class*="_dropdownLabel"]) :is(div) {
+  background-color: transparent !important;
+}
+
+/* The horizontal scroll strip clips the capsule overhang — pad + pull back. */
+html.codex-theme-studio [class*="horizontal-scroll-fade-mask"]:has([class*="_dropdownLabel"]) {
+  padding: 8px 14px !important;
+  margin: -8px -14px !important;
+}
+
+/* ============================================================
+   Dark shell — the actual NERV command center. Wall art breathes
+   under a light black veil; body veil EXACTLY matches main veil
+   (no tonal band), main drop shadow off.
+   ============================================================ */
+
+html.codex-theme-studio[data-cts-shell="dark"] body {
+  background:
+    linear-gradient(90deg, rgba(11, 12, 17, .66) 0%, rgba(11, 12, 17, .55) 55%, rgba(11, 12, 17, .42) 100%),
+    var(--cts-asset-wall) center / cover no-repeat fixed,
+    #0b0c11 !important;
+  color: #f0edfa !important;
+}
+
+html.codex-theme-studio[data-cts-shell="dark"] main.main-surface {
+  background:
+    linear-gradient(90deg, rgba(11, 12, 17, .66) 0%, rgba(11, 12, 17, .55) 55%, rgba(11, 12, 17, .42) 100%),
+    var(--cts-asset-wall) center / cover no-repeat,
+    #0e0f15 !important;
+  box-shadow: none !important;
+}
+
+html.codex-theme-studio[data-cts-shell="dark"] main.main-surface:not(.cts-home-shell) {
+  background:
+    linear-gradient(90deg, rgba(11, 12, 17, .66) 0%, rgba(11, 12, 17, .55) 55%, rgba(11, 12, 17, .42) 100%),
+    var(--cts-asset-wall) center / cover no-repeat,
+    #0e0f15 !important;
+}
+
+html.codex-theme-studio[data-cts-shell="dark"] div.main-surface {
+  background:
+    linear-gradient(90deg, rgba(11, 12, 17, .66) 0%, rgba(11, 12, 17, .55) 55%, rgba(11, 12, 17, .42) 100%),
+    var(--cts-asset-wall) center / cover no-repeat,
+    #0e0f15 !important;
+}
+
+html.codex-theme-studio[data-cts-shell="dark"] div.main-surface::before {
+  opacity: .2;
+}
+
+html.codex-theme-studio[data-cts-shell="dark"] main.main-surface::before {
+  opacity: .9;
+  filter: drop-shadow(-14px 18px 34px rgba(0, 0, 0, .55)) brightness(.94);
+}
+
+html.codex-theme-studio[data-cts-shell="dark"] main.main-surface:not(.cts-home-shell)::before {
+  opacity: .12;
+}
+
+/* Counter strip: dark violet armor plate with a moonlit seam. */
+html.codex-theme-studio[data-cts-shell="dark"] main.main-surface::after {
+  background:
+    linear-gradient(180deg,
+      rgba(16, 14, 30, 0) 0%,
+      rgba(36, 28, 62, .72) 14%,
+      #24183d 28%,
+      #1a122e 42%,
+      #120e24 66%,
+      #090b17 100%);
+  border-top: 0;
+  box-shadow: inset 0 -26px 34px -22px rgba(0, 0, 0, .65);
+}
+
+/* Hero text: cool moonlight glow in the dark. */
+html.codex-theme-studio[data-cts-shell="dark"] .cts-hero-title {
+  color: rgba(230, 224, 255, .72);
+  text-shadow: 0 0 18px rgba(139, 216, 255, .25);
+}
+
+html.codex-theme-studio[data-cts-shell="dark"] .cts-hero-sub {
+  color: rgba(214, 200, 255, .40);
+}
+
+/* Sticky headers fade to fully transparent (a solid band reads as a bug). */
+html.codex-theme-studio[data-cts-shell="dark"] [role="main"] .sticky[class~="bg-token-main-surface-primary"] {
+  background: linear-gradient(180deg, rgba(14, 15, 21, .72), rgba(14, 15, 21, 0)) !important;
+  backdrop-filter: blur(4px);
+}
+
+/* Overlays follow the night palette. */
+html.codex-theme-studio[data-cts-shell="dark"] :is(
+  [role="menu"],
+  [role="listbox"],
+  [data-radix-popper-content-wrapper] > div,
+  [data-radix-menu-content]
+) {
+  background: #141526 !important;
+  border: 1px solid rgba(139, 216, 255, .28) !important;
+  color: #f0edfa !important;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, .5), inset 0 1px 0 rgba(255, 255, 255, .06) !important;
+}
+
+html.codex-theme-studio[data-cts-shell="dark"] :is([role="menu"], [role="listbox"], [data-radix-menu-content]) :is([role="menuitem"], [role="option"], button, a) {
+  color: #f0edfa !important;
+}
+
+html.codex-theme-studio[data-cts-shell="dark"] :is([role="menu"], [role="listbox"], [data-radix-menu-content]) :is([role="menuitem"], [role="option"]):is(:hover, [data-highlighted]) {
+  background: linear-gradient(90deg, rgba(139, 216, 255, .22), rgba(139, 216, 255, .07)) !important;
+  box-shadow: inset 2px 0 0 var(--cts-color-cyan) !important;
+}
+
+html.codex-theme-studio[data-cts-shell="dark"] [role="dialog"] {
+  background: #111321 !important;
+  border: 1px solid rgba(139, 216, 255, .25) !important;
+  color: #f0edfa !important;
+}
+
+html.codex-theme-studio[data-cts-shell="dark"] [role="dialog"] :is(h1, h2, h3, p, span, label, div) {
+  color: #f0edfa !important;
+}
+
+html.codex-theme-studio[data-cts-shell="dark"] [role="dialog"] :is(input, textarea, select) {
+  background: #0f1015 !important;
+  border: 1px solid rgba(240, 237, 250, .18) !important;
+  color: #f0edfa !important;
+}
+
+/* Floating surfaces go graphite with a cyan rim. */
+html.codex-theme-studio[data-cts-shell="dark"] section[class*="_floatingSurface_"] {
+  background:
+    linear-gradient(180deg, rgba(167, 139, 250, .08), rgba(20, 16, 20, 0) 42px),
+    #101322 !important;
+  border: 1px solid rgba(139, 216, 255, .3) !important;
+  border-top: 2px solid var(--cts-color-cyan) !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .55), inset 0 1px 0 rgba(255, 255, 255, .05) !important;
+}
+
+/* Task-page message cards over the dark veil. */
+html.codex-theme-studio[data-cts-shell="dark"] main.main-surface:not(.cts-home-shell) article {
+  background: rgba(18, 18, 36, .55);
+  border: 1px solid rgba(240, 237, 250, .08);
+}
+
+html.codex-theme-studio[data-cts-shell="dark"] ::-webkit-scrollbar-thumb {
+  background: rgba(167, 139, 250, .38);
+  background-clip: content-box;
+}
+
+/* ============================================================
+   v2 — right side panel & floating quick-ask. On a DARK wall
+   theme, "transparent token panel" reads as a HOLE (the light
+   cream-wall baseline trick does not transfer) — frost these panels
+   instead: atmosphere still breathes through the blur, but the
+   layout reads as a solid NERV console pane.
+   ============================================================ */
+
+html.codex-theme-studio main.main-surface aside:not(.app-shell-left-panel) {
+  background:
+    linear-gradient(90deg, rgba(245, 243, 249, .76), rgba(236, 233, 245, .48)),
+    var(--cts-asset-kaworu) right bottom / auto 86% no-repeat,
+    var(--cts-asset-wall) center / cover no-repeat,
+    #efedf5 !important;
+  backdrop-filter: none;
+  border-left: 1px solid rgba(118, 86, 199, .20);
+  box-shadow: -12px 0 28px rgba(15, 14, 30, .10);
+}
+
+/* Paint the side panel once on its semantic container. Its nested token
+   layers stay transparent, preventing the old sticky gradient band and
+   multiple translucent veils from stacking. */
+html.codex-theme-studio main.main-surface aside:not(.app-shell-left-panel) [class~="bg-token-main-surface-primary"] {
+  background: transparent !important;
+  backdrop-filter: none !important;
+}
+
+html.codex-theme-studio[data-cts-shell="dark"] main.main-surface aside:not(.app-shell-left-panel) {
+  background:
+    linear-gradient(90deg, rgba(14, 15, 21, .74), rgba(11, 12, 17, .42)),
+    var(--cts-asset-kaworu) right bottom / auto 86% no-repeat,
+    var(--cts-asset-wall) center / cover no-repeat,
+    #0e0f15 !important;
+  border-left: 1px solid rgba(139, 216, 255, .26);
+  box-shadow: -12px 0 28px rgba(0, 0, 0, .35);
+}
+
+/* The suggestion-card buttons ship a native hover token background that
+   outranks the base transparent rule — kill it in EVERY state, with grid
+   in the compound for the specificity headroom. */
+html.codex-theme-studio .cts-home .group\/home-suggestions .grid button,
+html.codex-theme-studio .cts-home .group\/home-suggestions .grid button:is(:hover, :focus, :focus-visible, :active, [data-state]) {
+  background-color: transparent !important;
+}
+
+
+/* Right side panel open squeezes the composer — swap the wide instrument
+   deck for the symmetric slim frame so the bezel doesn't eat the width. */
+html.codex-theme-studio main.main-surface:has(aside:not(.app-shell-left-panel)) div:has(> .composer-surface-chrome)::before {
+  inset: -14px -32px -20px -32px;
+  border-width: 14px 32px 20px 32px;
+  border-image: var(--cts-asset-deck-slim) 90 180 108 180 stretch;
+}

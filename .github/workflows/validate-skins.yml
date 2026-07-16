@@ -1,0 +1,45 @@
+name: Validate skins
+
+# Every skin submission passes the exact same delivery gate contributors run
+# locally: `pack` — full structural validation, asset budgets, preview
+# presence, version/codexVerified required. No gate, no merge.
+on:
+  pull_request:
+    paths: ["skins/**", "studio/**"]
+  push:
+    branches: [main]
+    paths: ["skins/**", "studio/**"]
+
+permissions:
+  contents: read
+
+jobs:
+  pack-gate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Pack every skin through the delivery gate
+        run: |
+          set -euo pipefail
+          failed=0
+          for dir in skins/*/; do
+            id="$(basename "$dir")"
+            echo "::group::pack $id"
+            if node studio/bin/codex-theme.mjs pack "$id" --out /tmp/gate; then
+              echo "OK: $id"
+            else
+              echo "::error::pack gate failed for $id"
+              failed=1
+            fi
+            echo "::endgroup::"
+          done
+          exit "$failed"
+      - name: Upload packed archives
+        uses: actions/upload-artifact@v4
+        with:
+          name: codexskins
+          path: /tmp/gate/*.codexskin
+          if-no-files-found: error

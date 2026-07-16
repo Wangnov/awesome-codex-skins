@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 2,
+  "id": "asuka-eva02",
+  "name": "NERV EVA-02 Asuka Terminal",
+  "description": "明日香与 EVA 二号机：NERV 指挥中心风格的素材化主题（深色为主，浅色为白昼报告风）。",
+  "colors": {
+    "red": "#c8300e",
+    "red-deep": "#8f1f08",
+    "orange": "#ff6a00",
+    "amber": "#ffb257",
+    "graphite": "#17181d",
+    "panel-dark": "#1f2026",
+    "ink-light": "#e8e4da",
+    "ink": "#26221f",
+    "hazard": "#f6c800",
+    "green": "#3ddc84",
+    "lcl": "#ff9e3d",
+    "line": "rgba(255, 178, 87, .18)"
+  },
+  "strings": {
+    "hero-title": "God's in His Heaven",
+    "hero-sub": "ALL'S RIGHT WITH THE WORLD"
+  },
+  "codexTheme": {
+    "appearanceTheme": "dark",
+    "dark": {
+      "accent": "#ff6a00",
+      "contrast": 60,
+      "ink": "#e8e4da",
+      "opaqueWindows": true,
+      "surface": "#17181d",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Hiragino Mincho ProN, \"Songti SC\""
+      },
+      "semanticColors": {
+        "diffAdded": "#3ddc84",
+        "diffRemoved": "#e0301e",
+        "skill": "#f6c800"
+      }
+    },
+    "light": {
+      "accent": "#c8300e",
+      "contrast": 60,
+      "ink": "#26221f",
+      "opaqueWindows": true,
+      "surface": "#f2ede4",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Hiragino Mincho ProN, \"Songti SC\""
+      },
+      "semanticColors": {
+        "diffAdded": "#2f9e63",
+        "diffRemoved": "#c8300e",
+        "skill": "#b08405"
+      }
+    }
+  },
+  "assets": {
+    "wall": "assets/wall.webp",
+    "sidebar-texture": "assets/sidebar-texture.webp",
+    "asuka": "assets/asuka.webp",
+    "intro": "assets/eva02-punch.webp",
+    "composer-deck": "assets/composer-deck.webp",
+    "deck-slim": "assets/deck-slim.webp",
+    "card-radar": "assets/card-radar.webp",
+    "card-atfield": "assets/card-atfield.webp",
+    "card-wave": "assets/card-wave.webp",
+    "card-eva02": "assets/card-eva02.webp",
+    "logo-codex": "assets/logo-codex.webp",
+    "logo-chatgpt-work": "assets/logo-chatgpt-work.webp",
+    "watermark": "assets/watermark.webp",
+    "watermark-dark": "assets/watermark-dark.webp",
+    "nerv-wing": "assets/nerv-wing.webp",
+    "pill-armor": "assets/pill-armor.webp",
+    "icon-new-task": "assets/icon-new-task.webp",
+    "icon-scheduled": "assets/icon-scheduled.webp",
+    "icon-plugins": "assets/icon-plugins.webp",
+    "icon-sites": "assets/icon-sites.webp",
+    "icon-pull-request": "assets/icon-pull-request.webp",
+    "icon-chat": "assets/icon-chat.webp",
+    "icon-search": "assets/icon-search.webp",
+    "icon-explore": "assets/icon-explore.webp",
+    "icon-build": "assets/icon-build.webp",
+    "icon-review": "assets/icon-review.webp",
+    "icon-fix": "assets/icon-fix.webp",
+    "icon-attach": "assets/icon-attach.webp",
+    "icon-mic": "assets/icon-mic.webp",
+    "icon-model": "assets/icon-model.webp",
+    "icon-settings": "assets/icon-settings.webp",
+    "icon-folder": "assets/icon-folder.webp",
+    "lance": "assets/lance.webp",
+    "lance-off": "assets/lance-off.webp"
+  },
+  "chrome": "chrome.html",
+  "css": "theme.css",
+  "version": "1.0.0",
+  "author": "wangnov",
+  "codexVerified": "26.707.91948",
+  "appearance": "dual",
+  "license": "personal-use",
+  "previews": [
+    "previews/home.webp"
+  ]
+}

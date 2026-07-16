@@ -1,0 +1,104 @@
+{
+  "schemaVersion": 2,
+  "id": "shinji-eva01",
+  "name": "NERV EVA-01 Shinji Synchronization Terminal",
+  "description": "碇真嗣与 EVA 初号机：以 CAGE-01 拘束机库、同步诊断和紫绿装甲构成的 NERV 素材化主题。",
+  "colors": {
+    "purple": "#61308c",
+    "purple-deep": "#271333",
+    "lime": "#9bea45",
+    "lime-deep": "#4f8d27",
+    "cyan": "#49d8e8",
+    "graphite": "#111018",
+    "panel-dark": "#1a1522",
+    "ink-light": "#eeeaf2",
+    "ink": "#28212e",
+    "warning": "#f2c94c",
+    "core": "#e34848",
+    "lcl": "#efa24c",
+    "line": "rgba(155, 234, 69, .18)"
+  },
+  "strings": {
+    "hero-title": "不能逃避",
+    "hero-sub": "EVA-01 // SYNCHRONIZATION ACTIVE"
+  },
+  "codexTheme": {
+    "appearanceTheme": "dark",
+    "dark": {
+      "accent": "#9bea45",
+      "contrast": 60,
+      "ink": "#eeeaf2",
+      "opaqueWindows": true,
+      "surface": "#111018",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Hiragino Mincho ProN, \"Songti SC\""
+      },
+      "semanticColors": {
+        "diffAdded": "#65c08a",
+        "diffRemoved": "#e34848",
+        "skill": "#f2c94c"
+      }
+    },
+    "light": {
+      "accent": "#61308c",
+      "contrast": 60,
+      "ink": "#28212e",
+      "opaqueWindows": true,
+      "surface": "#f0edf5",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Hiragino Mincho ProN, \"Songti SC\""
+      },
+      "semanticColors": {
+        "diffAdded": "#2f8f61",
+        "diffRemoved": "#bd3e50",
+        "skill": "#8a6b11"
+      }
+    }
+  },
+  "assets": {
+    "wall": "assets/wall.webp",
+    "shinji": "assets/shinji.webp",
+    "intro": "assets/eva01-awaken.webp",
+    "composer-deck": "assets/composer-deck.webp",
+    "deck-slim": "assets/deck-slim.webp",
+    "card-radar": "assets/card-radar.webp",
+    "card-atfield": "assets/card-atfield.webp",
+    "card-wave": "assets/card-wave.webp",
+    "card-eva01": "assets/card-eva01.webp",
+    "logo-codex": "assets/logo-codex.webp",
+    "logo-chatgpt-work": "assets/logo-chatgpt-work.webp",
+    "watermark": "assets/watermark.webp",
+    "watermark-dark": "assets/watermark-dark.webp",
+    "nerv-wing": "assets/nerv-wing.webp",
+    "pill-armor": "assets/pill-armor.webp",
+    "icon-new-task": "assets/icon-new-task.webp",
+    "icon-scheduled": "assets/icon-scheduled.webp",
+    "icon-plugins": "assets/icon-plugins.webp",
+    "icon-sites": "assets/icon-sites.webp",
+    "icon-pull-request": "assets/icon-pull-request.webp",
+    "icon-chat": "assets/icon-chat.webp",
+    "icon-search": "assets/icon-search.webp",
+    "icon-explore": "assets/icon-explore.webp",
+    "icon-build": "assets/icon-build.webp",
+    "icon-review": "assets/icon-review.webp",
+    "icon-fix": "assets/icon-fix.webp",
+    "icon-attach": "assets/icon-attach.webp",
+    "icon-mic": "assets/icon-mic.webp",
+    "icon-model": "assets/icon-model.webp",
+    "icon-settings": "assets/icon-settings.webp",
+    "icon-folder": "assets/icon-folder.webp",
+    "sync-trigger": "assets/sync-trigger.webp"
+  },
+  "chrome": "chrome.html",
+  "css": "theme.css",
+  "version": "1.0.0",
+  "author": "wangnov",
+  "codexVerified": "26.707.91948",
+  "appearance": "dual",
+  "license": "personal-use",
+  "previews": [
+    "previews/home.webp"
+  ]
+}

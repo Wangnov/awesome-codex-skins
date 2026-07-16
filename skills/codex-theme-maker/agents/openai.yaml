@@ -1,0 +1,4 @@
+interface:
+  display_name: "Codex Theme Maker"
+  short_description: "从概念图制作完整可逆的素材化 Codex 桌面主题皮肤"
+  default_prompt: "Use $codex-theme-maker to build a complete, reversible Codex desktop theme from this visual direction."

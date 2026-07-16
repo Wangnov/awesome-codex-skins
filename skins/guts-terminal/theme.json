@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 2,
+  "id": "guts-terminal",
+  "name": "TPC GUTS Command Terminal",
+  "description": "还原自迪迦奥特曼 TPC/GUTS 概念图的素材化指挥终端主题。",
+  "colors": {
+    "cream": "#ece8df",
+    "cream-deep": "#d9d4c6",
+    "panel": "#f4f1ea",
+    "ink": "#2a2a28",
+    "ink-soft": "#7a7568",
+    "screen": "#191a1d",
+    "screen-2": "#212327",
+    "amber": "#e8a33d",
+    "amber-deep": "#d97e2a",
+    "hazard": "#e0662e",
+    "cyan": "#4fc3d9",
+    "green": "#46c077",
+    "red": "#d64541",
+    "side-bg": "#0f1012",
+    "side-panel": "#16171a",
+    "side-text": "#d8d5cc",
+    "line": "rgba(42, 42, 40, .16)"
+  },
+  "strings": {
+    "hero-title": "你相信光吗",
+    "hero-sub": "T P C"
+  },
+  "codexTheme": {
+    "appearanceTheme": "light",
+    "light": {
+      "accent": "#d97e2a",
+      "contrast": 60,
+      "ink": "#2a2a28",
+      "opaqueWindows": true,
+      "surface": "#ece8df",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "SF Pro Display, \"PingFang SC\""
+      },
+      "semanticColors": {
+        "diffAdded": "#46c077",
+        "diffRemoved": "#d64541",
+        "skill": "#e8a33d"
+      }
+    },
+    "dark": {
+      "accent": "#e8a33d",
+      "contrast": 60,
+      "ink": "#e8e5da",
+      "opaqueWindows": true,
+      "surface": "#191a1d",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "SF Pro Display, \"PingFang SC\""
+      },
+      "semanticColors": {
+        "diffAdded": "#46c077",
+        "diffRemoved": "#d64541",
+        "skill": "#e8a33d"
+      }
+    }
+  },
+  "assets": {
+    "wall": "assets/wall.webp",
+    "sidebar-texture": "assets/sidebar-texture.webp",
+    "deck-slim": "assets/deck-slim.webp",
+    "tiga": "assets/tiga.webp",
+    "watermark": "assets/watermark.webp",
+    "composer-deck": "assets/composer-deck.webp",
+    "spark-button": "assets/spark-button.webp",
+    "card-screen": "assets/card-screen.webp",
+    "card-radar": "assets/card-radar.webp",
+    "card-nodes": "assets/card-nodes.webp",
+    "card-chart": "assets/card-chart.webp",
+    "card-mech": "assets/card-mech.webp",
+    "guts-wing": "assets/guts-wing.webp",
+    "icon-new-task": "assets/icon-new-task.webp",
+    "icon-scheduled": "assets/icon-scheduled.webp",
+    "icon-plugins": "assets/icon-plugins.webp",
+    "icon-sites": "assets/icon-sites.webp",
+    "icon-pull-request": "assets/icon-pull-request.webp",
+    "icon-chat": "assets/icon-chat.webp",
+    "icon-search": "assets/icon-search.webp",
+    "icon-explore": "assets/icon-explore.webp",
+    "icon-build": "assets/icon-build.webp",
+    "icon-review": "assets/icon-review.webp",
+    "icon-fix": "assets/icon-fix.webp",
+    "icon-attach": "assets/icon-attach.webp",
+    "icon-mic": "assets/icon-mic.webp",
+    "icon-model": "assets/icon-model.webp",
+    "icon-settings": "assets/icon-settings.webp",
+    "icon-folder": "assets/icon-folder.webp",
+    "spark-lence": "assets/spark-lence.webp",
+    "tiga-punch": "assets/tiga-punch.webp",
+    "logo-codex": "assets/logo-codex.webp",
+    "logo-chatgpt-work": "assets/logo-chatgpt-work.webp",
+    "spark-lence-closed": "assets/spark-lence-closed.webp",
+    "watermark-dark": "assets/watermark-dark.webp",
+    "pill-cream": "assets/pill-cream.webp"
+  },
+  "chrome": "chrome.html",
+  "css": "theme.css",
+  "version": "1.0.0",
+  "author": "wangnov",
+  "codexVerified": "26.707.91948",
+  "appearance": "dual",
+  "license": "personal-use",
+  "previews": [
+    "previews/home.webp"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "name": "codex-theme-studio",
+  "version": "0.1.0",
+  "description": "Theme studio for the Codex desktop app — asset-based UI themes injected via CDP, zero modification of app files.",
+  "type": "module",
+  "bin": {
+    "codex-theme": "./bin/codex-theme.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "check": "node --check bin/codex-theme.mjs && node --check src/cdp.mjs && node --check src/codex-app.mjs && node --check src/theme.mjs && node --check src/payload.mjs && node --check src/state.mjs"
+  },
+  "license": "MIT"
+}

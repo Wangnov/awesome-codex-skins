@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 2,
+  "id": "kaworu-mark06",
+  "name": "SEELE Mark.06 Kaworu Terminal",
+  "description": "渚薰与 Mark.06：月下 Terminal Dogma 风格的素材化主题，深紫月光为主，浅色为银灰观测报告风。",
+  "colors": {
+    "violet": "#7656c7",
+    "violet-deep": "#38245f",
+    "cyan": "#8bd8ff",
+    "moon": "#d6c8ff",
+    "graphite": "#0b0d18",
+    "panel-dark": "#141829",
+    "ink-light": "#f0edfa",
+    "ink": "#242032",
+    "signal": "#bfa5ff",
+    "green": "#4ade9a",
+    "lilith": "#9f8cff",
+    "line": "rgba(214, 200, 255, .18)"
+  },
+  "strings": {
+    "hero-title": "歌はいいね。",
+    "hero-sub": "THE MOON / THE PIANO / THE LAST ANGEL"
+  },
+  "codexTheme": {
+    "appearanceTheme": "dark",
+    "dark": {
+      "accent": "#8bd8ff",
+      "contrast": 60,
+      "ink": "#f0edfa",
+      "opaqueWindows": true,
+      "surface": "#0b0d18",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Hiragino Mincho ProN, \"Songti SC\""
+      },
+      "semanticColors": {
+        "diffAdded": "#4ade9a",
+        "diffRemoved": "#e56b8f",
+        "skill": "#bfa5ff"
+      }
+    },
+    "light": {
+      "accent": "#7656c7",
+      "contrast": 60,
+      "ink": "#242032",
+      "opaqueWindows": true,
+      "surface": "#f3f0f8",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Hiragino Mincho ProN, \"Songti SC\""
+      },
+      "semanticColors": {
+        "diffAdded": "#29885e",
+        "diffRemoved": "#bd4569",
+        "skill": "#7656c7"
+      }
+    }
+  },
+  "assets": {
+    "wall": "assets/wall.webp",
+    "sidebar-texture": "assets/sidebar-texture.webp",
+    "kaworu": "assets/kaworu.webp",
+    "intro": "assets/mark06-strike.webp",
+    "composer-deck": "assets/composer-deck.webp",
+    "deck-slim": "assets/deck-slim.webp",
+    "card-moon": "assets/card-moon.webp",
+    "card-piano": "assets/card-piano.webp",
+    "card-seele": "assets/card-seele.webp",
+    "card-mark06": "assets/card-mark06.webp",
+    "logo-codex": "assets/logo-codex.webp",
+    "logo-chatgpt-work": "assets/logo-chatgpt-work.webp",
+    "nerv-wing": "assets/nerv-wing.webp",
+    "pill-armor": "assets/pill-armor.webp",
+    "icon-new-task": "assets/icon-new-task.webp",
+    "icon-scheduled": "assets/icon-scheduled.webp",
+    "icon-plugins": "assets/icon-plugins.webp",
+    "icon-sites": "assets/icon-sites.webp",
+    "icon-pull-request": "assets/icon-pull-request.webp",
+    "icon-chat": "assets/icon-chat.webp",
+    "icon-search": "assets/icon-search.webp",
+    "icon-explore": "assets/icon-explore.webp",
+    "icon-build": "assets/icon-build.webp",
+    "icon-review": "assets/icon-review.webp",
+    "icon-fix": "assets/icon-fix.webp",
+    "icon-attach": "assets/icon-attach.webp",
+    "icon-mic": "assets/icon-mic.webp",
+    "icon-model": "assets/icon-model.webp",
+    "icon-settings": "assets/icon-settings.webp",
+    "icon-folder": "assets/icon-folder.webp",
+    "lance": "assets/lance.webp",
+    "lance-off": "assets/lance-off.webp"
+  },
+  "chrome": "chrome.html",
+  "css": "theme.css",
+  "version": "1.0.0",
+  "author": "wangnov",
+  "codexVerified": "26.707.91948",
+  "appearance": "dual",
+  "license": "personal-use",
+  "previews": [
+    "previews/home.webp"
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "schemaVersion": 2,
+  "id": "rei-eva00",
+  "name": "NERV EVA-00 Rei Prototype Terminal",
+  "description": "绫波丽与 EVA 零号机：冷静克制的 NERV 原型机实验终端（深色为主，浅色为医疗观察报告风）。",
+  "colors": {
+    "ice": "#c7e7f2",
+    "blue": "#5aa9c4",
+    "blue-deep": "#23495d",
+    "cyan": "#42d6df",
+    "amber": "#f2a93b",
+    "ivory": "#ece9df",
+    "navy": "#0e1720",
+    "panel-dark": "#15232d",
+    "ink-light": "#e4edf1",
+    "ink": "#1b2a33",
+    "red-eye": "#c9494f",
+    "green": "#55c995",
+    "line": "rgba(66, 214, 223, .18)"
+  },
+  "strings": {
+    "hero-title": "零号機、起動",
+    "hero-sub": "PROTOTYPE ZERO ACTIVATION"
+  },
+  "codexTheme": {
+    "appearanceTheme": "dark",
+    "dark": {
+      "accent": "#42d6df",
+      "contrast": 60,
+      "ink": "#e4edf1",
+      "opaqueWindows": true,
+      "surface": "#0e1720",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Hiragino Mincho ProN, \"Songti SC\""
+      },
+      "semanticColors": {
+        "diffAdded": "#55c995",
+        "diffRemoved": "#d45b64",
+        "skill": "#f2a93b"
+      }
+    },
+    "light": {
+      "accent": "#5aa9c4",
+      "contrast": 60,
+      "ink": "#1b2a33",
+      "opaqueWindows": true,
+      "surface": "#edf2f3",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Hiragino Mincho ProN, \"Songti SC\""
+      },
+      "semanticColors": {
+        "diffAdded": "#2d8b67",
+        "diffRemoved": "#b44650",
+        "skill": "#9b6a14"
+      }
+    }
+  },
+  "assets": {
+    "wall": "assets/wall.webp",
+    "sidebar-texture": "assets/sidebar-texture.webp",
+    "rei": "assets/rei.webp",
+    "intro": "assets/eva00-punch.webp",
+    "composer-deck": "assets/composer-deck.webp",
+    "deck-slim": "assets/deck-slim.webp",
+    "card-radar": "assets/card-radar.webp",
+    "card-atfield": "assets/card-atfield.webp",
+    "card-wave": "assets/card-wave.webp",
+    "card-eva00": "assets/card-eva00.webp",
+    "logo-codex": "assets/logo-codex.webp",
+    "logo-chatgpt-work": "assets/logo-chatgpt-work.webp",
+    "watermark": "assets/watermark.webp",
+    "watermark-dark": "assets/watermark-dark.webp",
+    "nerv-wing": "assets/nerv-wing.webp",
+    "pill-armor": "assets/pill-armor.webp",
+    "icon-new-task": "assets/icon-new-task.webp",
+    "icon-scheduled": "assets/icon-scheduled.webp",
+    "icon-plugins": "assets/icon-plugins.webp",
+    "icon-sites": "assets/icon-sites.webp",
+    "icon-pull-request": "assets/icon-pull-request.webp",
+    "icon-chat": "assets/icon-chat.webp",
+    "icon-search": "assets/icon-search.webp",
+    "icon-explore": "assets/icon-explore.webp",
+    "icon-build": "assets/icon-build.webp",
+    "icon-review": "assets/icon-review.webp",
+    "icon-fix": "assets/icon-fix.webp",
+    "icon-attach": "assets/icon-attach.webp",
+    "icon-mic": "assets/icon-mic.webp",
+    "icon-model": "assets/icon-model.webp",
+    "icon-settings": "assets/icon-settings.webp",
+    "icon-folder": "assets/icon-folder.webp",
+    "lance": "assets/lance.webp",
+    "lance-off": "assets/lance-off.webp"
+  },
+  "chrome": "chrome.html",
+  "css": "theme.css",
+  "version": "1.0.0",
+  "author": "wangnov",
+  "codexVerified": "26.707.91948",
+  "appearance": "dual",
+  "license": "personal-use",
+  "previews": [
+    "previews/home.webp"
+  ]
+}
