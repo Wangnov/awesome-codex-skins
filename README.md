@@ -57,9 +57,10 @@ node bin/codex-theme.mjs off                           # 即刻还原原生
 仓库内置完整生产线——把一张概念图/一种 IP 风格做成成品 `.codexskin` 的 Agent Skill，**Claude Code 与 Codex 通用**（纯 SKILL.md，无需插件）：
 
 ```bash
-# Claude Code
-cp -r skills/codex-theme-maker ~/.claude/skills/
-# Codex：同样放入你的 skills 目录
+npx skills add wangnov/awesome-codex-skins --skill codex-theme-maker -g
+# 面向特定 Agent（两者皆原生支持）：
+#   -a claude-code   Claude Code
+#   -a codex         Codex
 ```
 
 然后对你的 Agent 说：「做一个 XX 风格的 Codex 皮肤」。Skill 全程驱动：素材生成（品红底抠图、alpha 门禁）→ 按 DOM 配方组装 CSS → CDP 实时迭代 → 结构化验收 → `pack` 交付质量门。详见 [skills/codex-theme-maker/SKILL.md](skills/codex-theme-maker/SKILL.md) 与 [SPEC.md](SPEC.md)。
@@ -119,9 +120,10 @@ Requirements: macOS, Node ≥ 20, official Codex.app. Windows support tracks [Co
 The repo ships the full production line — an agent skill that takes a concept image / IP style all the way to a packed `.codexskin`, for **both Claude Code and Codex** (plain `SKILL.md`, no plugin required):
 
 ```bash
-# Claude Code
-cp -r skills/codex-theme-maker ~/.claude/skills/
-# Codex — place it in your skills directory likewise
+npx skills add wangnov/awesome-codex-skins --skill codex-theme-maker -g
+# Target a specific agent (both supported natively):
+#   -a claude-code   Claude Code
+#   -a codex         Codex
 ```
 
 Then ask your agent: *"make me a Codex skin in the style of X"*. The skill drives asset generation (magenta-matte cutouts, alpha gates), CSS assembly against the DOM recipe book, live CDP iteration, a structural acceptance suite, and the final `pack` delivery gate. See [skills/codex-theme-maker/SKILL.md](skills/codex-theme-maker/SKILL.md) and [SPEC.md](SPEC.md).
