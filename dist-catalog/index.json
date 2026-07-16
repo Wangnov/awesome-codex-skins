@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-16T18:34:34.921Z",
+  "source": "https://github.com/Wangnov/awesome-codex-skins",
+  "skins": [
+    {
+      "id": "asuka-eva02",
+      "name": "NERV EVA-02 Asuka Terminal",
+      "description": "明日香与 EVA 二号机：NERV 指挥中心风格的素材化主题（深色为主，浅色为白昼报告风）。",
+      "version": "1.0.0",
+      "author": "wangnov",
+      "appearance": "dual",
+      "license": "personal-use",
+      "tags": [],
+      "codexVerified": "26.707.91948",
+      "bytes": 2043999,
+      "sha256": "537a6ed1e62eb2acb391e24aa050d03f8859c0bcfa1783c484f64e0e22434e57",
+      "pack": "packs/asuka-eva02-1.0.0.codexskin",
+      "preview": "previews/asuka-eva02.webp"
+    },
+    {
+      "id": "guts-terminal",
+      "name": "TPC GUTS Command Terminal",
+      "description": "还原自迪迦奥特曼 TPC/GUTS 概念图的素材化指挥终端主题。",
+      "version": "1.0.0",
+      "author": "wangnov",
+      "appearance": "dual",
+      "license": "personal-use",
+      "tags": [],
+      "codexVerified": "26.707.91948",
+      "bytes": 1862396,
+      "sha256": "7fb016c046454339c17860def086e05694723df6419ec2ea3c0e8c06d5526979",
+      "pack": "packs/guts-terminal-1.0.0.codexskin",
+      "preview": "previews/guts-terminal.webp"
+    },
+    {
+      "id": "kaworu-mark06",
+      "name": "SEELE Mark.06 Kaworu Terminal",
+      "description": "渚薰与 Mark.06：月下 Terminal Dogma 风格的素材化主题，深紫月光为主，浅色为银灰观测报告风。",
+      "version": "1.0.0",
+      "author": "wangnov",
+      "appearance": "dual",
+      "license": "personal-use",
+      "tags": [],
+      "codexVerified": "26.707.91948",
+      "bytes": 2533143,
+      "sha256": "9f499674f376f4fe22f9d8314ac30f6d55ad18f4b1868bdd5712e4b7ae89ca46",
+      "pack": "packs/kaworu-mark06-1.0.0.codexskin",
+      "preview": "previews/kaworu-mark06.webp"
+    },
+    {
+      "id": "rei-eva00",
+      "name": "NERV EVA-00 Rei Prototype Terminal",
+      "description": "绫波丽与 EVA 零号机：冷静克制的 NERV 原型机实验终端（深色为主，浅色为医疗观察报告风）。",
+      "version": "1.0.0",
+      "author": "wangnov",
+      "appearance": "dual",
+      "license": "personal-use",
+      "tags": [],
+      "codexVerified": "26.707.91948",
+      "bytes": 2180147,
+      "sha256": "95b8df2fb95b6fc37a9908bc55be91a505aaebc8a745d76b3b862c6ce3b756e0",
+      "pack": "packs/rei-eva00-1.0.0.codexskin",
+      "preview": "previews/rei-eva00.webp"
+    },
+    {
+      "id": "shinji-eva01",
+      "name": "NERV EVA-01 Shinji Synchronization Terminal",
+      "description": "碇真嗣与 EVA 初号机：以 CAGE-01 拘束机库、同步诊断和紫绿装甲构成的 NERV 素材化主题。",
+      "version": "1.0.0",
+      "author": "wangnov",
+      "appearance": "dual",
+      "license": "personal-use",
+      "tags": [],
+      "codexVerified": "26.707.91948",
+      "bytes": 1767649,
+      "sha256": "4639d8734b3e6999776b715c5427a0b4cd57c8e7ef14088d8782fc61f0ba0870",
+      "pack": "packs/shinji-eva01-1.0.0.codexskin",
+      "preview": "previews/shinji-eva01.webp"
+    }
+  ]
+}

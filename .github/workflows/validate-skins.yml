@@ -43,3 +43,33 @@ jobs:
           name: codexskins
           path: /tmp/gate/*.codexskin
           if-no-files-found: error
+
+  # main is the catalog's source of truth: every push republishes
+  # skins.agentsmirror.com (index.json + packs + previews). Secrets are an
+  # R2 S3 token; publish never runs for fork PRs (push-to-main only).
+  publish-catalog:
+    needs: pack-gate
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Pack all skins
+        run: |
+          set -euo pipefail
+          for dir in skins/*/; do
+            node studio/bin/codex-theme.mjs pack "$(basename "$dir")" --out dist
+          done
+      - name: Build catalog
+        run: node scripts/build-catalog.mjs
+      - name: Sync to R2 (skins.agentsmirror.com)
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: auto
+        run: |
+          aws s3 sync dist-catalog/ s3://codex-skins/ \
+            --endpoint-url "${{ secrets.R2_ENDPOINT }}" --only-show-errors
+          echo "published $(date -u +%FT%TZ)"
