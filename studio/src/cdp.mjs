@@ -119,6 +119,22 @@ export async function listAppTargets(port) {
   }
 }
 
+// Pet/avatar windows are independent transparent renderers. They share the
+// app:// scheme and Codex-branded titles with the main shell, so the normal
+// title fallback would otherwise accept them and paint a full body backdrop.
+export function isThemeExcludedTarget(target) {
+  try {
+    const url = new URL(target.url);
+    if (url.protocol !== "app:") return false;
+    return (
+      url.pathname.startsWith("/avatar-overlay") ||
+      url.searchParams.get("initialRoute")?.startsWith("/avatar-overlay") === true
+    );
+  } catch {
+    return false;
+  }
+}
+
 // Accept renderers that expose the native Codex shell markers, or —
 // for full-screen routes like Settings where the shell unmounts — an
 // app:// page whose title still identifies the Codex app.
@@ -145,7 +161,7 @@ export async function connectTarget(target, port) {
   return new CdpSession(target, port).open();
 }
 
-export async function connectCodexTargets(port, timeoutMs) {
+export async function connectCodexTargets(port, timeoutMs, { includeExcluded = false } = {}) {
   const deadline = Date.now() + timeoutMs;
   let lastError;
   while (Date.now() < deadline) {
@@ -153,12 +169,21 @@ export async function connectCodexTargets(port, timeoutMs) {
       const targets = await listAppTargets(port);
       const connected = [];
       for (const target of targets) {
+        const excluded = isThemeExcludedTarget(target);
+        if (excluded && !includeExcluded) continue;
         let session;
         try {
           session = await connectTarget(target, port);
           const probe = await probeSession(session);
-          if (probe?.codex) connected.push({ target, session, probe });
-          else session.close();
+          if (!probe?.codex) {
+            session.close();
+            continue;
+          }
+          if (excluded) {
+            connected.push({ target, session, probe: { ...probe, themeExcluded: true } });
+            continue;
+          }
+          connected.push({ target, session, probe });
         } catch (error) {
           session?.close();
           lastError = error;

@@ -19,6 +19,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   connectCodexTargets, listAppTargets, connectTarget, probeSession, captureScreenshot,
+  isThemeExcludedTarget,
 } from "../src/cdp.mjs";
 import {
   discoverCodexAppForStop, discoverManagedCodexApp, findRunningCodexApps,
@@ -100,8 +101,8 @@ async function requireNoOtherRunningCodex(selectedApp) {
   }
 }
 
-async function withSessions(port, timeoutMs, fn) {
-  const connected = await connectCodexTargets(port, timeoutMs);
+async function withSessions(port, timeoutMs, fn, options) {
+  const connected = await connectCodexTargets(port, timeoutMs, options);
   try {
     return await fn(connected);
   } finally {
@@ -130,7 +131,7 @@ async function removeThemeOnce(port, timeoutMs) {
       results.push({ targetId: target.id, removed });
     }
     return results;
-  });
+  }, { includeExcluded: true });
 }
 
 // ---------------------------------------------------------------- commands
@@ -527,7 +528,7 @@ async function cmdPack(argv) {
 
 async function runWatchDaemon(port) {
   process.title = "codex-theme-watcher";
-  const sessions = new Map(); // targetId → { session, appliedStamp }
+  const sessions = new Map(); // targetId → { session, appliedStamp, excluded }
   let payloadCache = null; // { themeId, payload }
   let lastStateMtime = 0;
   let currentTheme = (await readState())?.currentTheme ?? null;
@@ -549,7 +550,10 @@ async function runWatchDaemon(port) {
 
   const applyTo = async (entry, targetId) => {
     try {
-      if (currentTheme) {
+      if (entry.excluded) {
+        await entry.session.evaluate(REMOVE_EXPRESSION);
+        entry.appliedStamp = null;
+      } else if (currentTheme) {
         const payload = await loadPayloadFor(currentTheme);
         await entry.session.evaluate(payload);
         entry.appliedStamp = `${STUDIO_VERSION}:${currentTheme}`;
@@ -606,7 +610,8 @@ async function runWatchDaemon(port) {
         session = await connectTarget(target, port);
         const probe = await probeSession(session);
         if (!probe?.codex) { session.close(); continue; }
-        const entry = { session, appliedStamp: null };
+        const excluded = isThemeExcludedTarget(target);
+        const entry = { session, appliedStamp: null, excluded };
         session.on("Page.loadEventFired", () => {
           setTimeout(() => {
             entry.appliedStamp = null;
@@ -615,7 +620,7 @@ async function runWatchDaemon(port) {
         });
         sessions.set(target.id, entry);
         await applyTo(entry, target.id);
-        log(`connected target ${target.id} (${target.title || target.url})`);
+        log(`${excluded ? "excluded and cleaned" : "connected"} target ${target.id} (${target.title || target.url})`);
       } catch (error) {
         session?.close();
         log(`connect failed for ${target.id}: ${error.message}`);

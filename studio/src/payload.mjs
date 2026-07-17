@@ -52,6 +52,8 @@ export const REMOVE_EXPRESSION = `(() => {
   document.documentElement?.removeAttribute('data-cts-shell');
   document.getElementById('cts-style')?.remove();
   document.getElementById('cts-chrome')?.remove();
+  document.getElementById('cts-stage')?.remove();
+  document.getElementById('cts-intro')?.remove();
   delete window.__CODEX_THEME_STUDIO__;
   return true;
 })()`;
@@ -60,6 +62,8 @@ export const VERIFY_REMOVED_EXPRESSION = `(() =>
   !document.documentElement.classList.contains('codex-theme-studio') &&
   !document.getElementById('cts-style') &&
   !document.getElementById('cts-chrome') &&
+  !document.getElementById('cts-stage') &&
+  !document.getElementById('cts-intro') &&
   !window.__CODEX_THEME_STUDIO__
 )()`;
 
