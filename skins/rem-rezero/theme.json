@@ -3,8 +3,8 @@
   "id": "rem-rezero",
   "name": "Roswaal Mansion — Rem Companion",
   "description": "Re:Zero 西方玄幻蕾姆陪伴主题：月夜宅邸、拉碧斯蓝珐琅、黄铜纹章与冰蓝魔力共同构成主页和任务页的双姿态陪伴体验。",
-  "version": "1.1.0",
-  "codexVerified": "26.707.91948",
+  "version": "1.2.0",
+  "codexVerified": "26.715.21425",
   "previews": [
     "previews/home.webp",
     "previews/task.webp"
@@ -101,7 +101,8 @@
     "icon-mic": "assets/icon-mic.png",
     "icon-model": "assets/icon-model.png",
     "icon-settings": "assets/icon-settings.png",
-    "icon-folder": "assets/icon-folder.png"
+    "icon-folder": "assets/icon-folder.png",
+    "logo-chatgpt": "assets/logo-chatgpt.png"
   },
   "chrome": "chrome.html",
   "css": "theme.css",

@@ -525,6 +525,7 @@ html.codex-theme-studio .app-shell-left-panel [data-cts-logo] :is(span, div, b, 
 
 html.codex-theme-studio .app-shell-left-panel [data-cts-logo="codex"] { background-image: var(--cts-asset-logo-codex); }
 html.codex-theme-studio .app-shell-left-panel [data-cts-logo="chatgpt-work"] { background-image: var(--cts-asset-logo-chatgpt-work); }
+html.codex-theme-studio .app-shell-left-panel [data-cts-logo="chatgpt"] { background-image: var(--cts-asset-logo-chatgpt, var(--cts-asset-logo-chatgpt-work)); }
 
 html.codex-theme-studio div.z-0:has(.group\/project-selector) {
   z-index: 12 !important;
@@ -1033,3 +1034,27 @@ html.codex-theme-studio[data-cts-shell="dark"] main.main-surface {
 }
 
 @keyframes cts-intro-charge { 0%{transform:scale(.28) rotate(-10deg);opacity:0}26%{opacity:1}76%{transform:scale(1) rotate(0)}100%{transform:scale(1.55);opacity:0} }
+
+/* ------------------------------------------------ work (ChatGPT) home cards
+   ChatGPT-for-work home renders suggestions as a vertical list of
+   `home-suggestion-list-item` buttons, not the personal 4-card grid
+   (Codex 26.715 reworked this surface). Card-ify the list to match the
+   personal home, reusing this deck's own art for positions 1-3. The
+   :not(:has(.grid)) scope leaves the personal grid home untouched. */
+html.codex-theme-studio .cts-home .group\/home-suggestions:not(:has(.grid)) > div > div {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)) !important;
+  gap: 16px !important;
+  padding-left: 0 !important;
+  min-height: 0 !important;
+}
+html.codex-theme-studio .cts-home .group\/home-suggestions:not(:has(.grid)) > div > div > div { min-width: 0; }
+html.codex-theme-studio .cts-home .group\/home-suggestions:not(:has(.grid)) button.group\/home-suggestion-list-item {
+  align-items: flex-end !important;
+}
+html.codex-theme-studio .cts-home .group\/home-suggestions:not(:has(.grid)) > div > div > div:nth-child(1) button::before { background-image: var(--cts-asset-card-1); }
+html.codex-theme-studio .cts-home .group\/home-suggestions:not(:has(.grid)) > div > div > div:nth-child(2) button::before { background-image: var(--cts-asset-card-2); }
+html.codex-theme-studio .cts-home .group\/home-suggestions:not(:has(.grid)) > div > div > div:nth-child(3) button::before { background-image: var(--cts-asset-card-3); }
+html.codex-theme-studio .cts-home .group\/home-suggestions:not(:has(.grid)) > div > div > div:nth-child(1) button::after { content: "01"; }
+html.codex-theme-studio .cts-home .group\/home-suggestions:not(:has(.grid)) > div > div > div:nth-child(2) button::after { content: "02"; }
+html.codex-theme-studio .cts-home .group\/home-suggestions:not(:has(.grid)) > div > div > div:nth-child(3) button::after { content: "03"; }

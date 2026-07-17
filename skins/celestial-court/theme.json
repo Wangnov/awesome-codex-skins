@@ -3,9 +3,9 @@
   "id": "celestial-court",
   "name": "凌霄金阙 · Celestial Court",
   "description": "原创国风天庭主题：白玉宫阙、凌霄云海、金色星轨、玉皇大帝与青玉法器构成明净庄严的天宫 Codex 皮肤。",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "author": "Wangnov",
-  "codexVerified": "26.707.91948",
+  "codexVerified": "26.715.21425",
   "appearance": "dual",
   "license": "personal-use",
   "css": "theme.css",
@@ -67,7 +67,8 @@
     "icon-mic": "assets/icon-mic.webp",
     "icon-model": "assets/icon-model.webp",
     "icon-settings": "assets/icon-settings.webp",
-    "icon-folder": "assets/icon-folder.webp"
+    "icon-folder": "assets/icon-folder.webp",
+    "logo-chatgpt": "assets/logo-chatgpt.webp"
   },
   "codexTheme": {
     "appearanceTheme": "light",

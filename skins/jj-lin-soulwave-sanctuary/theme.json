@@ -3,9 +3,9 @@
   "id": "jj-lin-soulwave-sanctuary",
   "name": "林俊杰 · 回响圣所",
   "description": "以深海蓝绿、烟青玻璃、铂银结构与琥珀脉冲构成的林俊杰个人创作非官方应援主题。",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "author": "Wangnov",
-  "codexVerified": "26.707.91948",
+  "codexVerified": "26.715.21425",
   "appearance": "dual",
   "license": "personal-use",
   "colors": {
@@ -94,7 +94,8 @@
     "icon-mic": "assets/icon-mic.webp",
     "icon-model": "assets/icon-model.webp",
     "icon-settings": "assets/icon-settings.webp",
-    "icon-folder": "assets/icon-folder.webp"
+    "icon-folder": "assets/icon-folder.webp",
+    "logo-chatgpt": "assets/logo-chatgpt.webp"
   },
   "chrome": "chrome.html",
   "css": "theme.css",

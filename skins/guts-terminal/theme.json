@@ -101,13 +101,14 @@
     "logo-chatgpt-work": "assets/logo-chatgpt-work.webp",
     "spark-lence-closed": "assets/spark-lence-closed.webp",
     "watermark-dark": "assets/watermark-dark.webp",
-    "pill-cream": "assets/pill-cream.webp"
+    "pill-cream": "assets/pill-cream.webp",
+    "logo-chatgpt": "assets/logo-chatgpt.webp"
   },
   "chrome": "chrome.html",
   "css": "theme.css",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "author": "Wangnov",
-  "codexVerified": "26.707.91948",
+  "codexVerified": "26.715.21425",
   "appearance": "dual",
   "license": "personal-use",
   "previews": [

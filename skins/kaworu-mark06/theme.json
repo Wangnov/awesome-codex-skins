@@ -92,13 +92,14 @@
     "icon-settings": "assets/icon-settings.webp",
     "icon-folder": "assets/icon-folder.webp",
     "lance": "assets/lance.webp",
-    "lance-off": "assets/lance-off.webp"
+    "lance-off": "assets/lance-off.webp",
+    "logo-chatgpt": "assets/logo-chatgpt.webp"
   },
   "chrome": "chrome.html",
   "css": "theme.css",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "author": "Wangnov",
-  "codexVerified": "26.707.91948",
+  "codexVerified": "26.715.21425",
   "appearance": "dual",
   "license": "personal-use",
   "previews": [
