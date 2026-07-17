@@ -21,7 +21,7 @@ import {
   connectCodexTargets, listAppTargets, connectTarget, probeSession, captureScreenshot,
 } from "../src/cdp.mjs";
 import {
-  CodexAppNotFoundError, discoverManagedCodexApp, findRunningCodexApps,
+  discoverCodexAppForStop, discoverManagedCodexApp, findRunningCodexApps,
   codexMainPids, verifiedCdpEndpoint, cdpHttpReady,
   selectAvailablePort, launchCodexWithCdp, waitForCdp, quitCodex, DEFAULT_PORT,
 } from "../src/codex-app.mjs";
@@ -77,15 +77,6 @@ async function activePort() {
   const state = await readState();
   if (state?.port && (await cdpHttpReady(state.port))) return state.port;
   return null;
-}
-
-async function discoverCodexAppIfInstalled(preferredBundle) {
-  try {
-    return await discoverManagedCodexApp(preferredBundle);
-  } catch (error) {
-    if (error instanceof CodexAppNotFoundError) return null;
-    throw error;
-  }
 }
 
 async function requireNoRunningCodex(additionalBundle) {
@@ -307,7 +298,7 @@ async function cmdStop(argv) {
   let codexStopped = null;
   let nativeRestored = null;
   if (flags["quit-codex"]) {
-    const app = await discoverCodexAppIfInstalled(state?.appBundle);
+    const app = await discoverCodexAppForStop(state?.appBundle);
     codexStopped = app ? await quitCodex(app, { force: false }) : true;
     // With Codex down we can safely put the user's appearance config back.
     if (codexStopped && (await hasBackup())) {

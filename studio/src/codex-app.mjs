@@ -13,6 +13,7 @@ export const DEFAULT_PORT = 9345;
 export const PORT_SCAN_LIMIT = 100;
 
 export class CodexAppNotFoundError extends Error {}
+export class CodexAppAmbiguousError extends Error {}
 
 export function standardBundlePaths(env = process.env) {
   const roots = ["/Applications"];
@@ -82,7 +83,7 @@ export async function discoverCodexApp({
       if ((await findPids(app)).length > 0) running.push(app);
     }
     if (running.length === 1) return running[0];
-    throw new Error(
+    throw new CodexAppAmbiguousError(
       `Multiple Codex app installations were found; set CODEX_APP_PATH to the one Studio should manage: ${apps.map((app) => app.bundle).join(", ")}`,
     );
   }
@@ -160,6 +161,31 @@ export async function findRunningCodexApps({
     if (pids.length > 0) running.push({ ...app, pids });
   }
   return running;
+}
+
+export async function discoverCodexAppForStop(preferredBundle, {
+  env = process.env,
+  discover = discoverManagedCodexApp,
+  findRunning = findRunningCodexApps,
+} = {}) {
+  try {
+    return await discover(preferredBundle, { env });
+  } catch (error) {
+    if (!(error instanceof CodexAppNotFoundError || error instanceof CodexAppAmbiguousError)) throw error;
+
+    // Stop does not need to choose between idle installations. If normal
+    // discovery is missing or ambiguous, target the sole running Codex app;
+    // otherwise report nothing to quit or fail closed on multiple live apps.
+    const running = await findRunning({
+      env,
+      additionalBundles: preferredBundle ? [preferredBundle] : [],
+    });
+    if (running.length === 0) return null;
+    if (running.length === 1) return running[0];
+    throw new CodexAppAmbiguousError(
+      `Multiple Codex installations are running; set CODEX_APP_PATH to the one Studio should stop: ${running.map((app) => app.bundle).join(", ")}`,
+    );
+  }
 }
 
 export function commandBelongsToApp(command, app) {

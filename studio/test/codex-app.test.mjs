@@ -2,10 +2,12 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  CodexAppAmbiguousError,
   CODEX_BUNDLE_ID,
   candidateBundlePaths,
   commandBelongsToApp,
   discoverCodexApp,
+  discoverCodexAppForStop,
   discoverManagedCodexApp,
   findRunningCodexApps,
   parseMainProcessTable,
@@ -85,7 +87,8 @@ test("discovery refuses to guess between multiple idle installs", async () => {
       inspect: async (bundle) => apps.find((app) => app.bundle === bundle),
       findPids: async () => [],
     }),
-    /Multiple Codex app installations were found; set CODEX_APP_PATH/,
+    (error) => error instanceof CodexAppAmbiguousError
+      && /Multiple Codex app installations were found; set CODEX_APP_PATH/.test(error.message),
   );
 });
 
@@ -103,6 +106,27 @@ test("managed discovery reuses a persisted nonstandard bundle", async () => {
 
   assert.equal(app.bundle, persisted.bundle);
   assert.deepEqual(inspected, [persisted.bundle]);
+});
+
+test("stop discovery tolerates multiple idle installations", async () => {
+  const app = await discoverCodexAppForStop(null, {
+    env: {},
+    discover: async () => { throw new CodexAppAmbiguousError("multiple idle apps"); },
+    findRunning: async () => [],
+  });
+
+  assert.equal(app, null);
+});
+
+test("stop discovery selects the sole running installation after ambiguity", async () => {
+  const running = codexApp("/Applications/ChatGPT.app");
+  const app = await discoverCodexAppForStop(null, {
+    env: {},
+    discover: async () => { throw new CodexAppAmbiguousError("multiple installed apps"); },
+    findRunning: async () => [{ ...running, pids: [42] }],
+  });
+
+  assert.equal(app.bundle, running.bundle);
 });
 
 test("explicit override takes precedence over a persisted bundle", async () => {
