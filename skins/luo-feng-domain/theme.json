@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 2,
+  "id": "luo-feng-domain",
+  "name": "银河领主 — 罗峰·陨墨星域",
+  "description": "《吞噬星空》罗峰全覆盖陪伴主题：陨墨星传承、遁天梭、金角巨兽、黑洞法则与 Babata 双状态，组成主页全身与任务页掌心黑洞双姿态工作台，并完整替换 16 类图标及四类 Retina 鼠标指针。",
+  "version": "1.0.2",
+  "author": "Wangnov",
+  "codexVerified": "26.715.21425",
+  "appearance": "dual",
+  "license": "personal-use",
+  "previews": [
+    "previews/home.webp",
+    "previews/task.webp"
+  ],
+  "colors": {
+    "primary": "#59d8ff",
+    "glow": "#b7f1ff",
+    "mystic": "#9e2638",
+    "midnight": "#070b14",
+    "panel": "#101a2a",
+    "secondary": "#23344a",
+    "metal": "#d5dce5",
+    "paper": "#e8edf3",
+    "ink": "#1b2430",
+    "ink-light": "#f2f6fa",
+    "positive": "#4dbd8a",
+    "negative": "#d45a68",
+    "gold": "#e4b85c",
+    "line": "rgba(89, 216, 255, .22)"
+  },
+  "strings": {
+    "hero-title": "跨越鸿沟，站上顶端",
+    "hero-sub": "YUN MO INHERITANCE • KNIFE RIVER KING"
+  },
+  "codexTheme": {
+    "appearanceTheme": "dark",
+    "codeThemeIds": {
+      "dark": "absolutely",
+      "light": "absolutely"
+    },
+    "dark": {
+      "accent": "#59d8ff",
+      "contrast": 62,
+      "ink": "#f2f6fa",
+      "opaqueWindows": true,
+      "surface": "#070b14",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Avenir Next, SF Pro Text, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#4dbd8a",
+        "diffRemoved": "#d45a68",
+        "skill": "#e4b85c"
+      }
+    },
+    "light": {
+      "accent": "#287f9f",
+      "contrast": 62,
+      "ink": "#1b2430",
+      "opaqueWindows": true,
+      "surface": "#e8edf3",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Avenir Next, SF Pro Text, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#367d5d",
+        "diffRemoved": "#aa4351",
+        "skill": "#8b6b20"
+      }
+    }
+  },
+  "assets": {
+    "wall": "assets/wall.webp",
+    "sidebar-texture": "assets/sidebar-texture.webp",
+    "luofeng-home": "assets/luofeng-home.webp",
+    "luofeng-task": "assets/luofeng-task.webp",
+    "intro": "assets/intro.webp",
+    "composer-deck": "assets/composer-deck.webp",
+    "deck-slim": "assets/deck-slim.webp",
+    "card-duntian": "assets/card-duntian.webp",
+    "card-golden-horn": "assets/card-golden-horn.webp",
+    "card-babota": "assets/card-babota.webp",
+    "card-black-hole": "assets/card-black-hole.webp",
+    "pill": "assets/pill.webp",
+    "watermark": "assets/watermark.webp",
+    "crest": "assets/crest.webp",
+    "logo-codex": "assets/logo-codex.webp",
+    "logo-chatgpt": "assets/logo-chatgpt.webp",
+    "logo-chatgpt-work": "assets/logo-chatgpt-work.webp",
+    "babata-core": "assets/babata-core.webp",
+    "babata-core-off": "assets/babata-core-off.webp",
+    "cursor-default": "assets/cursor-default.webp",
+    "cursor-default-2x": "assets/cursor-default-2x.webp",
+    "cursor-pointer": "assets/cursor-pointer.webp",
+    "cursor-pointer-2x": "assets/cursor-pointer-2x.webp",
+    "cursor-text": "assets/cursor-text.webp",
+    "cursor-text-2x": "assets/cursor-text-2x.webp",
+    "cursor-grab": "assets/cursor-grab.webp",
+    "cursor-grab-2x": "assets/cursor-grab-2x.webp",
+    "icon-new-task": "assets/icon-new-task.webp",
+    "icon-scheduled": "assets/icon-scheduled.webp",
+    "icon-plugins": "assets/icon-plugins.webp",
+    "icon-sites": "assets/icon-sites.webp",
+    "icon-pull-request": "assets/icon-pull-request.webp",
+    "icon-chat": "assets/icon-chat.webp",
+    "icon-search": "assets/icon-search.webp",
+    "icon-explore": "assets/icon-explore.webp",
+    "icon-build": "assets/icon-build.webp",
+    "icon-review": "assets/icon-review.webp",
+    "icon-fix": "assets/icon-fix.webp",
+    "icon-attach": "assets/icon-attach.webp",
+    "icon-mic": "assets/icon-mic.webp",
+    "icon-model": "assets/icon-model.webp",
+    "icon-settings": "assets/icon-settings.webp",
+    "icon-folder": "assets/icon-folder.webp"
+  },
+  "chrome": "chrome.html",
+  "css": "theme.css"
+}

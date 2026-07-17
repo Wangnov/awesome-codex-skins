@@ -22,6 +22,7 @@ Tiers · 分级: **Certified** = CI green + maintainer verified on a real Codex 
 | SEELE Mark.06 Kaworu Terminal | `kaworu-mark06` | 1.0.0 | @Wangnov | 26.707.91948 | dual |
 | KUN Afterglow Fan Studio | `kun-afterglow` | 1.0.0 | @Wangnov | 26.707.91948 | dual |
 | Thousand Sunny — Dawn Adventure | `luffy-onepiece` | 1.0.1 | @Wangnov | 26.707.91948 | dual |
+| 银河领主 — 罗峰·陨墨星域 | `luo-feng-domain` | 1.0.2 | @Wangnov | 26.715.21425 | dual |
 | Shiranui Dojo — Scarlet Flame | `mai-shiranui` | 1.0.1 | @Wangnov | 26.707.91948 | dual |
 | 大明金阙 · Ming Imperial | `ming-imperial` | 1.0.1 | @Wangnov | 26.707.91948 | dual |
 | NERV EVA-00 Rei Prototype Terminal | `rei-eva00` | 1.0.0 | @Wangnov | 26.707.91948 | dual |
