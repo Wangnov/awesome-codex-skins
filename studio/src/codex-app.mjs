@@ -2,6 +2,7 @@
 // CDP endpoint. Never modifies, unpacks or replaces anything inside the app.
 
 import { execFile } from "node:child_process";
+import path from "node:path";
 import { promisify } from "node:util";
 import fs from "node:fs/promises";
 
@@ -11,28 +12,204 @@ export const CODEX_BUNDLE_ID = "com.openai.codex";
 export const DEFAULT_PORT = 9345;
 export const PORT_SCAN_LIMIT = 100;
 
-export async function discoverCodexApp() {
-  const candidates = ["/Applications/Codex.app", `${process.env.HOME}/Applications/Codex.app`];
+export class CodexAppNotFoundError extends Error {}
+export class CodexAppAmbiguousError extends Error {}
+
+export function standardBundlePaths(env = process.env) {
+  const roots = ["/Applications"];
+  if (env.HOME) roots.push(path.join(env.HOME, "Applications"));
+  return roots.flatMap((root) => ["Codex.app", "ChatGPT.app"].map((name) => path.join(root, name)));
+}
+
+export function candidateBundlePaths(env = process.env) {
+  const override = env.CODEX_APP_PATH?.trim();
+  if (override) return [path.resolve(override)];
+  return standardBundlePaths(env);
+}
+
+async function readPlistString(plist, key) {
+  const { stdout } = await run("/usr/bin/plutil", ["-extract", key, "raw", "-o", "-", plist]);
+  const value = stdout.trim();
+  if (!value) throw new Error(`${key} is empty`);
+  return value;
+}
+
+export async function inspectCodexApp(bundle) {
+  const resolvedBundle = await fs.realpath(bundle);
+  const plist = path.join(resolvedBundle, "Contents", "Info.plist");
+  await fs.access(plist);
+  const bundleId = await readPlistString(plist, "CFBundleIdentifier");
+  if (bundleId !== CODEX_BUNDLE_ID) return null;
+
+  const [version, executableName] = await Promise.all([
+    readPlistString(plist, "CFBundleShortVersionString"),
+    readPlistString(plist, "CFBundleExecutable"),
+  ]);
+  const executable = path.join(resolvedBundle, "Contents", "MacOS", executableName);
+  await fs.access(executable);
+  return { bundle: resolvedBundle, bundleId, executable, version };
+}
+
+export async function discoverCodexApp({
+  env = process.env,
+  candidates = candidateBundlePaths(env),
+  inspect = inspectCodexApp,
+  findPids = codexMainPids,
+} = {}) {
+  const override = env.CODEX_APP_PATH?.trim();
+  const apps = [];
   for (const bundle of candidates) {
     try {
-      const plist = `${bundle}/Contents/Info.plist`;
-      await fs.access(plist);
-      const { stdout } = await run("/usr/bin/plutil", ["-extract", "CFBundleIdentifier", "raw", "-o", "-", plist]);
-      if (stdout.trim() === CODEX_BUNDLE_ID) {
-        const { stdout: version } = await run("/usr/bin/plutil", ["-extract", "CFBundleShortVersionString", "raw", "-o", "-", plist]);
-        return { bundle, version: version.trim() };
+      const app = await inspect(bundle);
+      if (app) {
+        apps.push(app);
+        if (override) return app;
+        continue;
       }
-    } catch {
+      if (override) {
+        throw new Error(`${bundle} has a different CFBundleIdentifier (expected ${CODEX_BUNDLE_ID})`);
+      }
+    } catch (error) {
+      if (override) {
+        throw new Error(`CODEX_APP_PATH does not point to the Codex app: ${error.message}`, { cause: error });
+      }
       // keep scanning
     }
   }
-  throw new Error("Codex.app (com.openai.codex) was not found in /Applications or ~/Applications");
+  if (apps.length === 1) return apps[0];
+  if (apps.length > 1) {
+    const running = [];
+    for (const app of apps) {
+      if ((await findPids(app)).length > 0) running.push(app);
+    }
+    if (running.length === 1) return running[0];
+    throw new CodexAppAmbiguousError(
+      `Multiple Codex app installations were found; set CODEX_APP_PATH to the one Studio should manage: ${apps.map((app) => app.bundle).join(", ")}`,
+    );
+  }
+  throw new CodexAppNotFoundError(
+    "Codex app (com.openai.codex) was not found as Codex.app or ChatGPT.app in /Applications or ~/Applications",
+  );
 }
 
-export async function codexMainPids() {
+export async function discoverManagedCodexApp(preferredBundle, {
+  env = process.env,
+  inspect = inspectCodexApp,
+  ...options
+} = {}) {
+  // An explicit override always wins. Otherwise reuse the exact identity-gated
+  // bundle selected by `start`, including nonstandard install locations.
+  if (!env.CODEX_APP_PATH?.trim() && preferredBundle) {
+    try {
+      const app = await inspect(preferredBundle);
+      if (app) return app;
+    } catch {
+      // The stored bundle moved or disappeared; fall back to normal discovery.
+    }
+  }
+  return discoverCodexApp({ env, inspect, ...options });
+}
+
+export function parseRunningAppBundlePaths(stdout) {
+  const bundles = new Set();
+  for (const line of stdout.split("\n")) {
+    const match = line.match(/^\s*\d+\s+(.+?)\s*$/);
+    if (!match) continue;
+    const executable = match[1];
+    const appMatch = executable.match(/^(.*\.app)\/Contents\/MacOS\/[^/]+$/);
+    if (appMatch) bundles.add(appMatch[1]);
+  }
+  return [...bundles];
+}
+
+export async function runningAppBundlePaths() {
   try {
-    const { stdout } = await run("/usr/bin/pgrep", ["-f", "Codex.app/Contents/MacOS/"]);
-    return stdout.split("\n").map((line) => Number(line.trim())).filter((pid) => Number.isInteger(pid) && pid > 0);
+    const { stdout } = await run("/bin/ps", ["-axo", "pid=,comm="]);
+    return parseRunningAppBundlePaths(stdout);
+  } catch {
+    return [];
+  }
+}
+
+export async function findRunningCodexApps({
+  env = process.env,
+  additionalBundles = [],
+  inspect = inspectCodexApp,
+  findPids = codexMainPids,
+  findRunningBundles = runningAppBundlePaths,
+} = {}) {
+  const override = env.CODEX_APP_PATH?.trim();
+  const candidates = [
+    ...(override ? [path.resolve(override)] : []),
+    ...additionalBundles.filter(Boolean),
+    ...standardBundlePaths(env),
+    ...(await findRunningBundles()),
+  ];
+  const apps = new Map();
+  for (const bundle of candidates) {
+    try {
+      const app = await inspect(bundle);
+      if (app) apps.set(app.bundle, app);
+    } catch {
+      // Missing or unreadable candidates cannot be running from this path.
+    }
+  }
+
+  const running = [];
+  for (const app of apps.values()) {
+    const pids = await findPids(app);
+    if (pids.length > 0) running.push({ ...app, pids });
+  }
+  return running;
+}
+
+export async function discoverCodexAppForStop(preferredBundle, {
+  env = process.env,
+  discover = discoverManagedCodexApp,
+  findRunning = findRunningCodexApps,
+} = {}) {
+  try {
+    return await discover(preferredBundle, { env });
+  } catch (error) {
+    if (!(error instanceof CodexAppNotFoundError || error instanceof CodexAppAmbiguousError)) throw error;
+
+    // Stop does not need to choose between idle installations. If normal
+    // discovery is missing or ambiguous, target the sole running Codex app;
+    // otherwise report nothing to quit or fail closed on multiple live apps.
+    const running = await findRunning({
+      env,
+      additionalBundles: preferredBundle ? [preferredBundle] : [],
+    });
+    if (running.length === 0) return null;
+    if (running.length === 1) return running[0];
+    throw new CodexAppAmbiguousError(
+      `Multiple Codex installations are running; set CODEX_APP_PATH to the one Studio should stop: ${running.map((app) => app.bundle).join(", ")}`,
+    );
+  }
+}
+
+export function commandBelongsToApp(command, app) {
+  return command === app.executable || command.startsWith(`${app.executable} `);
+}
+
+export function parseMainProcessTable(stdout, app) {
+  const pids = [];
+  for (const line of stdout.split("\n")) {
+    const match = line.match(/^\s*(\d+)\s+(.+)$/);
+    if (!match || match[2].trim() !== app.executable) continue;
+    const pid = Number(match[1]);
+    if (Number.isInteger(pid) && pid > 0) pids.push(pid);
+  }
+  return pids;
+}
+
+export async function codexMainPids(app) {
+  try {
+    // macOS pgrep can expose only the process name for Electron's main app and
+    // miss an otherwise visible argv[0]. `ps comm` consistently returns the
+    // concrete executable path without the potentially huge argument list.
+    const { stdout } = await run("/bin/ps", ["-axo", "pid=,comm="]);
+    return parseMainProcessTable(stdout, app);
   } catch {
     return [];
   }
@@ -55,7 +232,7 @@ export async function cdpHttpReady(port) {
 
 // The CDP port must belong to a Codex process (or a descendant), not an
 // arbitrary local Chromium listener.
-export async function cdpBelongsToCodex(port) {
+export async function cdpBelongsToCodex(port, app) {
   try {
     const { stdout } = await run("/usr/sbin/lsof", ["-iTCP:" + port, "-sTCP:LISTEN", "-P", "-Fpc"]);
     const pids = [...stdout.matchAll(/^p(\d+)$/gm)].map((m) => Number(m[1]));
@@ -65,7 +242,7 @@ export async function cdpBelongsToCodex(port) {
       for (let hop = 0; hop < 6 && current > 1; hop += 1) {
         try {
           const { stdout: command } = await run("/bin/ps", ["-o", "command=", "-p", String(current)]);
-          if (command.includes("Codex.app/Contents/MacOS/")) return true;
+          if (commandBelongsToApp(command.trim(), app)) return true;
           const { stdout: parent } = await run("/bin/ps", ["-o", "ppid=", "-p", String(current)]);
           current = Number(parent.trim());
         } catch {
@@ -79,8 +256,8 @@ export async function cdpBelongsToCodex(port) {
   }
 }
 
-export async function verifiedCdpEndpoint(port) {
-  return (await cdpHttpReady(port)) && (await cdpBelongsToCodex(port));
+export async function verifiedCdpEndpoint(port, app) {
+  return (await cdpHttpReady(port)) && (await cdpBelongsToCodex(port, app));
 }
 
 export async function portIsFree(port) {
@@ -116,23 +293,27 @@ export async function waitForCdp(port, timeoutMs = 45000) {
   return false;
 }
 
-export async function quitCodex({ force = false } = {}) {
-  const pids = await codexMainPids();
+function applescriptQuote(value) {
+  return value.replaceAll("\\", "\\\\").replaceAll('"', '\\"');
+}
+
+export async function quitCodex(app, { force = false } = {}) {
+  const pids = await codexMainPids(app);
   if (!pids.length) return true;
   try {
-    await run("/usr/bin/osascript", ["-e", `tell application id "${CODEX_BUNDLE_ID}" to quit`]);
+    await run("/usr/bin/osascript", ["-e", `tell application "${applescriptQuote(app.bundle)}" to quit`]);
   } catch {
     // fall through to signal
   }
   const deadline = Date.now() + 8000;
   while (Date.now() < deadline) {
-    if (!(await codexMainPids()).length) return true;
+    if (!(await codexMainPids(app)).length) return true;
     await new Promise((resolve) => setTimeout(resolve, 400));
   }
-  if (!force) return (await codexMainPids()).length === 0;
-  for (const pid of await codexMainPids()) {
+  if (!force) return (await codexMainPids(app)).length === 0;
+  for (const pid of await codexMainPids(app)) {
     try { process.kill(pid, "SIGTERM"); } catch { /* already gone */ }
   }
   await new Promise((resolve) => setTimeout(resolve, 1500));
-  return (await codexMainPids()).length === 0;
+  return (await codexMainPids(app)).length === 0;
 }

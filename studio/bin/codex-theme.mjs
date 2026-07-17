@@ -21,7 +21,8 @@ import {
   connectCodexTargets, listAppTargets, connectTarget, probeSession, captureScreenshot,
 } from "../src/cdp.mjs";
 import {
-  discoverCodexApp, codexMainPids, verifiedCdpEndpoint, cdpHttpReady,
+  discoverCodexAppForStop, discoverManagedCodexApp, findRunningCodexApps,
+  codexMainPids, verifiedCdpEndpoint, cdpHttpReady,
   selectAvailablePort, launchCodexWithCdp, waitForCdp, quitCodex, DEFAULT_PORT,
 } from "../src/codex-app.mjs";
 import {
@@ -78,6 +79,27 @@ async function activePort() {
   return null;
 }
 
+async function requireNoRunningCodex(additionalBundle) {
+  const running = await findRunningCodexApps({
+    additionalBundles: additionalBundle ? [additionalBundle] : [],
+  });
+  if (running.length > 0) {
+    throw new Error(
+      `Codex is running from ${running.map((app) => app.bundle).join(", ")} — quit every Codex installation before changing the native theme configuration.`,
+    );
+  }
+}
+
+async function requireNoOtherRunningCodex(selectedApp) {
+  const running = await findRunningCodexApps({ additionalBundles: [selectedApp.bundle] });
+  const others = running.filter((app) => app.bundle !== selectedApp.bundle);
+  if (others.length > 0) {
+    throw new Error(
+      `Another Codex installation is running from ${others.map((app) => app.bundle).join(", ")} — quit it before changing the native theme configuration.`,
+    );
+  }
+}
+
 async function withSessions(port, timeoutMs, fn) {
   const connected = await connectCodexTargets(port, timeoutMs);
   try {
@@ -125,8 +147,8 @@ async function cmdThemes() {
 
 async function cmdStatus() {
   const state = await readState();
-  const app = await discoverCodexApp().catch((error) => ({ error: error.message }));
-  const codexPids = await codexMainPids();
+  const app = await discoverManagedCodexApp(state?.appBundle).catch((error) => ({ error: error.message }));
+  const codexPids = app.error ? [] : await codexMainPids(app);
   const port = state?.port ?? null;
   const cdpReady = port ? await cdpHttpReady(port) : false;
   out({
@@ -143,10 +165,10 @@ async function cmdStatus() {
 
 async function cmdStart(argv) {
   const flags = parseFlags(argv, { theme: String, port: asPort, "restart-existing": Boolean, foreground: Boolean, "no-native-theme": Boolean });
-  const app = await discoverCodexApp();
+  const previousState = await readState();
+  const app = await discoverManagedCodexApp(previousState?.appBundle);
   await ensureStateRoot();
 
-  const previousState = await readState();
   let port = flags.port ?? previousState?.port ?? DEFAULT_PORT;
 
   // Theme selection: explicit flag wins, otherwise keep the recorded one.
@@ -162,25 +184,28 @@ async function cmdStart(argv) {
     } catch { /* theme dir missing — ignore */ }
   }
 
-  let ready = await verifiedCdpEndpoint(port);
+  let ready = await verifiedCdpEndpoint(port, app);
   // Applying a native theme requires a relaunch even if CDP is already up.
   if (ready && codexTheme && flags["restart-existing"]) {
-    if (!(await quitCodex({ force: true }))) throw new Error("Could not stop the running Codex app.");
+    await requireNoOtherRunningCodex(app);
+    if (!(await quitCodex(app, { force: true }))) throw new Error("Could not stop the running Codex app.");
     ready = false;
   }
   if (!ready) {
-    const running = (await codexMainPids()).length > 0;
+    const running = (await codexMainPids(app)).length > 0;
     if (running) {
       if (!flags["restart-existing"]) {
         throw new Error("Codex is already running without the studio CDP endpoint. Re-run with --restart-existing to relaunch it.");
       }
-      if (!(await quitCodex({ force: true }))) throw new Error("Could not stop the running Codex app.");
+      if (codexTheme) await requireNoOtherRunningCodex(app);
+      if (!(await quitCodex(app, { force: true }))) throw new Error("Could not stop the running Codex app.");
     }
     // Native theme must be written while Codex is down — it persists its own
     // config on exit and would clobber external edits. The exit write can
     // land shortly AFTER the main pid disappears, so give it a beat first.
     if (codexTheme) {
       await new Promise((resolve) => setTimeout(resolve, 2000));
+      await requireNoRunningCodex(app.bundle);
       await applyNativeTheme(codexTheme);
       console.error("[studio] native Codex theme applied to config.toml (backup kept)");
     }
@@ -200,7 +225,13 @@ async function cmdStart(argv) {
     await new Promise((resolve) => setTimeout(resolve, 300));
   }
 
-  await writeState({ port, currentTheme, appVersion: app.version, codexPid: (await codexMainPids())[0] ?? null });
+  await writeState({
+    port,
+    currentTheme,
+    appBundle: app.bundle,
+    appVersion: app.version,
+    codexPid: (await codexMainPids(app))[0] ?? null,
+  });
 
   if (flags.foreground) {
     await writeState({ watcherPid: process.pid, watcherStartedAt: new Date().toISOString() });
@@ -267,17 +298,20 @@ async function cmdStop(argv) {
   let codexStopped = null;
   let nativeRestored = null;
   if (flags["quit-codex"]) {
-    codexStopped = await quitCodex({ force: false });
+    const app = await discoverCodexAppForStop(state?.appBundle);
+    codexStopped = app ? await quitCodex(app, { force: false }) : true;
     // With Codex down we can safely put the user's appearance config back.
-    if (codexStopped && (await hasBackup())) nativeRestored = await restoreNativeTheme();
+    if (codexStopped && (await hasBackup())) {
+      await requireNoRunningCodex(state?.appBundle);
+      nativeRestored = await restoreNativeTheme();
+    }
   }
   out({ ok: true, watcherStopped: true, codexStopped, nativeRestored });
 }
 
 async function cmdRestoreConfig() {
-  if ((await codexMainPids()).length > 0) {
-    throw new Error("Codex is running — quit it first (its exit overwrites config.toml), then re-run restore-config.");
-  }
+  const state = await readState();
+  await requireNoRunningCodex(state?.appBundle);
   const restored = await restoreNativeTheme();
   out({ ok: true, restored, note: restored ? "config.toml appearance sections restored from backup" : "no backup to restore" });
 }
