@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 2,
+  "id": "san-tibo",
+  "name": "San Tibo",
+  "description": "A warm editorial Codex skin inspired by the generous reset.",
+  "colors": {
+    "archive": "#201815",
+    "folio": "#332720",
+    "paper": "#f6edd8",
+    "ivory": "#fff6e0",
+    "parchment": "#e7d6b3",
+    "ink": "#31251d",
+    "gold": "#a77e34",
+    "oxblood": "#852023",
+    "line": "rgba(167, 126, 52, .24)"
+  },
+  "strings": {
+    "hero-title": "LIMITS SHALL RESET",
+    "hero-sub": "TOKENS FOR EVERYONE"
+  },
+  "codexTheme": {
+    "appearanceTheme": "light",
+    "light": {
+      "accent": "#852023",
+      "contrast": 60,
+      "ink": "#31251d",
+      "opaqueWindows": true,
+      "surface": "#f6edd8",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Avenir Next, SF Pro Text"
+      },
+      "semanticColors": {
+        "diffAdded": "#47764f",
+        "diffRemoved": "#a53b38",
+        "skill": "#8b6826"
+      }
+    },
+    "dark": {
+      "accent": "#d2aa55",
+      "contrast": 60,
+      "ink": "#fff6e0",
+      "opaqueWindows": true,
+      "surface": "#201815",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Avenir Next, SF Pro Text"
+      },
+      "semanticColors": {
+        "diffAdded": "#83ad83",
+        "diffRemoved": "#df7770",
+        "skill": "#d2aa55"
+      }
+    }
+  },
+  "assets": {
+    "wall": "assets/wall.webp",
+    "tibo": "assets/tibo.webp",
+    "intro": "assets/intro.webp",
+    "composer-deck": "assets/composer-deck.webp",
+    "deck-slim": "assets/deck-slim.webp",
+    "card-hourglass": "assets/card-hourglass.webp",
+    "card-tokens": "assets/card-tokens.webp",
+    "card-answers": "assets/card-answers.webp",
+    "card-reset": "assets/card-reset.webp",
+    "crest": "assets/crest.webp",
+    "crest-dark": "assets/crest-dark.webp",
+    "pill": "assets/pill.webp",
+    "reset-button": "assets/reset-button.webp",
+    "reset-button-off": "assets/reset-button-off.webp",
+    "logo-codex": "assets/logo-codex.webp",
+    "logo-chatgpt-work": "assets/logo-chatgpt-work.webp",
+    "icon-new-task": "assets/icon-new-task.webp",
+    "icon-scheduled": "assets/icon-scheduled.webp",
+    "icon-plugins": "assets/icon-plugins.webp",
+    "icon-sites": "assets/icon-sites.webp",
+    "icon-pull-request": "assets/icon-pull-request.webp",
+    "icon-chat": "assets/icon-chat.webp",
+    "icon-search": "assets/icon-search.webp",
+    "icon-explore": "assets/icon-explore.webp",
+    "icon-build": "assets/icon-build.webp",
+    "icon-review": "assets/icon-review.webp",
+    "icon-fix": "assets/icon-fix.webp",
+    "icon-attach": "assets/icon-attach.webp",
+    "icon-mic": "assets/icon-mic.webp",
+    "icon-model": "assets/icon-model.webp",
+    "icon-settings": "assets/icon-settings.webp",
+    "icon-folder": "assets/icon-folder.webp"
+  },
+  "chrome": "chrome.html",
+  "css": "theme.css",
+  "version": "1.0.0",
+  "author": "Wangnov",
+  "codexVerified": "26.707.91948",
+  "appearance": "dual",
+  "license": "personal-use",
+  "previews": [
+    "previews/home.webp"
+  ]
+}

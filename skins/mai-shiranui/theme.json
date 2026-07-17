@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 2,
+  "id": "mai-shiranui",
+  "name": "Shiranui Dojo — Scarlet Flame",
+  "description": "KOF 不知火舞陪伴主题：山间道场、朱漆、和纸、折扇金骨与火焰凤凰构成深浅双模式的双姿态格斗工作台。",
+  "version": "1.0.1",
+  "author": "Wangnov",
+  "codexVerified": "26.707.91948",
+  "appearance": "dual",
+  "license": "personal-use",
+  "css": "theme.css",
+  "chrome": "chrome.html",
+  "previews": [
+    "previews/home.webp",
+    "previews/task.webp"
+  ],
+  "colors": {
+    "primary": "#ef6b3c",
+    "glow": "#ffd19b",
+    "mystic": "#a12332",
+    "midnight": "#120f18",
+    "panel": "#241821",
+    "secondary": "#7f1f2b",
+    "metal": "#d5aa56",
+    "paper": "#f5ead8",
+    "ink": "#302126",
+    "ink-light": "#fff2e6",
+    "positive": "#63ab7b",
+    "negative": "#d95555",
+    "line": "rgba(239, 107, 60, .22)"
+  },
+  "strings": {
+    "hero-title": "修行开始",
+    "hero-sub": "SHIRANUI DOJO • SCARLET FLAME"
+  },
+  "codexTheme": {
+    "appearanceTheme": "dark",
+    "dark": {
+      "accent": "#ef6b3c",
+      "contrast": 60,
+      "ink": "#fff2e6",
+      "opaqueWindows": true,
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "SF Pro Text, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#63ab7b",
+        "diffRemoved": "#d95555",
+        "skill": "#d5aa56"
+      },
+      "surface": "#120f18"
+    },
+    "light": {
+      "accent": "#b84325",
+      "contrast": 60,
+      "ink": "#302126",
+      "opaqueWindows": true,
+      "surface": "#f5ead8",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "SF Pro Text, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#43805a",
+        "diffRemoved": "#ad3e3e",
+        "skill": "#96712c"
+      }
+    }
+  },
+  "assets": {
+    "wall": "assets/wall.webp",
+    "sidebar-texture": "assets/sidebar-texture.webp",
+    "mai-home": "assets/mai-home.webp",
+    "mai-task": "assets/mai-task.webp",
+    "intro": "assets/intro.webp",
+    "composer-deck": "assets/composer-deck.webp",
+    "deck-slim": "assets/deck-slim.webp",
+    "card-one": "assets/card-one.webp",
+    "card-two": "assets/card-two.webp",
+    "card-three": "assets/card-three.webp",
+    "card-four": "assets/card-four.webp",
+    "pill": "assets/pill.webp",
+    "watermark": "assets/watermark.webp",
+    "crest": "assets/crest.webp",
+    "logo-codex": "assets/logo-codex.webp",
+    "logo-chatgpt-work": "assets/logo-chatgpt-work.webp",
+    "prop": "assets/prop.webp",
+    "prop-off": "assets/prop-off.webp",
+    "icon-new-task": "assets/icon-new-task.webp",
+    "icon-scheduled": "assets/icon-scheduled.webp",
+    "icon-plugins": "assets/icon-plugins.webp",
+    "icon-sites": "assets/icon-sites.webp",
+    "icon-pull-request": "assets/icon-pull-request.webp",
+    "icon-chat": "assets/icon-chat.webp",
+    "icon-search": "assets/icon-search.webp",
+    "icon-explore": "assets/icon-explore.webp",
+    "icon-build": "assets/icon-build.webp",
+    "icon-review": "assets/icon-review.webp",
+    "icon-fix": "assets/icon-fix.webp",
+    "icon-attach": "assets/icon-attach.webp",
+    "icon-mic": "assets/icon-mic.webp",
+    "icon-model": "assets/icon-model.webp",
+    "icon-settings": "assets/icon-settings.webp",
+    "icon-folder": "assets/icon-folder.webp"
+  }
+}

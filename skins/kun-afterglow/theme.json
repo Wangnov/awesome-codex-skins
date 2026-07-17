@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 2,
+  "id": "kun-afterglow",
+  "name": "KUN Afterglow Fan Studio",
+  "description": "蔡徐坤星轨返场工作室：以午夜丝绒、香槟金 Cue 灯、茉莉花与演出余辉构成的偶像应援主题。",
+  "colors": {
+    "velvet": "#151416",
+    "surface": "#211d20",
+    "paper": "#f3ede1",
+    "ivory": "#f1e9da",
+    "ink": "#2a2326",
+    "champagne": "#d6b77b",
+    "wine": "#8a3f55",
+    "jasmine": "#e8e0cf",
+    "line": "rgba(214, 183, 123, .22)"
+  },
+  "strings": {
+    "hero-title": "下一幕，由你点亮",
+    "hero-sub": "KUN AFTERGLOW // CREATE IN YOUR OWN RHYTHM"
+  },
+  "codexTheme": {
+    "appearanceTheme": "dark",
+    "dark": {
+      "accent": "#d6b77b",
+      "contrast": 60,
+      "ink": "#f1e9da",
+      "opaqueWindows": true,
+      "surface": "#151416",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "SF Pro Text, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#86a58a",
+        "diffRemoved": "#d0808d",
+        "skill": "#d6b77b"
+      }
+    },
+    "light": {
+      "accent": "#8f6a35",
+      "contrast": 60,
+      "ink": "#2a2326",
+      "opaqueWindows": true,
+      "surface": "#f3ede1",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "SF Pro Text, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#3e7555",
+        "diffRemoved": "#a14559",
+        "skill": "#8f6a35"
+      }
+    }
+  },
+  "assets": {
+    "wall": "assets/wall.webp",
+    "kun": "assets/kun.webp",
+    "kun-task": "assets/kun-task.webp",
+    "intro": "assets/intro.webp",
+    "composer-deck": "assets/composer-deck.webp",
+    "deck-slim": "assets/deck-slim.webp",
+    "card-orbit": "assets/card-orbit.webp",
+    "card-mixer": "assets/card-mixer.webp",
+    "card-setlist": "assets/card-setlist.webp",
+    "card-encore": "assets/card-encore.webp",
+    "brand-mark": "assets/brand-mark.webp",
+    "logo-codex": "assets/logo-codex.webp",
+    "logo-chatgpt-work": "assets/logo-chatgpt-work.webp",
+    "cue-light": "assets/cue-light.webp",
+    "cue-light-off": "assets/cue-light-off.webp",
+    "icon-new-task": "assets/icon-new-task.webp",
+    "icon-scheduled": "assets/icon-scheduled.webp",
+    "icon-plugins": "assets/icon-plugins.webp",
+    "icon-sites": "assets/icon-sites.webp",
+    "icon-pull-request": "assets/icon-pull-request.webp",
+    "icon-chat": "assets/icon-chat.webp",
+    "icon-search": "assets/icon-search.webp",
+    "icon-explore": "assets/icon-explore.webp",
+    "icon-build": "assets/icon-build.webp",
+    "icon-review": "assets/icon-review.webp",
+    "icon-fix": "assets/icon-fix.webp",
+    "icon-attach": "assets/icon-attach.webp",
+    "icon-mic": "assets/icon-mic.webp",
+    "icon-model": "assets/icon-model.webp",
+    "icon-settings": "assets/icon-settings.webp",
+    "icon-folder": "assets/icon-folder.webp"
+  },
+  "chrome": "chrome.html",
+  "css": "theme.css",
+  "version": "1.0.0",
+  "author": "Wangnov",
+  "codexVerified": "26.707.91948",
+  "appearance": "dual",
+  "license": "personal-use",
+  "previews": [
+    "previews/home.webp",
+    "previews/task.webp"
+  ]
+}

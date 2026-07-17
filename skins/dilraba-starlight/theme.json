@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 2,
+  "id": "dilraba-starlight",
+  "name": "迪丽热巴 · STARLIGHT 星蝶光廊",
+  "description": "迪丽热巴星蝶应援工作室：以珍珠白、极光紫、电光青、晶心与切面蝴蝶构成的明亮偶像陪伴主题。",
+  "version": "1.0.0",
+  "author": "Wangnov",
+  "codexVerified": "26.707.91948",
+  "appearance": "dual",
+  "license": "personal-use",
+  "colors": {
+    "midnight": "#151336",
+    "surface": "#23204B",
+    "paper": "#F7F5FF",
+    "pearl": "#EEF1FF",
+    "ink": "#241A54",
+    "violet": "#7046E8",
+    "cyan": "#24C8E5",
+    "rose": "#E16CCA",
+    "silver": "#DCE6FF",
+    "line": "rgba(112, 70, 232, .20)"
+  },
+  "strings": {
+    "hero-title": "让灵感，沿星光盛放",
+    "hero-sub": "DILRABA STARLIGHT // CREATE BRAVELY, SHINE GENTLY"
+  },
+  "codexTheme": {
+    "appearanceTheme": "light",
+    "light": {
+      "accent": "#6A35DA",
+      "contrast": 60,
+      "ink": "#241A54",
+      "opaqueWindows": true,
+      "surface": "#F7F5FF",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "SF Pro Text, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#24866E",
+        "diffRemoved": "#B74377",
+        "skill": "#7046E8"
+      }
+    },
+    "dark": {
+      "accent": "#B79CFF",
+      "contrast": 60,
+      "ink": "#F5F2FF",
+      "opaqueWindows": true,
+      "surface": "#151336",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "SF Pro Text, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#67C7AD",
+        "diffRemoved": "#F083AB",
+        "skill": "#B79CFF"
+      }
+    }
+  },
+  "assets": {
+    "wall": "assets/wall.webp",
+    "dilraba": "assets/dilraba.webp",
+    "dilraba-task": "assets/dilraba-task.webp",
+    "intro": "assets/intro.webp",
+    "composer-deck": "assets/composer-deck.webp",
+    "deck-slim": "assets/deck-slim.webp",
+    "card-constellation": "assets/card-constellation.webp",
+    "card-prism": "assets/card-prism.webp",
+    "card-script": "assets/card-script.webp",
+    "card-mend": "assets/card-mend.webp",
+    "brand-mark": "assets/brand-mark.webp",
+    "logo-codex": "assets/logo-codex.webp",
+    "logo-chatgpt-work": "assets/logo-chatgpt-work.webp",
+    "wish-light": "assets/wish-light.webp",
+    "wish-light-off": "assets/wish-light-off.webp",
+    "icon-new-task": "assets/icon-new-task.webp",
+    "icon-scheduled": "assets/icon-scheduled.webp",
+    "icon-plugins": "assets/icon-plugins.webp",
+    "icon-sites": "assets/icon-sites.webp",
+    "icon-pull-request": "assets/icon-pull-request.webp",
+    "icon-chat": "assets/icon-chat.webp",
+    "icon-search": "assets/icon-search.webp",
+    "icon-explore": "assets/icon-explore.webp",
+    "icon-build": "assets/icon-build.webp",
+    "icon-review": "assets/icon-review.webp",
+    "icon-fix": "assets/icon-fix.webp",
+    "icon-attach": "assets/icon-attach.webp",
+    "icon-mic": "assets/icon-mic.webp",
+    "icon-model": "assets/icon-model.webp",
+    "icon-settings": "assets/icon-settings.webp",
+    "icon-folder": "assets/icon-folder.webp"
+  },
+  "chrome": "chrome.html",
+  "css": "theme.css",
+  "previews": [
+    "previews/home.webp",
+    "previews/task.webp"
+  ]
+}

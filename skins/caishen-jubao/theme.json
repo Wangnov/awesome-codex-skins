@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 2,
+  "id": "caishen-jubao",
+  "name": "财神聚宝阁 · Fortune Pavilion",
+  "description": "原创卡通财神主题：朱红聚宝阁、鎏金元宝、铜钱祥云与青玉如意共同构成的中国风 Codex 素材化皮肤。",
+  "version": "1.0.1",
+  "author": "Wangnov",
+  "codexVerified": "26.707.91948",
+  "appearance": "dual",
+  "license": "personal-use",
+  "css": "theme.css",
+  "chrome": "chrome.html",
+  "previews": [
+    "previews/home.webp"
+  ],
+  "colors": {
+    "cinnabar": "#B53524",
+    "cinnabar-deep": "#6B1813",
+    "gold": "#F1B83B",
+    "gold-light": "#FFE4A0",
+    "jade": "#2F8667",
+    "jade-deep": "#18533F",
+    "paper": "#F6EBD1",
+    "paper-deep": "#E3CFA6",
+    "ink": "#3A2419",
+    "ink-soft": "#765845",
+    "night": "#1C100D",
+    "night-panel": "#2A1712",
+    "line": "rgba(111, 25, 18, .18)"
+  },
+  "strings": {
+    "hero-title": "招财进宝 · 代码生金",
+    "hero-sub": "聚宝阁开张，今日也要满载而归"
+  },
+  "assets": {
+    "wall": "assets/wall.webp",
+    "caishen": "assets/caishen.webp",
+    "intro": "assets/intro.webp",
+    "composer-deck": "assets/composer-deck.webp",
+    "deck-slim": "assets/deck-slim.webp",
+    "card-yuanbao": "assets/card-yuanbao.webp",
+    "card-coins": "assets/card-coins.webp",
+    "card-abacus": "assets/card-abacus.webp",
+    "card-treasure": "assets/card-treasure.webp",
+    "card-screen": "assets/card-treasure.webp",
+    "logo-codex": "assets/logo-codex.webp",
+    "logo-chatgpt-work": "assets/logo-chatgpt-work.webp",
+    "fortune-pouch": "assets/fortune-pouch.webp",
+    "fortune-pouch-closed": "assets/fortune-pouch-closed.webp",
+    "brand-seal": "assets/brand-seal.webp",
+    "watermark": "assets/watermark.webp",
+    "watermark-dark": "assets/watermark-dark.webp",
+    "pill-ingot": "assets/pill-ingot.webp",
+    "sidebar-texture": "assets/sidebar-texture.webp",
+    "icon-new-task": "assets/icon-new-task.webp",
+    "icon-scheduled": "assets/icon-scheduled.webp",
+    "icon-plugins": "assets/icon-plugins.webp",
+    "icon-sites": "assets/icon-sites.webp",
+    "icon-pull-request": "assets/icon-pull-request.webp",
+    "icon-chat": "assets/icon-chat.webp",
+    "icon-search": "assets/icon-search.webp",
+    "icon-explore": "assets/icon-explore.webp",
+    "icon-build": "assets/icon-build.webp",
+    "icon-review": "assets/icon-review.webp",
+    "icon-fix": "assets/icon-fix.webp",
+    "icon-attach": "assets/icon-attach.webp",
+    "icon-mic": "assets/icon-mic.webp",
+    "icon-model": "assets/icon-model.webp",
+    "icon-settings": "assets/icon-settings.webp",
+    "icon-folder": "assets/icon-folder.webp"
+  },
+  "codexTheme": {
+    "appearanceTheme": "light",
+    "light": {
+      "accent": "#B53524",
+      "contrast": 60,
+      "ink": "#3A2419",
+      "opaqueWindows": true,
+      "surface": "#F6EBD1",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Hiragino Mincho ProN, Songti SC, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#3E9A68",
+        "diffRemoved": "#C8483B",
+        "skill": "#A57416"
+      }
+    },
+    "dark": {
+      "accent": "#F1B83B",
+      "contrast": 60,
+      "ink": "#F7E8C2",
+      "opaqueWindows": true,
+      "surface": "#1C100D",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Hiragino Mincho ProN, Songti SC, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#65B987",
+        "diffRemoved": "#E16B5C",
+        "skill": "#F1B83B"
+      }
+    }
+  }
+}

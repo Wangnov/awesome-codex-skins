@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 2,
+  "id": "rem-rezero",
+  "name": "Roswaal Mansion — Rem Companion",
+  "description": "Re:Zero 西方玄幻蕾姆陪伴主题：月夜宅邸、拉碧斯蓝珐琅、黄铜纹章与冰蓝魔力共同构成主页和任务页的双姿态陪伴体验。",
+  "version": "1.0.0",
+  "codexVerified": "26.707.91948",
+  "previews": [
+    "previews/home.webp",
+    "previews/task.webp"
+  ],
+  "colors": {
+    "rem-blue": "#6fc5f4",
+    "mana": "#b9ebff",
+    "violet": "#6c4a8d",
+    "midnight": "#171527",
+    "panel": "#211c35",
+    "wine": "#4b203d",
+    "brass": "#c7a66a",
+    "parchment": "#f3ead8",
+    "ink": "#282035",
+    "ink-light": "#f0edf7",
+    "jade": "#62b79f",
+    "rose": "#d78cb4",
+    "line": "rgba(111, 197, 244, .20)"
+  },
+  "strings": {
+    "hero-title": "欢迎回来，客人",
+    "hero-sub": "ROSWAAL MANSION • NIGHT DUTY"
+  },
+  "codexTheme": {
+    "appearanceTheme": "dark",
+    "dark": {
+      "accent": "#6fc5f4",
+      "contrast": 60,
+      "ink": "#f0edf7",
+      "opaqueWindows": true,
+      "surface": "#171527",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "SF Pro Text, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#62b79f",
+        "diffRemoved": "#d78cb4",
+        "skill": "#c7a66a"
+      }
+    },
+    "light": {
+      "accent": "#3f91bd",
+      "contrast": 60,
+      "ink": "#282035",
+      "opaqueWindows": true,
+      "surface": "#f3ead8",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "SF Pro Text, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#3b806b",
+        "diffRemoved": "#a6577d",
+        "skill": "#947542"
+      }
+    }
+  },
+  "assets": {
+    "wall": "assets/wall.webp",
+    "sidebar-texture": "assets/sidebar-texture.webp",
+    "rem-home": "assets/rem-home.png",
+    "rem-task": "assets/rem-task.png",
+    "intro": "assets/rem-intro.webp",
+    "composer-deck": "assets/composer-deck.png",
+    "deck-slim": "assets/deck-slim.png",
+    "card-mansion": "assets/card-mansion.webp",
+    "card-magic-circle": "assets/card-magic-circle.webp",
+    "card-library": "assets/card-library.webp",
+    "card-morningstar": "assets/card-morningstar.webp",
+    "pill-enamel": "assets/pill-enamel.png",
+    "watermark": "assets/watermark.png",
+    "oni-crest": "assets/oni-crest.png",
+    "logo-codex": "assets/logo-codex.png",
+    "logo-chatgpt-work": "assets/logo-chatgpt-work.png",
+    "morningstar": "assets/morningstar.png",
+    "morningstar-off": "assets/morningstar-off.png",
+    "icon-new-task": "assets/icon-new-task.png",
+    "icon-scheduled": "assets/icon-scheduled.png",
+    "icon-plugins": "assets/icon-plugins.png",
+    "icon-sites": "assets/icon-sites.png",
+    "icon-pull-request": "assets/icon-pull-request.png",
+    "icon-chat": "assets/icon-chat.png",
+    "icon-search": "assets/icon-search.png",
+    "icon-explore": "assets/icon-explore.png",
+    "icon-build": "assets/icon-build.png",
+    "icon-review": "assets/icon-review.png",
+    "icon-fix": "assets/icon-fix.png",
+    "icon-attach": "assets/icon-attach.png",
+    "icon-mic": "assets/icon-mic.png",
+    "icon-model": "assets/icon-model.png",
+    "icon-settings": "assets/icon-settings.png",
+    "icon-folder": "assets/icon-folder.png"
+  },
+  "chrome": "chrome.html",
+  "css": "theme.css",
+  "metadata": {
+    "version": "1.0.0",
+    "author": "wangnov",
+    "codexVerified": "26.707.91948",
+    "appearance": "dual",
+    "license": "personal-use"
+  },
+  "author": "Wangnov"
+}

@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 2,
+  "id": "luffy-onepiece",
+  "name": "Thousand Sunny — Dawn Adventure",
+  "description": "ONE PIECE 路飞陪伴主题：阳光号甲板、海天青、草帽金、珊瑚红与航海木构成轻快的双姿态冒险工作台。",
+  "version": "1.0.1",
+  "author": "Wangnov",
+  "codexVerified": "26.707.91948",
+  "appearance": "dual",
+  "license": "personal-use",
+  "css": "theme.css",
+  "chrome": "chrome.html",
+  "previews": [
+    "previews/home.webp",
+    "previews/task.webp"
+  ],
+  "colors": {
+    "primary": "#31bde4",
+    "glow": "#b9eff7",
+    "mystic": "#d65342",
+    "midnight": "#091d2b",
+    "panel": "#123047",
+    "secondary": "#73442b",
+    "metal": "#d3a83c",
+    "paper": "#f6ebd2",
+    "ink": "#202932",
+    "ink-light": "#f7f2e7",
+    "positive": "#55b98a",
+    "negative": "#e36054",
+    "line": "rgba(49, 189, 228, .22)"
+  },
+  "strings": {
+    "hero-title": "去冒险吧！",
+    "hero-sub": "THOUSAND SUNNY • DAWN VOYAGE"
+  },
+  "codexTheme": {
+    "appearanceTheme": "dark",
+    "dark": {
+      "accent": "#31bde4",
+      "contrast": 60,
+      "ink": "#f7f2e7",
+      "opaqueWindows": true,
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "SF Pro Text, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#55b98a",
+        "diffRemoved": "#e36054",
+        "skill": "#d3a83c"
+      },
+      "surface": "#091d2b"
+    },
+    "light": {
+      "accent": "#167e9f",
+      "contrast": 60,
+      "ink": "#202932",
+      "opaqueWindows": true,
+      "surface": "#f6ebd2",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "SF Pro Text, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#368461",
+        "diffRemoved": "#b84339",
+        "skill": "#957324"
+      }
+    }
+  },
+  "assets": {
+    "wall": "assets/wall.webp",
+    "sidebar-texture": "assets/sidebar-texture.webp",
+    "luffy-home": "assets/luffy-home.webp",
+    "luffy-task": "assets/luffy-task.webp",
+    "intro": "assets/intro.webp",
+    "composer-deck": "assets/composer-deck.webp",
+    "deck-slim": "assets/deck-slim.webp",
+    "card-one": "assets/card-one.webp",
+    "card-two": "assets/card-two.webp",
+    "card-three": "assets/card-three.webp",
+    "card-four": "assets/card-four.webp",
+    "pill": "assets/pill.webp",
+    "watermark": "assets/watermark.webp",
+    "crest": "assets/crest.webp",
+    "logo-codex": "assets/logo-codex.webp",
+    "logo-chatgpt-work": "assets/logo-chatgpt-work.webp",
+    "prop": "assets/prop.webp",
+    "prop-off": "assets/prop-off.webp",
+    "icon-new-task": "assets/icon-new-task.webp",
+    "icon-scheduled": "assets/icon-scheduled.webp",
+    "icon-plugins": "assets/icon-plugins.webp",
+    "icon-sites": "assets/icon-sites.webp",
+    "icon-pull-request": "assets/icon-pull-request.webp",
+    "icon-chat": "assets/icon-chat.webp",
+    "icon-search": "assets/icon-search.webp",
+    "icon-explore": "assets/icon-explore.webp",
+    "icon-build": "assets/icon-build.webp",
+    "icon-review": "assets/icon-review.webp",
+    "icon-fix": "assets/icon-fix.webp",
+    "icon-attach": "assets/icon-attach.webp",
+    "icon-mic": "assets/icon-mic.webp",
+    "icon-model": "assets/icon-model.webp",
+    "icon-settings": "assets/icon-settings.webp",
+    "icon-folder": "assets/icon-folder.webp"
+  }
+}

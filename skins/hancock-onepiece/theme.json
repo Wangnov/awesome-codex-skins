@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 2,
+  "id": "hancock-onepiece",
+  "name": "Amazon Lily — Kuja Empress",
+  "description": "ONE PIECE 波雅·汉库克陪伴主题：亚马逊·百合宫殿、朱漆、玉石、蛇纹金饰与心形光粒构成帝王感双姿态工作台。",
+  "version": "1.0.1",
+  "author": "Wangnov",
+  "codexVerified": "26.707.91948",
+  "appearance": "dual",
+  "license": "personal-use",
+  "css": "theme.css",
+  "chrome": "chrome.html",
+  "previews": [
+    "previews/home.webp",
+    "previews/task.webp"
+  ],
+  "colors": {
+    "primary": "#e58cb3",
+    "glow": "#ffd4e7",
+    "mystic": "#7451a0",
+    "midnight": "#160f25",
+    "panel": "#251738",
+    "secondary": "#852f3b",
+    "metal": "#d5b15c",
+    "paper": "#f8eee8",
+    "ink": "#302033",
+    "ink-light": "#fbf0f6",
+    "positive": "#54a987",
+    "negative": "#cf5d74",
+    "line": "rgba(229, 140, 179, .22)"
+  },
+  "strings": {
+    "hero-title": "妾身在此",
+    "hero-sub": "AMAZON LILY • KUJA EMPRESS"
+  },
+  "codexTheme": {
+    "appearanceTheme": "dark",
+    "dark": {
+      "accent": "#e58cb3",
+      "contrast": 60,
+      "ink": "#fbf0f6",
+      "opaqueWindows": true,
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "SF Pro Text, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#54a987",
+        "diffRemoved": "#cf5d74",
+        "skill": "#d5b15c"
+      },
+      "surface": "#160f25"
+    },
+    "light": {
+      "accent": "#b2567d",
+      "contrast": 60,
+      "ink": "#302033",
+      "opaqueWindows": true,
+      "surface": "#f8eee8",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "SF Pro Text, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#397d62",
+        "diffRemoved": "#a24458",
+        "skill": "#947536"
+      }
+    }
+  },
+  "assets": {
+    "wall": "assets/wall.webp",
+    "sidebar-texture": "assets/sidebar-texture.webp",
+    "hancock-home": "assets/hancock-home.webp",
+    "hancock-task": "assets/hancock-task.webp",
+    "intro": "assets/intro.webp",
+    "composer-deck": "assets/composer-deck.webp",
+    "deck-slim": "assets/deck-slim.webp",
+    "card-one": "assets/card-one.webp",
+    "card-two": "assets/card-two.webp",
+    "card-three": "assets/card-three.webp",
+    "card-four": "assets/card-four.webp",
+    "pill": "assets/pill.webp",
+    "watermark": "assets/watermark.webp",
+    "crest": "assets/crest.webp",
+    "logo-codex": "assets/logo-codex.webp",
+    "logo-chatgpt-work": "assets/logo-chatgpt-work.webp",
+    "prop": "assets/prop.webp",
+    "prop-off": "assets/prop-off.webp",
+    "icon-new-task": "assets/icon-new-task.webp",
+    "icon-scheduled": "assets/icon-scheduled.webp",
+    "icon-plugins": "assets/icon-plugins.webp",
+    "icon-sites": "assets/icon-sites.webp",
+    "icon-pull-request": "assets/icon-pull-request.webp",
+    "icon-chat": "assets/icon-chat.webp",
+    "icon-search": "assets/icon-search.webp",
+    "icon-explore": "assets/icon-explore.webp",
+    "icon-build": "assets/icon-build.webp",
+    "icon-review": "assets/icon-review.webp",
+    "icon-fix": "assets/icon-fix.webp",
+    "icon-attach": "assets/icon-attach.webp",
+    "icon-mic": "assets/icon-mic.webp",
+    "icon-model": "assets/icon-model.webp",
+    "icon-settings": "assets/icon-settings.webp",
+    "icon-folder": "assets/icon-folder.webp"
+  }
+}

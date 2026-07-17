@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 2,
+  "id": "jay-chou-inkstone-rhapsody",
+  "name": "周杰伦 · 墨键夜航",
+  "description": "以墨蓝漆面、象牙琴键、青瓷月光与旧铜节拍构成的周杰伦个人创作非官方应援主题。",
+  "version": "1.0.0",
+  "author": "Wangnov",
+  "codexVerified": "26.707.91948",
+  "appearance": "dual",
+  "license": "personal-use",
+  "colors": {
+    "inknight": "#0D1520",
+    "lacquer": "#18212B",
+    "paper": "#F4F0E6",
+    "ivory": "#EAE1D0",
+    "ink": "#1A2630",
+    "celadon": "#5D9D99",
+    "cobalt": "#355E86",
+    "brass": "#C8A66A",
+    "cinnabar": "#B45643",
+    "moon": "#C7D8D4",
+    "line": "rgba(200, 166, 106, .22)"
+  },
+  "strings": {
+    "hero-title": "把想象，写进下一拍",
+    "hero-sub": "INKSTONE RHAPSODY // COMPOSE THE NEXT IDEA"
+  },
+  "codexTheme": {
+    "appearanceTheme": "dark",
+    "dark": {
+      "accent": "#D1B276",
+      "contrast": 60,
+      "ink": "#F2EBDD",
+      "opaqueWindows": true,
+      "surface": "#0D1520",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "SF Pro Text, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#6FB5A0",
+        "diffRemoved": "#D07B70",
+        "skill": "#73B3AE"
+      }
+    },
+    "light": {
+      "accent": "#356F70",
+      "contrast": 60,
+      "ink": "#1A2630",
+      "opaqueWindows": true,
+      "surface": "#F4F0E6",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "SF Pro Text, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#377B68",
+        "diffRemoved": "#A4473A",
+        "skill": "#356F70"
+      }
+    }
+  },
+  "assets": {
+    "wall": "assets/wall.webp",
+    "jay": "assets/jay.webp",
+    "jay-task": "assets/jay-task.webp",
+    "intro": "assets/intro.webp",
+    "composer-deck": "assets/composer-deck.webp",
+    "deck-slim": "assets/deck-slim.webp",
+    "card-notation": "assets/card-notation.webp",
+    "card-arrangement": "assets/card-arrangement.webp",
+    "card-proof": "assets/card-proof.webp",
+    "card-resolve": "assets/card-resolve.webp",
+    "brand-mark": "assets/brand-mark.webp",
+    "logo-codex": "assets/logo-codex.webp",
+    "logo-chatgpt-work": "assets/logo-chatgpt-work.webp",
+    "beat-seal": "assets/beat-seal.webp",
+    "beat-seal-off": "assets/beat-seal-off.webp",
+    "icon-new-task": "assets/icon-new-task.webp",
+    "icon-scheduled": "assets/icon-scheduled.webp",
+    "icon-plugins": "assets/icon-plugins.webp",
+    "icon-sites": "assets/icon-sites.webp",
+    "icon-pull-request": "assets/icon-pull-request.webp",
+    "icon-chat": "assets/icon-chat.webp",
+    "icon-search": "assets/icon-search.webp",
+    "icon-explore": "assets/icon-explore.webp",
+    "icon-build": "assets/icon-build.webp",
+    "icon-review": "assets/icon-review.webp",
+    "icon-fix": "assets/icon-fix.webp",
+    "icon-attach": "assets/icon-attach.webp",
+    "icon-mic": "assets/icon-mic.webp",
+    "icon-model": "assets/icon-model.webp",
+    "icon-settings": "assets/icon-settings.webp",
+    "icon-folder": "assets/icon-folder.webp"
+  },
+  "chrome": "chrome.html",
+  "css": "theme.css",
+  "previews": [
+    "previews/home.webp",
+    "previews/task.webp"
+  ]
+}

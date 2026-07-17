@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 2,
+  "id": "jj-lin-soulwave-sanctuary",
+  "name": "林俊杰 · 回响圣所",
+  "description": "以深海蓝绿、烟青玻璃、铂银结构与琥珀脉冲构成的林俊杰个人创作非官方应援主题。",
+  "version": "1.0.0",
+  "author": "Wangnov",
+  "codexVerified": "26.707.91948",
+  "appearance": "dual",
+  "license": "personal-use",
+  "colors": {
+    "abyss": "#0D1A22",
+    "studio": "#142B32",
+    "paper": "#F1F6F4",
+    "mist": "#DCE9E5",
+    "ink": "#14252B",
+    "jade": "#43B9A7",
+    "azure": "#4A9CC4",
+    "amber": "#E1A65B",
+    "platinum": "#C8D7D4",
+    "line": "rgba(67, 185, 167, .22)"
+  },
+  "strings": {
+    "hero-title": "让每一次灵感，都找到回响",
+    "hero-sub": "SOULWAVE SANCTUARY // BUILD WITH FEELING, RESONATE WITH CLARITY"
+  },
+  "codexTheme": {
+    "appearanceTheme": "dark",
+    "dark": {
+      "accent": "#64CCB9",
+      "contrast": 60,
+      "ink": "#EDF6F3",
+      "opaqueWindows": true,
+      "surface": "#0D1A22",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "SF Pro Text, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#6BC7A4",
+        "diffRemoved": "#E88488",
+        "skill": "#64CCB9"
+      }
+    },
+    "light": {
+      "accent": "#237F73",
+      "contrast": 60,
+      "ink": "#14252B",
+      "opaqueWindows": true,
+      "surface": "#F1F6F4",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "SF Pro Text, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#237E61",
+        "diffRemoved": "#B64D58",
+        "skill": "#237F73"
+      }
+    }
+  },
+  "assets": {
+    "wall": "assets/wall.webp",
+    "jjlin": "assets/jjlin.webp",
+    "jjlin-task": "assets/jjlin-task.webp",
+    "intro": "assets/intro.webp",
+    "composer-deck": "assets/composer-deck.webp",
+    "deck-slim": "assets/deck-slim.webp",
+    "card-echo-map": "assets/card-echo-map.webp",
+    "card-harmony-stack": "assets/card-harmony-stack.webp",
+    "card-score-lens": "assets/card-score-lens.webp",
+    "card-signal-repair": "assets/card-signal-repair.webp",
+    "brand-mark": "assets/brand-mark.webp",
+    "logo-codex": "assets/logo-codex.webp",
+    "logo-chatgpt-work": "assets/logo-chatgpt-work.webp",
+    "resonance-key": "assets/resonance-key.webp",
+    "resonance-key-off": "assets/resonance-key-off.webp",
+    "icon-new-task": "assets/icon-new-task.webp",
+    "icon-scheduled": "assets/icon-scheduled.webp",
+    "icon-plugins": "assets/icon-plugins.webp",
+    "icon-sites": "assets/icon-sites.webp",
+    "icon-pull-request": "assets/icon-pull-request.webp",
+    "icon-chat": "assets/icon-chat.webp",
+    "icon-search": "assets/icon-search.webp",
+    "icon-explore": "assets/icon-explore.webp",
+    "icon-build": "assets/icon-build.webp",
+    "icon-review": "assets/icon-review.webp",
+    "icon-fix": "assets/icon-fix.webp",
+    "icon-attach": "assets/icon-attach.webp",
+    "icon-mic": "assets/icon-mic.webp",
+    "icon-model": "assets/icon-model.webp",
+    "icon-settings": "assets/icon-settings.webp",
+    "icon-folder": "assets/icon-folder.webp"
+  },
+  "chrome": "chrome.html",
+  "css": "theme.css",
+  "previews": [
+    "previews/home.webp",
+    "previews/task.webp"
+  ]
+}

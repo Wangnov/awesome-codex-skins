@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 2,
+  "id": "jensen-infinite-compute",
+  "name": "Jensen Infinite Compute",
+  "description": "A graphite-and-green Codex skin powered by Jensen and infinite GPU energy.",
+  "colors": {
+    "void": "#070907",
+    "graphite": "#121612",
+    "carbon": "#202620",
+    "panel": "#e9efe5",
+    "ice": "#f7faf4",
+    "ink": "#172015",
+    "nvidia": "#76b900",
+    "signal": "#b7ff3c",
+    "silicon": "#94a5a0",
+    "trace": "rgba(118, 185, 0, .28)"
+  },
+  "strings": {
+    "hero-title": "THE MORE YOU BUY",
+    "hero-sub": "THE MORE YOU SAVE"
+  },
+  "codexTheme": {
+    "appearanceTheme": "dark",
+    "light": {
+      "accent": "#5f9600",
+      "contrast": 62,
+      "ink": "#172015",
+      "opaqueWindows": true,
+      "surface": "#e9efe5",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "DIN Alternate, Avenir Next, SF Pro Text"
+      },
+      "semanticColors": {
+        "diffAdded": "#4f8a22",
+        "diffRemoved": "#b54a43",
+        "skill": "#5f9600"
+      }
+    },
+    "dark": {
+      "accent": "#76b900",
+      "contrast": 62,
+      "ink": "#f7faf4",
+      "opaqueWindows": true,
+      "surface": "#070907",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "DIN Alternate, Avenir Next, SF Pro Text"
+      },
+      "semanticColors": {
+        "diffAdded": "#8cd34a",
+        "diffRemoved": "#f07a72",
+        "skill": "#b7ff3c"
+      }
+    }
+  },
+  "assets": {
+    "wall": "assets/wall.webp",
+    "jensen": "assets/jensen.webp",
+    "intro": "assets/intro.webp",
+    "composer-deck": "assets/composer-deck.webp",
+    "deck-slim": "assets/deck-slim.webp",
+    "card-tensor": "assets/card-tensor.webp",
+    "card-raytrace": "assets/card-raytrace.webp",
+    "card-datacenter": "assets/card-datacenter.webp",
+    "card-gpu": "assets/card-gpu.webp",
+    "gpu-mark": "assets/gpu-mark.webp",
+    "gpu-mark-dark": "assets/gpu-mark-dark.webp",
+    "pill": "assets/pill.webp",
+    "send-gpu": "assets/send-gpu.webp",
+    "send-gpu-off": "assets/send-gpu-off.webp",
+    "logo-codex": "assets/logo-codex.webp",
+    "logo-chatgpt-work": "assets/logo-chatgpt-work.webp",
+    "icon-new-task": "assets/icon-new-task.webp",
+    "icon-scheduled": "assets/icon-scheduled.webp",
+    "icon-plugins": "assets/icon-plugins.webp",
+    "icon-sites": "assets/icon-sites.webp",
+    "icon-pull-request": "assets/icon-pull-request.webp",
+    "icon-chat": "assets/icon-chat.webp",
+    "icon-search": "assets/icon-search.webp",
+    "icon-explore": "assets/icon-explore.webp",
+    "icon-build": "assets/icon-build.webp",
+    "icon-review": "assets/icon-review.webp",
+    "icon-fix": "assets/icon-fix.webp",
+    "icon-attach": "assets/icon-attach.webp",
+    "icon-mic": "assets/icon-mic.webp",
+    "icon-model": "assets/icon-model.webp",
+    "icon-settings": "assets/icon-settings.webp",
+    "icon-folder": "assets/icon-folder.webp"
+  },
+  "chrome": "chrome.html",
+  "css": "theme.css",
+  "previews": [
+    "previews/home.webp"
+  ],
+  "version": "1.0.0",
+  "author": "Wangnov",
+  "codexVerified": "26.707.91948",
+  "appearance": "dual",
+  "license": "personal-use"
+}

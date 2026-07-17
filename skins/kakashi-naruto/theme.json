@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 2,
+  "id": "kakashi-naruto",
+  "name": "Konoha ANBU — Lightning Copy Ninja",
+  "description": "NARUTO 卡卡西陪伴主题：木叶任务档案、战术橄榄、卷轴纸、写轮眼红与雷切蓝构成双姿态忍者工作台。",
+  "version": "1.0.1",
+  "author": "Wangnov",
+  "codexVerified": "26.707.91948",
+  "appearance": "dual",
+  "license": "personal-use",
+  "css": "theme.css",
+  "chrome": "chrome.html",
+  "previews": [
+    "previews/home.webp",
+    "previews/task.webp"
+  ],
+  "colors": {
+    "primary": "#7ecbff",
+    "glow": "#c9efff",
+    "mystic": "#a33d49",
+    "midnight": "#111a1d",
+    "panel": "#1d2b2b",
+    "secondary": "#374c3d",
+    "metal": "#9aa39b",
+    "paper": "#ede6d5",
+    "ink": "#242c29",
+    "ink-light": "#eef2ed",
+    "positive": "#65a67b",
+    "negative": "#c95b62",
+    "line": "rgba(126, 203, 255, .22)"
+  },
+  "strings": {
+    "hero-title": "任务开始了",
+    "hero-sub": "KONOHA ARCHIVE • COPY NINJA"
+  },
+  "codexTheme": {
+    "appearanceTheme": "dark",
+    "dark": {
+      "accent": "#7ecbff",
+      "contrast": 60,
+      "ink": "#eef2ed",
+      "opaqueWindows": true,
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "SF Pro Text, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#65a67b",
+        "diffRemoved": "#c95b62",
+        "skill": "#9aa39b"
+      },
+      "surface": "#111a1d"
+    },
+    "light": {
+      "accent": "#3c88b7",
+      "contrast": 60,
+      "ink": "#242c29",
+      "opaqueWindows": true,
+      "surface": "#ede6d5",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "SF Pro Text, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#477e59",
+        "diffRemoved": "#a2484e",
+        "skill": "#6c756e"
+      }
+    }
+  },
+  "assets": {
+    "wall": "assets/wall.webp",
+    "sidebar-texture": "assets/sidebar-texture.webp",
+    "kakashi-home": "assets/kakashi-home.webp",
+    "kakashi-task": "assets/kakashi-task.webp",
+    "intro": "assets/intro.webp",
+    "composer-deck": "assets/composer-deck.webp",
+    "deck-slim": "assets/deck-slim.webp",
+    "card-one": "assets/card-one.webp",
+    "card-two": "assets/card-two.webp",
+    "card-three": "assets/card-three.webp",
+    "card-four": "assets/card-four.webp",
+    "pill": "assets/pill.webp",
+    "watermark": "assets/watermark.webp",
+    "crest": "assets/crest.webp",
+    "logo-codex": "assets/logo-codex.webp",
+    "logo-chatgpt-work": "assets/logo-chatgpt-work.webp",
+    "prop": "assets/prop.webp",
+    "prop-off": "assets/prop-off.webp",
+    "icon-new-task": "assets/icon-new-task.webp",
+    "icon-scheduled": "assets/icon-scheduled.webp",
+    "icon-plugins": "assets/icon-plugins.webp",
+    "icon-sites": "assets/icon-sites.webp",
+    "icon-pull-request": "assets/icon-pull-request.webp",
+    "icon-chat": "assets/icon-chat.webp",
+    "icon-search": "assets/icon-search.webp",
+    "icon-explore": "assets/icon-explore.webp",
+    "icon-build": "assets/icon-build.webp",
+    "icon-review": "assets/icon-review.webp",
+    "icon-fix": "assets/icon-fix.webp",
+    "icon-attach": "assets/icon-attach.webp",
+    "icon-mic": "assets/icon-mic.webp",
+    "icon-model": "assets/icon-model.webp",
+    "icon-settings": "assets/icon-settings.webp",
+    "icon-folder": "assets/icon-folder.webp"
+  }
+}

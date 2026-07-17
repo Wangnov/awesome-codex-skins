@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 2,
+  "id": "emilia-rezero",
+  "name": "Elior Forest — Spirit Companion",
+  "description": "Re:Zero 爱蜜莉雅精灵陪伴主题：冰晶森林、紫水晶、香槟金与帕克精灵光构成主页和任务页的双姿态陪伴体验。",
+  "version": "1.0.1",
+  "author": "Wangnov",
+  "codexVerified": "26.707.91948",
+  "appearance": "dual",
+  "license": "personal-use",
+  "css": "theme.css",
+  "chrome": "chrome.html",
+  "previews": [
+    "previews/home.webp",
+    "previews/task.webp"
+  ],
+  "colors": {
+    "primary": "#9ad9ff",
+    "glow": "#d8f5ff",
+    "mystic": "#8a6bc8",
+    "midnight": "#11192f",
+    "panel": "#1c2743",
+    "secondary": "#5b4976",
+    "metal": "#d4bd83",
+    "paper": "#f3f2fa",
+    "ink": "#26243b",
+    "ink-light": "#f5f4ff",
+    "positive": "#68bda7",
+    "negative": "#d785a7",
+    "line": "rgba(154, 217, 255, .22)"
+  },
+  "strings": {
+    "hero-title": "欢迎回来，我的契约者",
+    "hero-sub": "ELIOR FOREST • SPIRIT BOND"
+  },
+  "codexTheme": {
+    "appearanceTheme": "dark",
+    "dark": {
+      "accent": "#9ad9ff",
+      "contrast": 60,
+      "ink": "#f5f4ff",
+      "opaqueWindows": true,
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "SF Pro Text, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#68bda7",
+        "diffRemoved": "#d785a7",
+        "skill": "#d4bd83"
+      },
+      "surface": "#11192f"
+    },
+    "light": {
+      "accent": "#5b9fc5",
+      "contrast": 60,
+      "ink": "#26243b",
+      "opaqueWindows": true,
+      "surface": "#f3f2fa",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "SF Pro Text, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#3f856f",
+        "diffRemoved": "#a8597b",
+        "skill": "#92763f"
+      }
+    }
+  },
+  "assets": {
+    "wall": "assets/wall.webp",
+    "sidebar-texture": "assets/sidebar-texture.webp",
+    "emilia-home": "assets/emilia-home.webp",
+    "emilia-task": "assets/emilia-task.webp",
+    "intro": "assets/intro.webp",
+    "composer-deck": "assets/composer-deck.webp",
+    "deck-slim": "assets/deck-slim.webp",
+    "card-one": "assets/card-one.webp",
+    "card-two": "assets/card-two.webp",
+    "card-three": "assets/card-three.webp",
+    "card-four": "assets/card-four.webp",
+    "pill": "assets/pill.webp",
+    "watermark": "assets/watermark.webp",
+    "crest": "assets/crest.webp",
+    "logo-codex": "assets/logo-codex.webp",
+    "logo-chatgpt-work": "assets/logo-chatgpt-work.webp",
+    "prop": "assets/prop.webp",
+    "prop-off": "assets/prop-off.webp",
+    "icon-new-task": "assets/icon-new-task.webp",
+    "icon-scheduled": "assets/icon-scheduled.webp",
+    "icon-plugins": "assets/icon-plugins.webp",
+    "icon-sites": "assets/icon-sites.webp",
+    "icon-pull-request": "assets/icon-pull-request.webp",
+    "icon-chat": "assets/icon-chat.webp",
+    "icon-search": "assets/icon-search.webp",
+    "icon-explore": "assets/icon-explore.webp",
+    "icon-build": "assets/icon-build.webp",
+    "icon-review": "assets/icon-review.webp",
+    "icon-fix": "assets/icon-fix.webp",
+    "icon-attach": "assets/icon-attach.webp",
+    "icon-mic": "assets/icon-mic.webp",
+    "icon-model": "assets/icon-model.webp",
+    "icon-settings": "assets/icon-settings.webp",
+    "icon-folder": "assets/icon-folder.webp"
+  }
+}

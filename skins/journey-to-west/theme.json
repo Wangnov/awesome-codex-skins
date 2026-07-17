@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 2,
+  "id": "journey-to-west",
+  "name": "大圣云途 · Journey to the West",
+  "description": "原创国风西游主题：齐天大圣、筋斗云、金箍棒、火焰山与取经法器构成灵动热烈的西游记 Codex 皮肤。",
+  "version": "1.0.1",
+  "author": "Wangnov",
+  "codexVerified": "26.707.91948",
+  "appearance": "dual",
+  "license": "personal-use",
+  "css": "theme.css",
+  "chrome": "chrome.html",
+  "previews": [
+    "previews/home.webp"
+  ],
+  "colors": {
+    "accent": "#C83B28",
+    "accent-deep": "#712115",
+    "metal": "#E6B548",
+    "metal-light": "#FFE7A1",
+    "focus": "#2A8195",
+    "focus-deep": "#175260",
+    "surface": "#F0E1C3",
+    "surface-deep": "#D8C09B",
+    "ink": "#33251E",
+    "ink-soft": "#725B4A",
+    "night": "#16131C",
+    "night-panel": "#251A20",
+    "line": "#C83B282e"
+  },
+  "strings": {
+    "hero-title": "踏云开路 · 万难皆破",
+    "hero-sub": "大圣在此，今日也把难题打个通透"
+  },
+  "assets": {
+    "wall": "assets/wall.webp",
+    "character": "assets/character.webp",
+    "intro": "assets/intro.webp",
+    "composer-deck": "assets/composer-deck.webp",
+    "deck-slim": "assets/deck-slim.webp",
+    "card-1": "assets/card-1.webp",
+    "card-2": "assets/card-2.webp",
+    "card-3": "assets/card-3.webp",
+    "card-4": "assets/card-4.webp",
+    "card-screen": "assets/card-4.webp",
+    "logo-codex": "assets/logo-codex.webp",
+    "logo-chatgpt-work": "assets/logo-chatgpt-work.webp",
+    "send-prop": "assets/send-prop.webp",
+    "send-prop-closed": "assets/send-prop-closed.webp",
+    "brand-seal": "assets/brand-seal.webp",
+    "watermark": "assets/watermark.webp",
+    "watermark-dark": "assets/watermark-dark.webp",
+    "pill": "assets/pill.webp",
+    "sidebar-texture": "assets/sidebar-texture.webp",
+    "icon-new-task": "assets/icon-new-task.webp",
+    "icon-scheduled": "assets/icon-scheduled.webp",
+    "icon-plugins": "assets/icon-plugins.webp",
+    "icon-sites": "assets/icon-sites.webp",
+    "icon-pull-request": "assets/icon-pull-request.webp",
+    "icon-chat": "assets/icon-chat.webp",
+    "icon-search": "assets/icon-search.webp",
+    "icon-explore": "assets/icon-explore.webp",
+    "icon-build": "assets/icon-build.webp",
+    "icon-review": "assets/icon-review.webp",
+    "icon-fix": "assets/icon-fix.webp",
+    "icon-attach": "assets/icon-attach.webp",
+    "icon-mic": "assets/icon-mic.webp",
+    "icon-model": "assets/icon-model.webp",
+    "icon-settings": "assets/icon-settings.webp",
+    "icon-folder": "assets/icon-folder.webp"
+  },
+  "codexTheme": {
+    "appearanceTheme": "dark",
+    "light": {
+      "accent": "#C83B28",
+      "contrast": 60,
+      "ink": "#33251E",
+      "opaqueWindows": true,
+      "surface": "#F0E1C3",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Hiragino Mincho ProN, Songti SC, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#3E9A68",
+        "diffRemoved": "#C8483B",
+        "skill": "#E6B548"
+      }
+    },
+    "dark": {
+      "accent": "#E6B548",
+      "contrast": 60,
+      "ink": "#FFE7A1",
+      "opaqueWindows": true,
+      "surface": "#16131C",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Hiragino Mincho ProN, Songti SC, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#65B987",
+        "diffRemoved": "#E16B5C",
+        "skill": "#E6B548"
+      }
+    }
+  }
+}

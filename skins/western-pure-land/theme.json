@@ -1,0 +1,107 @@
+{
+  "schemaVersion": 2,
+  "id": "western-pure-land",
+  "name": "莲界琉光 · Western Pure Land",
+  "description": "原创东方净土主题：如来佛祖、八瓣莲台、琉璃宝光、莲池与金色法轮构成庄严宁静的西方极乐世界 Codex 皮肤。",
+  "version": "1.0.1",
+  "author": "Wangnov",
+  "codexVerified": "26.707.91948",
+  "appearance": "dual",
+  "license": "personal-use",
+  "css": "theme.css",
+  "chrome": "chrome.html",
+  "previews": [
+    "previews/home.webp"
+  ],
+  "colors": {
+    "accent": "#B07C24",
+    "accent-deep": "#634313",
+    "metal": "#E0B94F",
+    "metal-light": "#FFF0B0",
+    "focus": "#7653A5",
+    "focus-deep": "#49336C",
+    "surface": "#FFF4D8",
+    "surface-deep": "#E9D9B7",
+    "ink": "#3D2F33",
+    "ink-soft": "#75636F",
+    "night": "#17102A",
+    "night-panel": "#24183A",
+    "line": "#B07C242e"
+  },
+  "strings": {
+    "hero-title": "莲界澄明 · 心行无碍",
+    "hero-sub": "一念归静，让复杂之事层层开解"
+  },
+  "assets": {
+    "wall": "assets/wall.webp",
+    "character": "assets/character.webp",
+    "intro": "assets/intro.webp",
+    "composer-deck": "assets/composer-deck.webp",
+    "deck-slim": "assets/deck-slim.webp",
+    "card-1": "assets/card-1.webp",
+    "card-2": "assets/card-2.webp",
+    "card-3": "assets/card-3.webp",
+    "card-4": "assets/card-4.webp",
+    "card-screen": "assets/card-4.webp",
+    "logo-codex": "assets/logo-codex.webp",
+    "logo-chatgpt-work": "assets/logo-chatgpt-work.webp",
+    "send-prop": "assets/send-prop.webp",
+    "send-prop-closed": "assets/send-prop-closed.webp",
+    "brand-seal": "assets/brand-seal.webp",
+    "watermark": "assets/watermark.webp",
+    "watermark-dark": "assets/watermark-dark.webp",
+    "pill": "assets/pill.webp",
+    "sidebar-texture": "assets/sidebar-texture.webp",
+    "icon-new-task": "assets/icon-new-task.webp",
+    "icon-scheduled": "assets/icon-scheduled.webp",
+    "icon-plugins": "assets/icon-plugins.webp",
+    "icon-sites": "assets/icon-sites.webp",
+    "icon-pull-request": "assets/icon-pull-request.webp",
+    "icon-chat": "assets/icon-chat.webp",
+    "icon-search": "assets/icon-search.webp",
+    "icon-explore": "assets/icon-explore.webp",
+    "icon-build": "assets/icon-build.webp",
+    "icon-review": "assets/icon-review.webp",
+    "icon-fix": "assets/icon-fix.webp",
+    "icon-attach": "assets/icon-attach.webp",
+    "icon-mic": "assets/icon-mic.webp",
+    "icon-model": "assets/icon-model.webp",
+    "icon-settings": "assets/icon-settings.webp",
+    "icon-folder": "assets/icon-folder.webp"
+  },
+  "codexTheme": {
+    "appearanceTheme": "light",
+    "light": {
+      "accent": "#B07C24",
+      "contrast": 60,
+      "ink": "#3D2F33",
+      "opaqueWindows": true,
+      "surface": "#FFF4D8",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Hiragino Mincho ProN, Songti SC, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#3E9A68",
+        "diffRemoved": "#C8483B",
+        "skill": "#E0B94F"
+      }
+    },
+    "dark": {
+      "accent": "#E0B94F",
+      "contrast": 60,
+      "ink": "#FFF0B0",
+      "opaqueWindows": true,
+      "surface": "#17102A",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Hiragino Mincho ProN, Songti SC, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#65B987",
+        "diffRemoved": "#E16B5C",
+        "skill": "#E0B94F"
+      }
+    }
+  }
+}

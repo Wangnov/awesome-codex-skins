@@ -31,9 +31,19 @@
 
 | | |
 |:---:|:---:|
-| ![GUTS Terminal](skins/guts-terminal/previews/home.webp) **TPC GUTS 指挥终端** `guts-terminal` — 迪迦奥特曼 TPC/GUTS 指挥台 | ![Asuka EVA-02](skins/asuka-eva02/previews/home.webp) **NERV 二号机 · 明日香** `asuka-eva02` — 剃刀警示纹与骑士红 |
-| ![Rei EVA-00](skins/rei-eva00/previews/home.webp) **NERV 零号机 · 绫波丽** `rei-eva00` — 淡蓝 LCL 的静谧 | ![Kaworu Mark.06](skins/kaworu-mark06/previews/home.webp) **Mark.06 · 渚薰** `kaworu-mark06` — 月夜与 SEELE 色调 |
-| ![Shinji EVA-01](skins/shinji-eva01/previews/home.webp) **NERV 初号机 · 碇真嗣** `shinji-eva01` — 测试型紫绿 | *你的皮肤 —— 见[投稿收录](#投稿收录)* |
+| ![NERV EVA-02 Asuka Terminal](skins/asuka-eva02/previews/home.webp) **NERV EVA-02 Asuka Terminal**<br>`asuka-eva02` · @Wangnov | ![财神聚宝阁 · Fortune Pavilion](skins/caishen-jubao/previews/home.webp) **财神聚宝阁 · Fortune Pavilion**<br>`caishen-jubao` · @Wangnov |
+| ![凌霄金阙 · Celestial Court](skins/celestial-court/previews/home.webp) **凌霄金阙 · Celestial Court**<br>`celestial-court` · @Wangnov | ![迪丽热巴 · STARLIGHT 星蝶光廊](skins/dilraba-starlight/previews/home.webp) **迪丽热巴 · STARLIGHT 星蝶光廊**<br>`dilraba-starlight` · @Wangnov |
+| ![Elon Mars Protocol](skins/elon-mars-protocol/previews/home.webp) **Elon Mars Protocol**<br>`elon-mars-protocol` · @Wangnov | ![Elior Forest — Spirit Companion](skins/emilia-rezero/previews/home.webp) **Elior Forest — Spirit Companion**<br>`emilia-rezero` · @Wangnov |
+| ![TPC GUTS Command Terminal](skins/guts-terminal/previews/home.webp) **TPC GUTS Command Terminal**<br>`guts-terminal` · @Wangnov | ![Amazon Lily — Kuja Empress](skins/hancock-onepiece/previews/home.webp) **Amazon Lily — Kuja Empress**<br>`hancock-onepiece` · @Wangnov |
+| ![周杰伦 · 墨键夜航](skins/jay-chou-inkstone-rhapsody/previews/home.webp) **周杰伦 · 墨键夜航**<br>`jay-chou-inkstone-rhapsody` · @Wangnov | ![Jensen Infinite Compute](skins/jensen-infinite-compute/previews/home.webp) **Jensen Infinite Compute**<br>`jensen-infinite-compute` · @Wangnov |
+| ![林俊杰 · 回响圣所](skins/jj-lin-soulwave-sanctuary/previews/home.webp) **林俊杰 · 回响圣所**<br>`jj-lin-soulwave-sanctuary` · @Wangnov | ![大圣云途 · Journey to the West](skins/journey-to-west/previews/home.webp) **大圣云途 · Journey to the West**<br>`journey-to-west` · @Wangnov |
+| ![Konoha ANBU — Lightning Copy Ninja](skins/kakashi-naruto/previews/home.webp) **Konoha ANBU — Lightning Copy Ninja**<br>`kakashi-naruto` · @Wangnov | ![SEELE Mark.06 Kaworu Terminal](skins/kaworu-mark06/previews/home.webp) **SEELE Mark.06 Kaworu Terminal**<br>`kaworu-mark06` · @Wangnov |
+| ![KUN Afterglow Fan Studio](skins/kun-afterglow/previews/home.webp) **KUN Afterglow Fan Studio**<br>`kun-afterglow` · @Wangnov | ![Thousand Sunny — Dawn Adventure](skins/luffy-onepiece/previews/home.webp) **Thousand Sunny — Dawn Adventure**<br>`luffy-onepiece` · @Wangnov |
+| ![Shiranui Dojo — Scarlet Flame](skins/mai-shiranui/previews/home.webp) **Shiranui Dojo — Scarlet Flame**<br>`mai-shiranui` · @Wangnov | ![大明金阙 · Ming Imperial](skins/ming-imperial/previews/home.webp) **大明金阙 · Ming Imperial**<br>`ming-imperial` · @Wangnov |
+| ![NERV EVA-00 Rei Prototype Terminal](skins/rei-eva00/previews/home.webp) **NERV EVA-00 Rei Prototype Terminal**<br>`rei-eva00` · @Wangnov | ![Roswaal Mansion — Rem Companion](skins/rem-rezero/previews/home.webp) **Roswaal Mansion — Rem Companion**<br>`rem-rezero` · @Wangnov |
+| ![San Tibo](skins/san-tibo/previews/home.webp) **San Tibo**<br>`san-tibo` · @Wangnov | ![NERV EVA-01 Shinji Synchronization Terminal](skins/shinji-eva01/previews/home.webp) **NERV EVA-01 Shinji Synchronization Terminal**<br>`shinji-eva01` · @Wangnov |
+| ![赤壁风云 · Three Kingdoms](skins/three-kingdoms/previews/home.webp) **赤壁风云 · Three Kingdoms**<br>`three-kingdoms` · @Wangnov | ![Trump Golden Order](skins/trump-golden-order/previews/home.webp) **Trump Golden Order**<br>`trump-golden-order` · @Wangnov |
+| ![幽都判府 · Underworld Tribunal](skins/underworld-yama/previews/home.webp) **幽都判府 · Underworld Tribunal**<br>`underworld-yama` · @Wangnov | ![莲界琉光 · Western Pure Land](skins/western-pure-land/previews/home.webp) **莲界琉光 · Western Pure Land**<br>`western-pure-land` · @Wangnov |
 
 ## 使用皮肤
 
@@ -94,9 +104,19 @@ npx skills add wangnov/awesome-codex-skins --skill codex-theme-maker -g
 
 | | |
 |:---:|:---:|
-| ![GUTS Terminal](skins/guts-terminal/previews/home.webp) **TPC GUTS Command Terminal** `guts-terminal` — Ultraman Tiga command deck | ![Asuka EVA-02](skins/asuka-eva02/previews/home.webp) **NERV EVA-02 Asuka** `asuka-eva02` — hazard stripes & knight red |
-| ![Rei EVA-00](skins/rei-eva00/previews/home.webp) **NERV EVA-00 Rei** `rei-eva00` — pale-blue LCL calm | ![Kaworu Mark.06](skins/kaworu-mark06/previews/home.webp) **Mark.06 Kaworu** `kaworu-mark06` — moonlit SEELE tones |
-| ![Shinji EVA-01](skins/shinji-eva01/previews/home.webp) **NERV EVA-01 Shinji** `shinji-eva01` — Test Type purple/green | *Your skin here — see [Contributing](#contributing)* |
+| ![NERV EVA-02 Asuka Terminal](skins/asuka-eva02/previews/home.webp) **NERV EVA-02 Asuka Terminal**<br>`asuka-eva02` · @Wangnov | ![财神聚宝阁 · Fortune Pavilion](skins/caishen-jubao/previews/home.webp) **财神聚宝阁 · Fortune Pavilion**<br>`caishen-jubao` · @Wangnov |
+| ![凌霄金阙 · Celestial Court](skins/celestial-court/previews/home.webp) **凌霄金阙 · Celestial Court**<br>`celestial-court` · @Wangnov | ![迪丽热巴 · STARLIGHT 星蝶光廊](skins/dilraba-starlight/previews/home.webp) **迪丽热巴 · STARLIGHT 星蝶光廊**<br>`dilraba-starlight` · @Wangnov |
+| ![Elon Mars Protocol](skins/elon-mars-protocol/previews/home.webp) **Elon Mars Protocol**<br>`elon-mars-protocol` · @Wangnov | ![Elior Forest — Spirit Companion](skins/emilia-rezero/previews/home.webp) **Elior Forest — Spirit Companion**<br>`emilia-rezero` · @Wangnov |
+| ![TPC GUTS Command Terminal](skins/guts-terminal/previews/home.webp) **TPC GUTS Command Terminal**<br>`guts-terminal` · @Wangnov | ![Amazon Lily — Kuja Empress](skins/hancock-onepiece/previews/home.webp) **Amazon Lily — Kuja Empress**<br>`hancock-onepiece` · @Wangnov |
+| ![周杰伦 · 墨键夜航](skins/jay-chou-inkstone-rhapsody/previews/home.webp) **周杰伦 · 墨键夜航**<br>`jay-chou-inkstone-rhapsody` · @Wangnov | ![Jensen Infinite Compute](skins/jensen-infinite-compute/previews/home.webp) **Jensen Infinite Compute**<br>`jensen-infinite-compute` · @Wangnov |
+| ![林俊杰 · 回响圣所](skins/jj-lin-soulwave-sanctuary/previews/home.webp) **林俊杰 · 回响圣所**<br>`jj-lin-soulwave-sanctuary` · @Wangnov | ![大圣云途 · Journey to the West](skins/journey-to-west/previews/home.webp) **大圣云途 · Journey to the West**<br>`journey-to-west` · @Wangnov |
+| ![Konoha ANBU — Lightning Copy Ninja](skins/kakashi-naruto/previews/home.webp) **Konoha ANBU — Lightning Copy Ninja**<br>`kakashi-naruto` · @Wangnov | ![SEELE Mark.06 Kaworu Terminal](skins/kaworu-mark06/previews/home.webp) **SEELE Mark.06 Kaworu Terminal**<br>`kaworu-mark06` · @Wangnov |
+| ![KUN Afterglow Fan Studio](skins/kun-afterglow/previews/home.webp) **KUN Afterglow Fan Studio**<br>`kun-afterglow` · @Wangnov | ![Thousand Sunny — Dawn Adventure](skins/luffy-onepiece/previews/home.webp) **Thousand Sunny — Dawn Adventure**<br>`luffy-onepiece` · @Wangnov |
+| ![Shiranui Dojo — Scarlet Flame](skins/mai-shiranui/previews/home.webp) **Shiranui Dojo — Scarlet Flame**<br>`mai-shiranui` · @Wangnov | ![大明金阙 · Ming Imperial](skins/ming-imperial/previews/home.webp) **大明金阙 · Ming Imperial**<br>`ming-imperial` · @Wangnov |
+| ![NERV EVA-00 Rei Prototype Terminal](skins/rei-eva00/previews/home.webp) **NERV EVA-00 Rei Prototype Terminal**<br>`rei-eva00` · @Wangnov | ![Roswaal Mansion — Rem Companion](skins/rem-rezero/previews/home.webp) **Roswaal Mansion — Rem Companion**<br>`rem-rezero` · @Wangnov |
+| ![San Tibo](skins/san-tibo/previews/home.webp) **San Tibo**<br>`san-tibo` · @Wangnov | ![NERV EVA-01 Shinji Synchronization Terminal](skins/shinji-eva01/previews/home.webp) **NERV EVA-01 Shinji Synchronization Terminal**<br>`shinji-eva01` · @Wangnov |
+| ![赤壁风云 · Three Kingdoms](skins/three-kingdoms/previews/home.webp) **赤壁风云 · Three Kingdoms**<br>`three-kingdoms` · @Wangnov | ![Trump Golden Order](skins/trump-golden-order/previews/home.webp) **Trump Golden Order**<br>`trump-golden-order` · @Wangnov |
+| ![幽都判府 · Underworld Tribunal](skins/underworld-yama/previews/home.webp) **幽都判府 · Underworld Tribunal**<br>`underworld-yama` · @Wangnov | ![莲界琉光 · Western Pure Land](skins/western-pure-land/previews/home.webp) **莲界琉光 · Western Pure Land**<br>`western-pure-land` · @Wangnov |
 
 ## Use a skin
 
