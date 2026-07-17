@@ -3,7 +3,7 @@
   "id": "emilia-rezero",
   "name": "Elior Forest — Spirit Companion",
   "description": "Re:Zero 爱蜜莉雅精灵陪伴主题：冰晶森林、紫水晶、香槟金与帕克精灵光构成主页和任务页的双姿态陪伴体验。",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "author": "Wangnov",
   "codexVerified": "26.707.91948",
   "appearance": "dual",
@@ -35,6 +35,10 @@
   },
   "codexTheme": {
     "appearanceTheme": "dark",
+    "codeThemeIds": {
+      "dark": "absolutely",
+      "light": "absolutely"
+    },
     "dark": {
       "accent": "#9ad9ff",
       "contrast": 60,

@@ -23,6 +23,10 @@
   },
   "codexTheme": {
     "appearanceTheme": "dark",
+    "codeThemeIds": {
+      "dark": "absolutely",
+      "light": "absolutely"
+    },
     "dark": {
       "accent": "#ff6a00",
       "contrast": 60,
@@ -89,12 +93,20 @@
     "icon-model": "assets/icon-model.webp",
     "icon-settings": "assets/icon-settings.webp",
     "icon-folder": "assets/icon-folder.webp",
+    "cursor-default": "assets/cursor-default.webp",
+    "cursor-default-2x": "assets/cursor-default-2x.webp",
+    "cursor-pointer": "assets/cursor-pointer.webp",
+    "cursor-pointer-2x": "assets/cursor-pointer-2x.webp",
+    "cursor-text": "assets/cursor-text.webp",
+    "cursor-text-2x": "assets/cursor-text-2x.webp",
+    "cursor-grab": "assets/cursor-grab.webp",
+    "cursor-grab-2x": "assets/cursor-grab-2x.webp",
     "lance": "assets/lance.webp",
     "lance-off": "assets/lance-off.webp"
   },
   "chrome": "chrome.html",
   "css": "theme.css",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "Wangnov",
   "codexVerified": "26.707.91948",
   "appearance": "dual",

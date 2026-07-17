@@ -3,7 +3,7 @@
   "id": "three-kingdoms",
   "name": "赤壁风云 · Three Kingdoms",
   "description": "原创三国演义主题：关羽、青龙偃月刀、赤壁火光、军阵沙盘与三方旌旗构成雄浑而富戏剧性的 Codex 皮肤。",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "author": "Wangnov",
   "codexVerified": "26.707.91948",
   "appearance": "dual",
@@ -71,6 +71,10 @@
   },
   "codexTheme": {
     "appearanceTheme": "dark",
+    "codeThemeIds": {
+      "dark": "absolutely",
+      "light": "absolutely"
+    },
     "light": {
       "accent": "#8F2B22",
       "contrast": 60,

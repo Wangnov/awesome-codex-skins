@@ -21,6 +21,10 @@
   },
   "codexTheme": {
     "appearanceTheme": "dark",
+    "codeThemeIds": {
+      "dark": "absolutely",
+      "light": "absolutely"
+    },
     "light": {
       "accent": "#5f9600",
       "contrast": 62,
@@ -93,7 +97,7 @@
   "previews": [
     "previews/home.webp"
   ],
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "Wangnov",
   "codexVerified": "26.707.91948",
   "appearance": "dual",

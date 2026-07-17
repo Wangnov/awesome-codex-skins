@@ -3,7 +3,7 @@
   "id": "western-pure-land",
   "name": "莲界琉光 · Western Pure Land",
   "description": "原创东方净土主题：如来佛祖、八瓣莲台、琉璃宝光、莲池与金色法轮构成庄严宁静的西方极乐世界 Codex 皮肤。",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "author": "Wangnov",
   "codexVerified": "26.707.91948",
   "appearance": "dual",
@@ -71,6 +71,10 @@
   },
   "codexTheme": {
     "appearanceTheme": "light",
+    "codeThemeIds": {
+      "dark": "absolutely",
+      "light": "absolutely"
+    },
     "light": {
       "accent": "#B07C24",
       "contrast": 60,

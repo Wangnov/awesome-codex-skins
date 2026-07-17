@@ -3,7 +3,7 @@
   "id": "caishen-jubao",
   "name": "财神聚宝阁 · Fortune Pavilion",
   "description": "原创卡通财神主题：朱红聚宝阁、鎏金元宝、铜钱祥云与青玉如意共同构成的中国风 Codex 素材化皮肤。",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "author": "Wangnov",
   "codexVerified": "26.707.91948",
   "appearance": "dual",
@@ -71,6 +71,10 @@
   },
   "codexTheme": {
     "appearanceTheme": "light",
+    "codeThemeIds": {
+      "dark": "absolutely",
+      "light": "absolutely"
+    },
     "light": {
       "accent": "#B53524",
       "contrast": 60,

@@ -3,7 +3,7 @@
   "id": "jay-chou-inkstone-rhapsody",
   "name": "周杰伦 · 墨键夜航",
   "description": "以墨蓝漆面、象牙琴键、青瓷月光与旧铜节拍构成的周杰伦个人创作非官方应援主题。",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "Wangnov",
   "codexVerified": "26.707.91948",
   "appearance": "dual",
@@ -27,6 +27,10 @@
   },
   "codexTheme": {
     "appearanceTheme": "dark",
+    "codeThemeIds": {
+      "dark": "absolutely",
+      "light": "absolutely"
+    },
     "dark": {
       "accent": "#D1B276",
       "contrast": 60,

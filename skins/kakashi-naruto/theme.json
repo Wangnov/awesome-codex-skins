@@ -3,7 +3,7 @@
   "id": "kakashi-naruto",
   "name": "Konoha ANBU — Lightning Copy Ninja",
   "description": "NARUTO 卡卡西陪伴主题：木叶任务档案、战术橄榄、卷轴纸、写轮眼红与雷切蓝构成双姿态忍者工作台。",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "author": "Wangnov",
   "codexVerified": "26.707.91948",
   "appearance": "dual",
@@ -35,6 +35,10 @@
   },
   "codexTheme": {
     "appearanceTheme": "dark",
+    "codeThemeIds": {
+      "dark": "absolutely",
+      "light": "absolutely"
+    },
     "dark": {
       "accent": "#7ecbff",
       "contrast": 60,

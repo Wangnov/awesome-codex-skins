@@ -24,6 +24,10 @@
   },
   "codexTheme": {
     "appearanceTheme": "dark",
+    "codeThemeIds": {
+      "dark": "absolutely",
+      "light": "absolutely"
+    },
     "dark": {
       "accent": "#42d6df",
       "contrast": 60,
@@ -95,7 +99,7 @@
   },
   "chrome": "chrome.html",
   "css": "theme.css",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "Wangnov",
   "codexVerified": "26.707.91948",
   "appearance": "dual",

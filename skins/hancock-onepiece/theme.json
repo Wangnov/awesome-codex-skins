@@ -3,7 +3,7 @@
   "id": "hancock-onepiece",
   "name": "Amazon Lily — Kuja Empress",
   "description": "ONE PIECE 波雅·汉库克陪伴主题：亚马逊·百合宫殿、朱漆、玉石、蛇纹金饰与心形光粒构成帝王感双姿态工作台。",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "author": "Wangnov",
   "codexVerified": "26.707.91948",
   "appearance": "dual",
@@ -35,6 +35,10 @@
   },
   "codexTheme": {
     "appearanceTheme": "dark",
+    "codeThemeIds": {
+      "dark": "absolutely",
+      "light": "absolutely"
+    },
     "dark": {
       "accent": "#e58cb3",
       "contrast": 60,

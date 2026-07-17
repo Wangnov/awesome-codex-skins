@@ -3,7 +3,7 @@
   "id": "luffy-onepiece",
   "name": "Thousand Sunny — Dawn Adventure",
   "description": "ONE PIECE 路飞陪伴主题：阳光号甲板、海天青、草帽金、珊瑚红与航海木构成轻快的双姿态冒险工作台。",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "author": "Wangnov",
   "codexVerified": "26.707.91948",
   "appearance": "dual",
@@ -35,6 +35,10 @@
   },
   "codexTheme": {
     "appearanceTheme": "dark",
+    "codeThemeIds": {
+      "dark": "absolutely",
+      "light": "absolutely"
+    },
     "dark": {
       "accent": "#31bde4",
       "contrast": 60,

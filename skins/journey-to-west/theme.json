@@ -3,7 +3,7 @@
   "id": "journey-to-west",
   "name": "大圣云途 · Journey to the West",
   "description": "原创国风西游主题：齐天大圣、筋斗云、金箍棒、火焰山与取经法器构成灵动热烈的西游记 Codex 皮肤。",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "author": "Wangnov",
   "codexVerified": "26.707.91948",
   "appearance": "dual",
@@ -71,6 +71,10 @@
   },
   "codexTheme": {
     "appearanceTheme": "dark",
+    "codeThemeIds": {
+      "dark": "absolutely",
+      "light": "absolutely"
+    },
     "light": {
       "accent": "#C83B28",
       "contrast": 60,

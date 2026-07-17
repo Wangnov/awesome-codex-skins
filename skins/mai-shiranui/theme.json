@@ -3,7 +3,7 @@
   "id": "mai-shiranui",
   "name": "Shiranui Dojo — Scarlet Flame",
   "description": "KOF 不知火舞陪伴主题：山间道场、朱漆、和纸、折扇金骨与火焰凤凰构成深浅双模式的双姿态格斗工作台。",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "author": "Wangnov",
   "codexVerified": "26.707.91948",
   "appearance": "dual",
@@ -35,6 +35,10 @@
   },
   "codexTheme": {
     "appearanceTheme": "dark",
+    "codeThemeIds": {
+      "dark": "absolutely",
+      "light": "absolutely"
+    },
     "dark": {
       "accent": "#ef6b3c",
       "contrast": 60,

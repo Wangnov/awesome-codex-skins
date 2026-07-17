@@ -15,6 +15,91 @@ html.codex-theme-studio[data-cts-shell="dark"] {
   color-scheme: dark !important;
 }
 
+/* ------------------------------------------------ EVA-02 cursor set
+   32px logical cursors with lossless 2x WebP variants for Retina displays.
+   Keep the rule set semantic instead of applying one cursor to every node:
+   native resize/not-allowed cursors can still win on their own controls. */
+
+html.codex-theme-studio,
+html.codex-theme-studio body {
+  cursor: image-set(
+    var(--cts-asset-cursor-default) 1x,
+    var(--cts-asset-cursor-default-2x) 2x
+  ) 3 2, default !important;
+}
+
+html.codex-theme-studio :is(
+  input:not(:is([type="button"], [type="submit"], [type="reset"], [type="checkbox"], [type="radio"], [type="range"], [type="file"])),
+  textarea,
+  [contenteditable="true"],
+  .ProseMirror,
+  p,
+  pre,
+  code,
+  blockquote,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6
+) {
+  cursor: image-set(
+    var(--cts-asset-cursor-text) 1x,
+    var(--cts-asset-cursor-text-2x) 2x
+  ) 16 16, text !important;
+}
+
+html.codex-theme-studio :is(
+  a[href],
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [role="link"],
+  [role="menuitem"],
+  [role="option"],
+  [role="tab"],
+  label[for],
+  summary,
+  select,
+  input:is([type="button"], [type="submit"], [type="reset"], [type="checkbox"], [type="radio"], [type="range"], [type="file"])
+),
+html.codex-theme-studio :is(
+  a[href],
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [role="link"],
+  [role="menuitem"],
+  [role="option"],
+  [role="tab"],
+  label[for],
+  summary
+) * {
+  cursor: image-set(
+    var(--cts-asset-cursor-pointer) 1x,
+    var(--cts-asset-cursor-pointer-2x) 2x
+  ) 14 2, pointer !important;
+}
+
+html.codex-theme-studio :is(
+  [draggable="true"],
+  [data-dnd-kit-draggable],
+  [data-rbd-draggable-id],
+  [class~="cursor-grab"],
+  [class~="cursor-grabbing"]
+),
+html.codex-theme-studio :is(
+  [draggable="true"],
+  [data-dnd-kit-draggable],
+  [data-rbd-draggable-id],
+  [class~="cursor-grab"],
+  [class~="cursor-grabbing"]
+) * {
+  cursor: image-set(
+    var(--cts-asset-cursor-grab) 1x,
+    var(--cts-asset-cursor-grab-2x) 2x
+  ) 16 16, grab !important;
+}
+
 /* Wall art on the body itself: every route — Settings included — sits on
    the NERV command-center wall even before surface rules kick in.
    Light shell: heavy warm-white veil turns the dark wall into a faint

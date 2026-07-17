@@ -3,7 +3,7 @@
   "id": "ming-imperial",
   "name": "大明金阙 · Ming Imperial",
   "description": "原创大明王朝主题：朱墙金瓦、明制衮服、青花瓷、日月山河纹与宝船构成端正华贵的历史国风 Codex 皮肤。",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "author": "Wangnov",
   "codexVerified": "26.707.91948",
   "appearance": "dual",
@@ -71,6 +71,10 @@
   },
   "codexTheme": {
     "appearanceTheme": "light",
+    "codeThemeIds": {
+      "dark": "absolutely",
+      "light": "absolutely"
+    },
     "light": {
       "accent": "#A92024",
       "contrast": 60,
