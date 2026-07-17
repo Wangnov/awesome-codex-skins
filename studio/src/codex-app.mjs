@@ -14,13 +14,16 @@ export const PORT_SCAN_LIMIT = 100;
 
 export class CodexAppNotFoundError extends Error {}
 
-export function candidateBundlePaths(env = process.env) {
-  const override = env.CODEX_APP_PATH?.trim();
-  if (override) return [path.resolve(override)];
-
+export function standardBundlePaths(env = process.env) {
   const roots = ["/Applications"];
   if (env.HOME) roots.push(path.join(env.HOME, "Applications"));
   return roots.flatMap((root) => ["Codex.app", "ChatGPT.app"].map((name) => path.join(root, name)));
+}
+
+export function candidateBundlePaths(env = process.env) {
+  const override = env.CODEX_APP_PATH?.trim();
+  if (override) return [path.resolve(override)];
+  return standardBundlePaths(env);
 }
 
 async function readPlistString(plist, key) {
@@ -86,6 +89,77 @@ export async function discoverCodexApp({
   throw new CodexAppNotFoundError(
     "Codex app (com.openai.codex) was not found as Codex.app or ChatGPT.app in /Applications or ~/Applications",
   );
+}
+
+export async function discoverManagedCodexApp(preferredBundle, {
+  env = process.env,
+  inspect = inspectCodexApp,
+  ...options
+} = {}) {
+  // An explicit override always wins. Otherwise reuse the exact identity-gated
+  // bundle selected by `start`, including nonstandard install locations.
+  if (!env.CODEX_APP_PATH?.trim() && preferredBundle) {
+    try {
+      const app = await inspect(preferredBundle);
+      if (app) return app;
+    } catch {
+      // The stored bundle moved or disappeared; fall back to normal discovery.
+    }
+  }
+  return discoverCodexApp({ env, inspect, ...options });
+}
+
+export function parseRunningAppBundlePaths(stdout) {
+  const bundles = new Set();
+  for (const line of stdout.split("\n")) {
+    const match = line.match(/^\s*\d+\s+(.+?)\s*$/);
+    if (!match) continue;
+    const executable = match[1];
+    const appMatch = executable.match(/^(.*\.app)\/Contents\/MacOS\/[^/]+$/);
+    if (appMatch) bundles.add(appMatch[1]);
+  }
+  return [...bundles];
+}
+
+export async function runningAppBundlePaths() {
+  try {
+    const { stdout } = await run("/bin/ps", ["-axo", "pid=,comm="]);
+    return parseRunningAppBundlePaths(stdout);
+  } catch {
+    return [];
+  }
+}
+
+export async function findRunningCodexApps({
+  env = process.env,
+  additionalBundles = [],
+  inspect = inspectCodexApp,
+  findPids = codexMainPids,
+  findRunningBundles = runningAppBundlePaths,
+} = {}) {
+  const override = env.CODEX_APP_PATH?.trim();
+  const candidates = [
+    ...(override ? [path.resolve(override)] : []),
+    ...additionalBundles.filter(Boolean),
+    ...standardBundlePaths(env),
+    ...(await findRunningBundles()),
+  ];
+  const apps = new Map();
+  for (const bundle of candidates) {
+    try {
+      const app = await inspect(bundle);
+      if (app) apps.set(app.bundle, app);
+    } catch {
+      // Missing or unreadable candidates cannot be running from this path.
+    }
+  }
+
+  const running = [];
+  for (const app of apps.values()) {
+    const pids = await findPids(app);
+    if (pids.length > 0) running.push({ ...app, pids });
+  }
+  return running;
 }
 
 export function commandBelongsToApp(command, app) {

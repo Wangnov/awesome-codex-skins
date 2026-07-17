@@ -6,7 +6,10 @@ import {
   candidateBundlePaths,
   commandBelongsToApp,
   discoverCodexApp,
+  discoverManagedCodexApp,
+  findRunningCodexApps,
   parseMainProcessTable,
+  parseRunningAppBundlePaths,
 } from "../src/codex-app.mjs";
 
 const codexApp = (bundle, executableName = "ChatGPT") => ({
@@ -84,6 +87,85 @@ test("discovery refuses to guess between multiple idle installs", async () => {
     }),
     /Multiple Codex app installations were found; set CODEX_APP_PATH/,
   );
+});
+
+test("managed discovery reuses a persisted nonstandard bundle", async () => {
+  const persisted = codexApp("/Volumes/Tools/Codex Preview.app");
+  const inspected = [];
+  const app = await discoverManagedCodexApp(persisted.bundle, {
+    env: {},
+    candidates: ["/Applications/Codex.app"],
+    inspect: async (bundle) => {
+      inspected.push(bundle);
+      return bundle === persisted.bundle ? persisted : null;
+    },
+  });
+
+  assert.equal(app.bundle, persisted.bundle);
+  assert.deepEqual(inspected, [persisted.bundle]);
+});
+
+test("explicit override takes precedence over a persisted bundle", async () => {
+  const persisted = codexApp("/Volumes/Tools/Codex Preview.app");
+  const override = codexApp("/Applications/ChatGPT.app");
+  const app = await discoverManagedCodexApp(persisted.bundle, {
+    env: { CODEX_APP_PATH: override.bundle },
+    candidates: [override.bundle],
+    inspect: async (bundle) => bundle === override.bundle ? override : null,
+  });
+
+  assert.equal(app.bundle, override.bundle);
+});
+
+test("running-app scan includes persisted, overridden, and standard installs", async () => {
+  const apps = [
+    codexApp("/Volumes/Tools/Persisted.app"),
+    codexApp("/Volumes/Tools/Override.app"),
+    codexApp("/Applications/Codex.app"),
+  ];
+  const running = await findRunningCodexApps({
+    env: { HOME: "/Users/tester", CODEX_APP_PATH: apps[1].bundle },
+    additionalBundles: [apps[0].bundle],
+    inspect: async (bundle) => apps.find((app) => app.bundle === bundle) ?? null,
+    findPids: async (app) => app.bundle === apps[1].bundle ? [] : [apps.indexOf(app) + 100],
+    findRunningBundles: async () => [],
+  });
+
+  assert.deepEqual(running.map((app) => [app.bundle, app.pids]), [
+    [apps[0].bundle, [100]],
+    [apps[2].bundle, [102]],
+  ]);
+});
+
+test("running-app scan discovers identity-gated bundles from the process table", async () => {
+  const nonstandard = codexApp("/Volumes/Tools/Codex Nightly.app", "Codex Nightly");
+  const classic = codexApp("/Volumes/Tools/ChatGPT Classic.app");
+  const running = await findRunningCodexApps({
+    env: {},
+    inspect: async (bundle) => bundle === nonstandard.bundle
+      ? nonstandard
+      : bundle === classic.bundle ? null : null,
+    findPids: async (app) => app.bundle === nonstandard.bundle ? [201] : [],
+    findRunningBundles: async () => [nonstandard.bundle, classic.bundle],
+  });
+
+  assert.deepEqual(running.map((app) => [app.bundle, app.pids]), [
+    [nonstandard.bundle, [201]],
+  ]);
+});
+
+test("process-table bundle parsing covers arbitrary app paths and ignores helpers", () => {
+  assert.deepEqual(parseRunningAppBundlePaths(`
+    201 /Volumes/Tools/Codex Nightly.app/Contents/MacOS/Codex Nightly
+    202 /Volumes/Tools/Codex Nightly.app/Contents/Frameworks/Codex Helper.app/Contents/MacOS/Codex Helper
+    203 /usr/bin/node
+    204 /Applications/ChatGPT.app/Contents/MacOS/ChatGPT
+    205 /Applications/ChatGPT.app/Contents/MacOS/ChatGPT
+  `), [
+    "/Volumes/Tools/Codex Nightly.app",
+    "/Volumes/Tools/Codex Nightly.app/Contents/Frameworks/Codex Helper.app",
+    "/Applications/ChatGPT.app",
+  ]);
 });
 
 test("invalid CODEX_APP_PATH fails instead of silently falling back", async () => {

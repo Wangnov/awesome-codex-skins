@@ -1,6 +1,6 @@
 // Studio state lives under ~/Library/Application Support/CodexThemeStudio.
-// state.json records the CDP port, the watcher pid and the active theme so
-// `use`/`off` can hot-swap themes against the running watcher.
+// state.json records the selected app bundle, CDP port, watcher pid and active
+// theme so later commands keep targeting the same identity-gated installation.
 
 import fs from "node:fs/promises";
 import path from "node:path";
