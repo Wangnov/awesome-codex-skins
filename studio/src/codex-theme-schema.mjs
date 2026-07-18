@@ -48,7 +48,8 @@ function validateVariant(value, path, problems, minimumContrast) {
   } else {
     for (const key of ["code", "ui"]) {
       const font = value.fonts[key];
-      if (font !== null && (typeof font !== "string" || !font.trim() || font.length > 240)) {
+      // An omitted font means "keep the Codex default" — same as null.
+      if (font !== undefined && font !== null && (typeof font !== "string" || !font.trim() || font.length > 240)) {
         problems.push(`${path}.fonts.${key} must be null or a non-empty string up to 240 characters`);
       }
     }
@@ -108,7 +109,7 @@ export function buildCodexThemeSharePayload(codexTheme, variant) {
     theme: {
       accent: source.accent,
       contrast: source.contrast,
-      fonts: { code: source.fonts.code, ui: source.fonts.ui },
+      fonts: { code: source.fonts.code ?? null, ui: source.fonts.ui ?? null },
       ink: source.ink,
       opaqueWindows: source.opaqueWindows,
       semanticColors: {

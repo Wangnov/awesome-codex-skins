@@ -110,8 +110,16 @@ export async function applyNativeTheme(codexTheme) {
   }
 
   if (typeof codexTheme.appearanceTheme === "string") {
+    const line = `appearanceTheme = ${tomlString(codexTheme.appearanceTheme)}`;
     if (/^appearanceTheme\s*=/m.test(text)) {
-      text = text.replace(/^appearanceTheme\s*=\s*.*$/m, `appearanceTheme = ${tomlString(codexTheme.appearanceTheme)}`);
+      text = text.replace(/^appearanceTheme\s*=\s*.*$/m, line);
+    } else {
+      // Top-level keys must sit before the first TOML table; a config with no
+      // appearanceTheme yet still has to end up with the requested value.
+      const firstSection = text.match(/^\[/m);
+      text = firstSection
+        ? `${text.slice(0, firstSection.index)}${line}\n${text.slice(firstSection.index)}`
+        : `${text.trimEnd()}\n${line}\n`;
     }
   }
 
@@ -134,6 +142,9 @@ export async function restoreNativeTheme() {
     text = /^appearanceTheme\s*=/m.test(text)
       ? text.replace(/^appearanceTheme\s*=\s*.*$/m, backup.appearanceTheme)
       : text;
+  } else {
+    // The pristine baseline had no appearanceTheme — drop the one we inserted.
+    text = text.replace(/^appearanceTheme\s*=\s*.*\n?/m, "");
   }
   const tmp = `${CONFIG_PATH}.cts-tmp`;
   await fs.writeFile(tmp, text, "utf8");
