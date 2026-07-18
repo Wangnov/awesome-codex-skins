@@ -31,7 +31,7 @@ import {
   ensureStateRoot, readState, writeState, processAlive,
 } from "../src/state.mjs";
 import { buildPayload, REMOVE_EXPRESSION, VERIFY_REMOVED_EXPRESSION, verifyExpression, STUDIO_VERSION } from "../src/payload.mjs";
-import { listThemes, resolveThemeDir, loadTheme } from "../src/theme.mjs";
+import { inspectPreviewPath, listThemes, resolveThemeDir, loadTheme } from "../src/theme.mjs";
 import { applyNativeTheme, restoreNativeTheme, hasBackup } from "../src/native-theme.mjs";
 import {
   CODEX_THEME_VARIANTS,
@@ -520,12 +520,15 @@ async function cmdPack(argv) {
     problems.push("missing `previews` — run `codex-theme preview-shot <id>` first");
   }
   for (const rel of previews) {
-    const stat = await fs.stat(path.join(dir, rel)).catch(() => null);
+    let stat;
+    try {
+      ({ stat } = await inspectPreviewPath(dir, rel));
+    } catch (error) {
+      problems.push(error.message);
+      continue;
+    }
     if (!stat?.isFile()) problems.push(`preview not found: ${rel}`);
     else if (stat.size > 1024 * 1024) problems.push(`preview over 1MB hard cap: ${rel}`);
-    if (!/^previews\/.+\.webp$/i.test(String(rel))) {
-      problems.push(`preview must be a WebP below previews/: ${rel}`);
-    }
   }
   if (typeof manifest.codexVerified !== "string" || !manifest.codexVerified.trim()) {
     problems.push("missing `codexVerified` — record the Codex version you verified against");

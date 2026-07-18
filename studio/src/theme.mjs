@@ -41,6 +41,42 @@ function assertInside(root, candidate, label) {
   return resolved;
 }
 
+export function resolvePreviewPath(themeDir, relative) {
+  const segments = typeof relative === "string" ? relative.split("/") : [];
+  const isCanonicalPreview = segments.length >= 2
+    && segments[0] === "previews"
+    && !relative.includes("\\")
+    && segments.slice(1).every((segment) => segment && !segment.startsWith("."))
+    && path.posix.extname(relative).toLowerCase() === ".webp";
+  if (!isCanonicalPreview) {
+    throw new Error(`preview must be a WebP below previews/: ${relative}`);
+  }
+
+  const previewsRoot = path.resolve(themeDir, "previews");
+  return assertInside(previewsRoot, segments.slice(1).join("/"), "preview");
+}
+
+export async function inspectPreviewPath(themeDir, relative) {
+  const themePath = path.resolve(themeDir);
+  const previewPath = resolvePreviewPath(themePath, relative);
+  try {
+    const [realThemePath, realPreviewPath] = await Promise.all([
+      fs.realpath(themePath),
+      fs.realpath(previewPath),
+    ]);
+    const expectedPath = path.resolve(realThemePath, path.relative(themePath, previewPath));
+    if (realPreviewPath !== expectedPath) {
+      throw new Error(`preview must not escape previews/ through a symbolic link: ${relative}`);
+    }
+    return { path: previewPath, stat: await fs.stat(realPreviewPath) };
+  } catch (error) {
+    if (error?.code === "ENOENT" || error?.code === "ENOTDIR") {
+      return { path: previewPath, stat: null };
+    }
+    throw error;
+  }
+}
+
 const text = (value, fallback, max = 160) =>
   typeof value === "string" && value.trim() ? value.trim().slice(0, max) : fallback;
 
