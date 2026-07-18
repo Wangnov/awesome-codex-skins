@@ -507,15 +507,23 @@ html.codex-theme-studio .cts-windows-menu-bar [data-cts-menu-region="main"] {
         setTimeout(() => intro.remove(), durationMs + 120);
         return intro;
       };
+      const intro = mountIntro();
       // A video that fails mid-play must not strand the fallback inside a
       // parent whose animation timeline already ran out: remount the intro
       // from scratch so the static art restarts cleanly (or clear it when the
-      // theme ships no static intro at all).
+      // theme ships no static intro at all). The callbacks are async — after
+      // a hot switch or `off`, the removed video rejects play() with
+      // AbortError and this closure fires against a world it no longer owns,
+      // so it must verify the intro is still ours (and only fall back once:
+      // the error event and the play rejection often arrive together).
+      let fellBack = false;
       const fallbackToStatic = (reason) => {
+        if (fellBack || window[DISABLED_KEY]) return;
+        if (document.getElementById(INTRO_ID) !== intro) return;
+        fellBack = true;
         if (art && art.trim()) mountIntro(reason);
-        else document.getElementById(INTRO_ID)?.remove();
+        else intro.remove();
       };
-      const intro = mountIntro();
       if (videoSrc) {
         const video = document.createElement("video");
         video.className = "cts-intro-video";

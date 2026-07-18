@@ -90,6 +90,17 @@ test("the loader rejects a motion key that shadows a static asset", async (t) =>
   await assert.rejects(() => loadTheme(dir), /collides with a static asset/);
 });
 
+test("the loader rejects absolute paths even when they resolve inside the theme", async (t) => {
+  const dir = await writeFixture();
+  t.after(() => fs.rm(dir, { recursive: true, force: true }));
+  const absolute = path.join(dir, "assets", "intro-video.mp4");
+  await fs.writeFile(absolute, Buffer.from("mp4-bytes"));
+  const manifest = JSON.parse(await fs.readFile(path.join(dir, "theme.json"), "utf8"));
+  manifest.motionAssets = { "intro-video": absolute };
+  await fs.writeFile(path.join(dir, "theme.json"), JSON.stringify(manifest));
+  await assert.rejects(() => loadTheme(dir), /must be a relative path/);
+});
+
 test("the runtime template accepts and consumes the motion argument", async () => {
   const template = await fs.readFile(
     path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "src", "runtime", "theme-runtime.js"),
@@ -106,4 +117,8 @@ test("the runtime template accepts and consumes the motion argument", async () =
   assert.match(template, /const fallbackToStatic/);
   assert.equal((template.match(/fallbackToStatic\(/g) || []).length >= 3, true,
     "error handler, play rejection and play throw must all route through fallbackToStatic");
+  // Async-callback contract: a stale closure (post-switch AbortError, double
+  // error+rejection) must not touch an intro it no longer owns.
+  assert.match(template, /fellBack \|\| window\[DISABLED_KEY\]/);
+  assert.match(template, /document\.getElementById\(INTRO_ID\) !== intro\) return/);
 });

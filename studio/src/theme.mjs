@@ -29,6 +29,11 @@ const MIME_BY_EXTENSION = {
 };
 
 function assertInside(root, candidate, label) {
+  // Absolute paths can point inside the dev checkout and still pack fine, but
+  // the manifest ships verbatim — the package must stay relocatable.
+  if (path.isAbsolute(candidate)) {
+    throw new Error(`${label} must be a relative path inside the theme directory: ${candidate}`);
+  }
   const resolved = path.resolve(root, candidate);
   if (resolved !== root && !resolved.startsWith(`${root}${path.sep}`)) {
     throw new Error(`${label} must stay inside the theme directory: ${candidate}`);
