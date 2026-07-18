@@ -5,15 +5,18 @@
 //     theme.css     required — selectors scoped to html.codex-theme-studio
 //     chrome.html   optional — decorative overlay fragment (pointer-events: none)
 //     assets/*.png  bitmap assets referenced by theme.json "assets"
+//     assets/*.mp4  optional local motion assets referenced by "motionAssets"
 //
 // Everything is validated and inlined; nothing is fetched at runtime.
 
 import fs from "node:fs/promises";
 import path from "node:path";
+import { validateCodexTheme } from "./codex-theme-schema.mjs";
 
 export const MAX_ASSET_BYTES = 24 * 1024 * 1024;
 export const MAX_TOTAL_ASSET_BYTES = 96 * 1024 * 1024;
 const ASSET_EXTENSIONS = new Set([".png", ".jpg", ".jpeg", ".webp"]);
+const MOTION_ASSET_EXTENSIONS = new Set([".mp4", ".webm"]);
 const NAME_PATTERN = /^[a-z0-9][a-z0-9-]{0,63}$/;
 
 const MIME_BY_EXTENSION = {
@@ -21,9 +24,16 @@ const MIME_BY_EXTENSION = {
   ".jpg": "image/jpeg",
   ".jpeg": "image/jpeg",
   ".webp": "image/webp",
+  ".mp4": "video/mp4",
+  ".webm": "video/webm",
 };
 
 function assertInside(root, candidate, label) {
+  // Absolute paths can point inside the dev checkout and still pack fine, but
+  // the manifest ships verbatim — the package must stay relocatable.
+  if (path.isAbsolute(candidate)) {
+    throw new Error(`${label} must be a relative path inside the theme directory: ${candidate}`);
+  }
   const resolved = path.resolve(root, candidate);
   if (resolved !== root && !resolved.startsWith(`${root}${path.sep}`)) {
     throw new Error(`${label} must stay inside the theme directory: ${candidate}`);
@@ -93,8 +103,13 @@ export async function loadTheme(themeDir) {
     strings: {},
   };
   // Optional native Codex theme block, applied to ~/.codex/config.toml by the
-  // CLI while Codex is stopped. Passed through as-is (validated on apply).
+  // CLI while Codex is stopped. Old schemaVersion-2 packages without
+  // codeThemeIds remain loadable; the delivery gate requires the new fields.
   const codexTheme = raw.codexTheme && typeof raw.codexTheme === "object" ? raw.codexTheme : null;
+  if (codexTheme) {
+    const problems = validateCodexTheme(codexTheme, { requireCodeThemeIds: false });
+    if (problems.length) throw new Error(`invalid codexTheme: ${problems.join("; ")}`);
+  }
   for (const [key, value] of Object.entries(raw.colors ?? {})) {
     if (!NAME_PATTERN.test(key)) throw new Error(`invalid color key: ${key}`);
     const validated = color(value, null);
@@ -130,12 +145,38 @@ export async function loadTheme(themeDir) {
     assets[key] = { path: assetPath, mime: MIME_BY_EXTENSION[extension], bytes: stat.size };
   }
 
-  return { dir, config, css, chromeHtml, assets, codexTheme };
+  // Motion assets are an additive Studio extension. They stay separate from
+  // the WebP-only `assets` contract so existing package managers can ignore
+  // them and retain the static fallback while this runtime plays the richer
+  // version when available.
+  const motionAssets = {};
+  for (const [key, relative] of Object.entries(raw.motionAssets ?? {})) {
+    if (!NAME_PATTERN.test(key)) throw new Error(`invalid motion asset key: ${key}`);
+    // The two maps merge into one data-URL namespace downstream; a shared key
+    // would let the video silently shadow the static asset's CSS variable.
+    if (Object.hasOwn(assets, key)) {
+      throw new Error(`motion asset ${key} collides with a static asset of the same name`);
+    }
+    const assetPath = assertInside(dir, String(relative), `motion asset ${key}`);
+    const extension = path.extname(assetPath).toLowerCase();
+    if (!MOTION_ASSET_EXTENSIONS.has(extension)) {
+      throw new Error(`unsupported motion asset format for ${key}: ${extension}`);
+    }
+    const stat = await fs.stat(assetPath);
+    if (!stat.isFile() || stat.size < 1 || stat.size > MAX_ASSET_BYTES) {
+      throw new Error(`motion asset ${key} must be a non-empty file up to ${MAX_ASSET_BYTES} bytes`);
+    }
+    totalBytes += stat.size;
+    if (totalBytes > MAX_TOTAL_ASSET_BYTES) throw new Error("combined theme assets exceed the size budget");
+    motionAssets[key] = { path: assetPath, mime: MIME_BY_EXTENSION[extension], bytes: stat.size };
+  }
+
+  return { dir, config, css, chromeHtml, assets, motionAssets, codexTheme };
 }
 
 export async function inlineAssets(theme) {
   const dataUrls = {};
-  for (const [key, asset] of Object.entries(theme.assets)) {
+  for (const [key, asset] of Object.entries({ ...theme.assets, ...theme.motionAssets })) {
     const buffer = await fs.readFile(asset.path);
     dataUrls[key] = `data:${asset.mime};base64,${buffer.toString("base64")}`;
   }
