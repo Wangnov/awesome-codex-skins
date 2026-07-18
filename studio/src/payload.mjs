@@ -156,14 +156,16 @@ export function verifyExpression(expectedVersion = STUDIO_VERSION) {
     const composerLanes = composerNode
       ? [...composerNode.querySelectorAll('[data-cts-composer-overflow="lane"]')]
       : [];
+    const composerMode = composerNode?.getAttribute('data-cts-composer-mode') ?? null;
     const composerOverflow = composerNode ? {
       shellRole: composerNode.getAttribute('data-cts-composer-overflow'),
-      mode: composerNode.getAttribute('data-cts-composer-mode'),
+      mode: composerMode,
       shellOverflowY: getComputedStyle(composerNode).overflowY,
       laneCount: composerLanes.length,
       laneOverflowYs: composerLanes.map((node) => getComputedStyle(node).overflowY),
       lanesValid: composerLanes.every((node) => getComputedStyle(node).overflowY === 'visible'),
-      lanePolicyValid: hostCompatibility.composerLanePolicy !== 'required' || composerLanes.length >= 1,
+      lanePolicyValid: hostCompatibility.composerLanePolicy !== 'required' ||
+        composerMode === 'single-line' || composerLanes.length >= 1,
       editorCount: composerNode.querySelectorAll('[data-cts-composer-overflow="editor"]').length,
       editorOverflowY: composerEditor ? getComputedStyle(composerEditor).overflowY : null,
     } : null;

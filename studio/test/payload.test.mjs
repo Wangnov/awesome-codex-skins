@@ -8,7 +8,12 @@ import {
   verifyExpression,
 } from "../src/payload.mjs";
 
-const evaluateVerify = ({ mode, editor = null, lanes = [] }) => {
+const evaluateVerify = ({
+  mode,
+  editor = null,
+  lanes = [],
+  hostVersion = "26.715.31925",
+}) => {
   const commentCard = {
     getBoundingClientRect: () => ({ x: 0, y: 0, width: 180, height: 80 }),
     computedStyle: { display: "block", visibility: "visible", overflowY: "visible" },
@@ -55,7 +60,7 @@ const evaluateVerify = ({ mode, editor = null, lanes = [] }) => {
     getElementById: (id) => id === "cts-style" ? {} : null,
   };
   const window = {
-    electronBridge: { getSentryInitOptions: () => ({ appVersion: "26.715.31925" }) },
+    electronBridge: { getSentryInitOptions: () => ({ appVersion: hostVersion }) },
     __CODEX_THEME_STUDIO__: { version: "0.1.0" },
   };
   const getComputedStyle = (node) => node.computedStyle;
@@ -106,6 +111,35 @@ test("verification still requires the scrolling editor contract in multiline mod
   assert.equal(result.composerOverflow.editorCount, 1);
   assert.equal(result.composerOverflow.editorOverflowY, "auto");
   assert.equal(result.composerOverflow.editorValid, true);
+});
+
+test("26.715.31251 requires a lane only for scrolling Composer layouts", () => {
+  const singleLine = evaluateVerify({
+    hostVersion: "26.715.31251",
+    mode: "single-line",
+  });
+  assert.equal(singleLine.pass, true);
+  assert.equal(singleLine.composerOverflow.laneCount, 0);
+  assert.equal(singleLine.composerOverflow.lanePolicyValid, true);
+
+  const editor = { computedStyle: { overflowY: "auto" } };
+  const lane = { computedStyle: { overflowY: "visible" } };
+  const scrolling = evaluateVerify({
+    hostVersion: "26.715.31251",
+    mode: "scrolling",
+    editor,
+    lanes: [lane],
+  });
+  assert.equal(scrolling.pass, true);
+  assert.equal(scrolling.composerOverflow.lanePolicyValid, true);
+
+  const missingLane = evaluateVerify({
+    hostVersion: "26.715.31251",
+    mode: "scrolling",
+    editor,
+  });
+  assert.equal(missingLane.pass, false);
+  assert.equal(missingLane.composerOverflow.lanePolicyValid, false);
 });
 
 test("removal expressions cover Composer runtime annotations", () => {

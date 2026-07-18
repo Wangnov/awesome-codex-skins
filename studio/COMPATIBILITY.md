@@ -6,7 +6,7 @@
 
 | Codex 版本 | 构建号 | Composer 档案 | lane 规则 | 审计状态 |
 | --- | ---: | --- | --- | --- |
-| `26.715.31251` | 5538 | `composer-three-layer` | 必须存在，且 `overflow-y: visible` | 真实 App 验证通过 |
+| `26.715.31251` | 5538 | `composer-three-layer` | 多行时必须存在，且 `overflow-y: visible`；单行时不要求 | 真实 App 验证通过 |
 | `26.715.31925` | 5551 | `composer-two-or-three-layer` | 可选；存在时必须为 `visible` | 真实 App 验证通过 |
 | 其他版本 | — | `capability-adaptive` | 按实时 DOM 探测 | 标记为未审计 |
 
