@@ -52,6 +52,9 @@ export const REMOVE_EXPRESSION = `(() => {
   document.documentElement?.removeAttribute('data-cts-shell');
   document.querySelectorAll('.cts-windows-menu-bar').forEach((node) => node.classList.remove('cts-windows-menu-bar'));
   document.querySelectorAll('[data-cts-menu-region]').forEach((node) => node.removeAttribute('data-cts-menu-region'));
+  document.documentElement?.style.removeProperty('--cts-windows-menu-height');
+  document.documentElement?.style.removeProperty('--cts-windows-sidebar-foreground');
+  document.documentElement?.style.removeProperty('--cts-windows-main-foreground');
   document.getElementById('cts-style')?.remove();
   document.getElementById('cts-chrome')?.remove();
   document.getElementById('cts-stage')?.remove();
@@ -64,6 +67,9 @@ export const VERIFY_REMOVED_EXPRESSION = `(() =>
   !document.documentElement.classList.contains('codex-theme-studio') &&
   !document.querySelector('.cts-windows-menu-bar') &&
   !document.querySelector('[data-cts-menu-region]') &&
+  !document.documentElement.style.getPropertyValue('--cts-windows-menu-height') &&
+  !document.documentElement.style.getPropertyValue('--cts-windows-sidebar-foreground') &&
+  !document.documentElement.style.getPropertyValue('--cts-windows-main-foreground') &&
   !document.getElementById('cts-style') &&
   !document.getElementById('cts-chrome') &&
   !document.getElementById('cts-stage') &&
