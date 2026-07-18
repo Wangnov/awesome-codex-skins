@@ -146,6 +146,49 @@ test("multiline roles are cleared when React reuses the nodes for single-line la
   assert.equal(readStyle(editor).overflowY, "hidden");
 });
 
+test("three-layer lanes remain detectable when a skin masks their native overflow", () => {
+  for (const overflowY of ["visible", "hidden", "clip"]) {
+    const shell = new FakeNode("div", { className: "composer-surface-chrome" });
+    const wrapper = shell.append(new FakeNode("div", {
+      className: "grid overflow-hidden",
+      nativeStyle: { overflowY: "hidden" },
+    }));
+    const lane = wrapper.append(new FakeNode("div", {
+      className: "mb-1 flex-grow overflow-y-auto",
+      nativeStyle: { overflowY },
+    }));
+    const editor = lane.append(new FakeNode("div", {
+      className: "editor overflow-y-auto",
+      nativeStyle: { overflowY: "auto", maxHeight: "160px" },
+    }));
+    editor.append(new FakeNode("div", {
+      className: "ProseMirror",
+      attributes: { "contenteditable": "true", "data-codex-composer": "true" },
+    }));
+
+    const readStyle = (node) => {
+      const role = node.getAttribute(OVERFLOW_ATTR);
+      if (role === "shell") return { ...node.nativeStyle, overflowY: "clip" };
+      if (role === "lane") return { ...node.nativeStyle, overflowY: "visible" };
+      if (role === "editor") return { ...node.nativeStyle, overflowY: "auto" };
+      return node.nativeStyle;
+    };
+    const annotate = createComposerOverflowAnnotator({
+      overflowAttribute: OVERFLOW_ATTR,
+      modeAttribute: MODE_ATTR,
+      readStyle,
+      viewportSignature: () => "1280x800",
+    });
+
+    annotate([shell]);
+    assert.equal(shell.getAttribute(MODE_ATTR), "scrolling");
+    assert.equal(lane.getAttribute(OVERFLOW_ATTR), "lane", overflowY);
+    assert.equal(readStyle(lane).overflowY, "visible", overflowY);
+    assert.equal(editor.getAttribute(OVERFLOW_ATTR), "editor", overflowY);
+    assert.equal(wrapper.getAttribute(OVERFLOW_ATTR), null, overflowY);
+  }
+});
+
 test("unchanged layout reuses its classification without remeasuring hardened styles", () => {
   const shell = new FakeNode("div", { className: "composer-surface-chrome" });
   const editor = shell.append(new FakeNode("div", {

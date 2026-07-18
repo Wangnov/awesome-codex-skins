@@ -38,6 +38,12 @@ export function createComposerOverflowAnnotator({
   const pathMatches = (left, right) =>
     left.length === right.length && left.every((node, index) => node === right[index]);
 
+  const declaresScrollableOverflow = (node) => {
+    const className = typeof node.className === "string" ? node.className : "";
+    return className.split(/\s+/).some((token) =>
+      /^!?overflow-y-(?:auto|scroll)$/.test(token));
+  };
+
   const nodeSignature = (node) => {
     const className = typeof node.className === "string" ? node.className : "";
     return `${node.tagName || ""}\u0000${className}\u0000${node.getAttribute("style") || ""}`;
@@ -85,7 +91,12 @@ export function createComposerOverflowAnnotator({
         const overflowY = nativeOverflow.has(node)
           ? nativeOverflow.get(node)
           : readStyle(node).overflowY;
-        if (/^(auto|scroll)$/.test(overflowY)) roles.set(node, "lane");
+        // A skin can mask the app's lane overflow before we measure it. Keep
+        // the app's explicit utility class as a structural signal, without
+        // treating unrelated intermediate layout wrappers as lanes.
+        if (/^(auto|scroll)$/.test(overflowY) || declaresScrollableOverflow(node)) {
+          roles.set(node, "lane");
+        }
       }
     }
 
