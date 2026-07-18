@@ -78,7 +78,7 @@ Output: `dist/<id>-<version>.codexskin`. The same gate runs in CI for every regi
 
 ## 5. Runtime contract · 运行时契约
 
-Injection is idempotent and reversible. The injected runtime stamps `window.__CODEX_THEME_STUDIO__.stamp = "<engineVersion>:<id>:<sha1(css+chrome+config)[..12]>"`; reconcilers (the studio watcher, Codex App Manager's daemon) re-inject only on stamp mismatch. Removal restores a byte-identical stock DOM (`class`/`style`/overlay/attribute zero-residue).
+Injection is idempotent and reversible. The injected runtime stamps `window.__CODEX_THEME_STUDIO__.stamp = "<engineVersion>:<id>:<sha1(runtime+css+chrome+config)[..12]>"`; reconcilers (the studio watcher, Codex App Manager's daemon) re-inject only on stamp mismatch. Removal restores a byte-identical stock DOM (`class`/`style`/overlay/attribute zero-residue).
 
 ## 6. Consumers · 消费端
 

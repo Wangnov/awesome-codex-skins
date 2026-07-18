@@ -15,6 +15,28 @@
   const ROOT_CLASS = "codex-theme-studio";
   const THEME_ATTR = "data-cts-theme";
   const SHELL_ATTR = "data-cts-shell";
+  const WINDOWS_MENU_CLASS = "cts-windows-menu-bar";
+  const WINDOWS_MENU_REGION_ATTR = "data-cts-menu-region";
+  const RUNTIME_CSS = `
+html.codex-theme-studio .cts-windows-menu-bar {
+  position: absolute !important;
+  inset: 0 0 auto 0 !important;
+  height: var(--cts-windows-menu-height, 36px) !important;
+}
+html.codex-theme-studio .cts-windows-menu-bar + * > aside.app-shell-left-panel {
+  padding-top: calc(var(--cts-windows-menu-height, 36px) + var(--cts-windows-sidebar-padding-top, 0px)) !important;
+}
+html.codex-theme-studio .cts-windows-menu-bar + * > main.main-surface {
+  padding-top: calc(var(--cts-windows-menu-height, 36px) + var(--cts-windows-main-padding-top, 0px)) !important;
+}
+html.codex-theme-studio .cts-windows-menu-bar [data-cts-menu-region="sidebar"] {
+  color: var(--cts-windows-sidebar-foreground) !important;
+  -webkit-text-fill-color: var(--cts-windows-sidebar-foreground) !important;
+}
+html.codex-theme-studio .cts-windows-menu-bar [data-cts-menu-region="main"] {
+  color: var(--cts-windows-main-foreground) !important;
+  -webkit-text-fill-color: var(--cts-windows-main-foreground) !important;
+}`;
   const VERSION = __CTS_VERSION_JSON__;
   const STAMP = __CTS_STAMP_JSON__;
   const THEME = themeConfig && typeof themeConfig === "object" ? themeConfig : {};
@@ -31,6 +53,12 @@
   if (previous?.mediaHandler && previous?.mediaQuery) {
     try { previous.mediaQuery.removeEventListener("change", previous.mediaHandler); } catch {}
   }
+  // Disable the old menu rule before its variables are cleared so the first
+  // pass of a hot-switched theme measures the shell's real base padding.
+  document.querySelectorAll(`.${WINDOWS_MENU_CLASS}`)
+    .forEach((node) => node.classList.remove(WINDOWS_MENU_CLASS));
+  document.querySelectorAll(`[${WINDOWS_MENU_REGION_ATTR}]`)
+    .forEach((node) => node.removeAttribute(WINDOWS_MENU_REGION_ATTR));
   if (previous?.appliedVars) {
     for (const name of previous.appliedVars) document.documentElement?.style.removeProperty(name);
   }
@@ -160,6 +188,55 @@
     });
   };
 
+  // Codex 26.715+ renders the Windows application menu (File/Edit/View/Help)
+  // as a separate 36px flex item above the sidebar/main row. Theme CSS written
+  // for the older in-main toolbar cannot reach that strip, so the stock canvas
+  // shows through. Move only this structurally verified menu out of flex flow,
+  // then use equivalent top padding on the real sidebar/main surfaces: their
+  // own theme backgrounds extend behind the menu without cloning per-theme
+  // artwork or changing any content geometry.
+  const integrateWindowsMenu = (shellMain) => {
+    const menu = document.querySelector(
+      '.app-header-tint[class~="group/application-menu-top-bar"]'
+    );
+    const shellRow = menu?.nextElementSibling;
+    const sidebar = shellRow?.querySelector(":scope > aside.app-shell-left-panel");
+    const main = shellRow?.querySelector(":scope > main.main-surface");
+    const menuBox = menu?.getBoundingClientRect();
+    const integrated = Boolean(menu?.classList.contains(WINDOWS_MENU_CLASS));
+    const eligible = Boolean(
+      menu && sidebar && main && main === shellMain &&
+      menuBox && menuBox.width > 0 && menuBox.height > 0
+    );
+
+    for (const stale of document.querySelectorAll(`.${WINDOWS_MENU_CLASS}`)) {
+      if (!eligible || stale !== menu) stale.classList.remove(WINDOWS_MENU_CLASS);
+    }
+    for (const stale of document.querySelectorAll(`[${WINDOWS_MENU_REGION_ATTR}]`)) {
+      if (!eligible || !menu.contains(stale)) stale.removeAttribute(WINDOWS_MENU_REGION_ATTR);
+    }
+    if (!eligible) return;
+
+    const sidebarStyle = getComputedStyle(sidebar);
+    const mainStyle = getComputedStyle(main);
+    const appliedOffset = integrated ? menuBox.height : 0;
+    const basePadding = (style) =>
+      `${Math.max(0, (Number.parseFloat(style.paddingTop) || 0) - appliedOffset)}px`;
+    setVar("--cts-windows-menu-height", `${menuBox.height}px`);
+    setVar("--cts-windows-sidebar-padding-top", basePadding(sidebarStyle));
+    setVar("--cts-windows-main-padding-top", basePadding(mainStyle));
+    setClass(menu, WINDOWS_MENU_CLASS, true);
+    setVar("--cts-windows-sidebar-foreground", sidebarStyle.color);
+    setVar("--cts-windows-main-foreground", mainStyle.color);
+
+    const sidebarRight = sidebar.getBoundingClientRect().right;
+    for (const control of menu.querySelectorAll("button, [role=button]")) {
+      const box = control.getBoundingClientRect();
+      const region = box.left + box.width / 2 <= sidebarRight ? "sidebar" : "main";
+      setAttr(control, WINDOWS_MENU_REGION_ATTR, region);
+    }
+  };
+
   const ensure = () => {
     if (window[DISABLED_KEY]) return;
     const root = document.documentElement;
@@ -180,11 +257,12 @@
       (document.head || root).appendChild(style);
     }
     if (style.dataset.ctsStamp !== STAMP) {
-      style.textContent = cssText;
+      style.textContent = `${cssText}\n\n${RUNTIME_CSS}`;
       style.dataset.ctsStamp = STAMP;
     }
 
     const shellMain = document.querySelector("main.main-surface") || document.querySelector("main");
+    integrateWindowsMenu(shellMain);
     const home = findHome(state?.homeSticky);
     if (state) state.homeSticky = home;
     for (const candidate of document.querySelectorAll('[role="main"].cts-home')) {
@@ -289,6 +367,8 @@
     document.querySelectorAll("[data-cts-glyph]").forEach((node) => node.removeAttribute("data-cts-glyph"));
     document.querySelectorAll("[data-cts-icon]").forEach((node) => node.removeAttribute("data-cts-icon"));
     document.querySelectorAll("[data-cts-logo]").forEach((node) => node.removeAttribute("data-cts-logo"));
+    document.querySelectorAll(`.${WINDOWS_MENU_CLASS}`).forEach((node) => node.classList.remove(WINDOWS_MENU_CLASS));
+    document.querySelectorAll(`[${WINDOWS_MENU_REGION_ATTR}]`).forEach((node) => node.removeAttribute(WINDOWS_MENU_REGION_ATTR));
     document.getElementById(STYLE_ID)?.remove();
     document.getElementById(CHROME_ID)?.remove();
     document.getElementById(STAGE_ID)?.remove();

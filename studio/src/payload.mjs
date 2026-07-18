@@ -23,10 +23,10 @@ export async function buildPayload(themeDir) {
     .map(([key, url]) => `  --cts-asset-${key}: url("${url}");`)
     .join("\n");
   const cssWithAssets = `:root.codex-theme-studio {\n${assetVariables}\n}\n\n${theme.css}`;
-  // Fingerprint the PACKED artifacts (not the source files) so packaging
-  // changes also propagate to renderers that already carry the theme.
+  // Fingerprint the executable payload, including the renderer runtime, so a
+  // runtime-only compatibility fix re-injects into already-themed renderers.
   const stamp = crypto.createHash("sha1")
-    .update(cssWithAssets).update(theme.chromeHtml ?? "")
+    .update(template).update(cssWithAssets).update(theme.chromeHtml ?? "")
     .update(JSON.stringify(theme.config))
     .digest("hex").slice(0, 12);
   const payload = template
@@ -50,6 +50,13 @@ export const REMOVE_EXPRESSION = `(() => {
   document.documentElement?.classList.remove('codex-theme-studio');
   document.documentElement?.removeAttribute('data-cts-theme');
   document.documentElement?.removeAttribute('data-cts-shell');
+  document.querySelectorAll('.cts-windows-menu-bar').forEach((node) => node.classList.remove('cts-windows-menu-bar'));
+  document.querySelectorAll('[data-cts-menu-region]').forEach((node) => node.removeAttribute('data-cts-menu-region'));
+  document.documentElement?.style.removeProperty('--cts-windows-menu-height');
+  document.documentElement?.style.removeProperty('--cts-windows-sidebar-padding-top');
+  document.documentElement?.style.removeProperty('--cts-windows-main-padding-top');
+  document.documentElement?.style.removeProperty('--cts-windows-sidebar-foreground');
+  document.documentElement?.style.removeProperty('--cts-windows-main-foreground');
   document.getElementById('cts-style')?.remove();
   document.getElementById('cts-chrome')?.remove();
   document.getElementById('cts-stage')?.remove();
@@ -60,6 +67,13 @@ export const REMOVE_EXPRESSION = `(() => {
 
 export const VERIFY_REMOVED_EXPRESSION = `(() =>
   !document.documentElement.classList.contains('codex-theme-studio') &&
+  !document.querySelector('.cts-windows-menu-bar') &&
+  !document.querySelector('[data-cts-menu-region]') &&
+  !document.documentElement.style.getPropertyValue('--cts-windows-menu-height') &&
+  !document.documentElement.style.getPropertyValue('--cts-windows-sidebar-padding-top') &&
+  !document.documentElement.style.getPropertyValue('--cts-windows-main-padding-top') &&
+  !document.documentElement.style.getPropertyValue('--cts-windows-sidebar-foreground') &&
+  !document.documentElement.style.getPropertyValue('--cts-windows-main-foreground') &&
   !document.getElementById('cts-style') &&
   !document.getElementById('cts-chrome') &&
   !document.getElementById('cts-stage') &&
