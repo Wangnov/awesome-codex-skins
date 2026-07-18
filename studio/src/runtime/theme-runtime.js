@@ -67,6 +67,11 @@ html.codex-theme-studio .cts-windows-menu-bar [data-cts-menu-region="main"] {
   if (previous?.appliedVars) {
     for (const name of previous.appliedVars) document.documentElement?.style.removeProperty(name);
   }
+  // A different stamp means a different theme (or payload): a still-playing
+  // intro from the previous theme must not outlive it, and its stale node
+  // would also make the new theme's playIntro() bail out. Same-stamp
+  // re-ensures leave the intro alone — reconciliation must never cut it.
+  if (previous && previous.stamp !== STAMP) document.getElementById(INTRO_ID)?.remove();
   document.querySelectorAll(`[${COMPOSER_OVERFLOW_ATTR}]`)
     .forEach((node) => node.removeAttribute(COMPOSER_OVERFLOW_ATTR));
   document.querySelectorAll(`[${COMPOSER_MODE_ATTR}]`)
@@ -491,13 +496,28 @@ html.codex-theme-studio .cts-windows-menu-bar [data-cts-menu-region="main"] {
       const durationMs = durationMatch
         ? Math.min(15000, Math.max(1000, Number(durationMatch[1]) * (durationMatch[2].toLowerCase() === "s" ? 1000 : 1)))
         : 2500;
-      const intro = document.createElement("div");
-      intro.id = INTRO_ID;
-      intro.setAttribute("aria-hidden", "true");
-      intro.innerHTML = '<i class="cts-intro-rays"></i><b class="cts-intro-figure"></b><u class="cts-intro-flash"></u>';
-      let video = null;
+      const mountIntro = (videoError) => {
+        document.getElementById(INTRO_ID)?.remove();
+        const intro = document.createElement("div");
+        intro.id = INTRO_ID;
+        intro.setAttribute("aria-hidden", "true");
+        if (videoError) intro.dataset.ctsVideoError = videoError;
+        intro.innerHTML = '<i class="cts-intro-rays"></i><b class="cts-intro-figure"></b><u class="cts-intro-flash"></u>';
+        document.body.appendChild(intro);
+        setTimeout(() => intro.remove(), durationMs + 120);
+        return intro;
+      };
+      // A video that fails mid-play must not strand the fallback inside a
+      // parent whose animation timeline already ran out: remount the intro
+      // from scratch so the static art restarts cleanly (or clear it when the
+      // theme ships no static intro at all).
+      const fallbackToStatic = (reason) => {
+        if (art && art.trim()) mountIntro(reason);
+        else document.getElementById(INTRO_ID)?.remove();
+      };
+      const intro = mountIntro();
       if (videoSrc) {
-        video = document.createElement("video");
+        const video = document.createElement("video");
         video.className = "cts-intro-video";
         video.src = videoSrc;
         video.autoplay = true;
@@ -511,25 +531,16 @@ html.codex-theme-studio .cts-windows-menu-bar [data-cts-menu-region="main"] {
         video.setAttribute("playsinline", "");
         video.addEventListener("error", () => {
           const mediaError = video.error;
-          intro.dataset.ctsVideoError = mediaError
+          fallbackToStatic(mediaError
             ? `${mediaError.code}:${mediaError.message || "media error"}`
-            : "media error";
-          video.remove();
+            : "media error");
         }, { once: true });
         intro.prepend(video);
-      }
-      document.body.appendChild(intro);
-      setTimeout(() => intro.remove(), durationMs + 120);
-      if (video) {
         try {
           const playing = video.play();
-          playing?.catch?.((error) => {
-            intro.dataset.ctsVideoError = `${error?.name || "play"}:${error?.message || "rejected"}`;
-            video.remove();
-          });
+          playing?.catch?.((error) => fallbackToStatic(`${error?.name || "play"}:${error?.message || "rejected"}`));
         } catch (error) {
-          intro.dataset.ctsVideoError = `${error?.name || "play"}:${error?.message || "failed"}`;
-          video.remove();
+          fallbackToStatic(`${error?.name || "play"}:${error?.message || "failed"}`);
         }
       }
     } catch { /* cosmetic only */ }

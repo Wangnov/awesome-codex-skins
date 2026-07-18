@@ -81,6 +81,15 @@ test("the loader rejects non-video motion formats and bad keys", async (t) => {
   await assert.rejects(() => loadTheme(badKey), /invalid motion asset key/);
 });
 
+test("the loader rejects a motion key that shadows a static asset", async (t) => {
+  const dir = await writeFixture({
+    motionAssets: { intro: "assets/intro-video.mp4" },
+    extraFiles: { "assets/intro-video.mp4": Buffer.from("mp4-bytes") },
+  });
+  t.after(() => fs.rm(dir, { recursive: true, force: true }));
+  await assert.rejects(() => loadTheme(dir), /collides with a static asset/);
+});
+
 test("the runtime template accepts and consumes the motion argument", async () => {
   const template = await fs.readFile(
     path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "src", "runtime", "theme-runtime.js"),
@@ -90,4 +99,11 @@ test("the runtime template accepts and consumes the motion argument", async () =
   assert.match(template, /__CTS_MOTION_JSON__\)$/m);
   assert.match(template, /MOTION\["intro-video"\]/);
   assert.match(template, /prefers-reduced-motion/);
+  // Hot-switch contract: a stamp change tears down a still-playing intro so
+  // the incoming theme can mount its own; same-stamp re-ensures leave it be.
+  assert.match(template, /previous\.stamp !== STAMP\) document\.getElementById\(INTRO_ID\)\?\.remove\(\)/);
+  // Late-failure contract: every video error path remounts the static intro.
+  assert.match(template, /const fallbackToStatic/);
+  assert.equal((template.match(/fallbackToStatic\(/g) || []).length >= 3, true,
+    "error handler, play rejection and play throw must all route through fallbackToStatic");
 });

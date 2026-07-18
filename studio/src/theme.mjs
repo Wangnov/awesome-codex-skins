@@ -147,6 +147,11 @@ export async function loadTheme(themeDir) {
   const motionAssets = {};
   for (const [key, relative] of Object.entries(raw.motionAssets ?? {})) {
     if (!NAME_PATTERN.test(key)) throw new Error(`invalid motion asset key: ${key}`);
+    // The two maps merge into one data-URL namespace downstream; a shared key
+    // would let the video silently shadow the static asset's CSS variable.
+    if (Object.hasOwn(assets, key)) {
+      throw new Error(`motion asset ${key} collides with a static asset of the same name`);
+    }
     const assetPath = assertInside(dir, String(relative), `motion asset ${key}`);
     const extension = path.extname(assetPath).toLowerCase();
     if (!MOTION_ASSET_EXTENSIONS.has(extension)) {
