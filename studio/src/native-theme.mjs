@@ -54,6 +54,47 @@ const tomlString = (value) => {
   return raw.includes('"') ? `'${raw}'` : `"${raw}"`;
 };
 
+// Codex reads appearanceTheme from the [desktop] table; stray top-level
+// copies exist in older configs and must be left untouched.
+function desktopSpan(text) {
+  const header = text.match(/^\[desktop\]\s*$/m);
+  if (!header) return null;
+  const bodyStart = header.index + header[0].length;
+  const next = text.slice(bodyStart).match(/^\[/m);
+  return { bodyStart, bodyEnd: next ? bodyStart + next.index : text.length };
+}
+
+function desktopAppearanceLine(text) {
+  const span = desktopSpan(text);
+  if (!span) return null;
+  const match = text.slice(span.bodyStart, span.bodyEnd).match(/^appearanceTheme\s*=\s*.*$/m);
+  return match ? match[0] : null;
+}
+
+// Replace, insert or (line === null) delete appearanceTheme inside [desktop].
+function setDesktopAppearance(text, line) {
+  const span = desktopSpan(text);
+  if (span) {
+    const body = text.slice(span.bodyStart, span.bodyEnd);
+    if (/^appearanceTheme\s*=/m.test(body)) {
+      const newBody = line === null
+        ? body.replace(/^appearanceTheme\s*=\s*.*\n?/m, "")
+        : body.replace(/^appearanceTheme\s*=\s*.*$/m, line);
+      return text.slice(0, span.bodyStart) + newBody + text.slice(span.bodyEnd);
+    }
+    if (line === null) return text;
+    return `${text.slice(0, span.bodyStart)}\n${line}${text.slice(span.bodyStart)}`;
+  }
+  if (line === null) return text;
+  // No [desktop] table yet — create it before the first desktop.* subtable
+  // (defining [desktop] after [desktop.x] would re-define the table).
+  const sub = text.match(/^\[desktop\./m);
+  const block = `[desktop]\n${line}\n`;
+  return sub
+    ? `${text.slice(0, sub.index)}${block}\n${text.slice(sub.index)}`
+    : `${text.trimEnd()}\n\n${block}`;
+}
+
 function chromeThemeToToml(sectionName, theme) {
   const lines = [`[desktop.${sectionName}]`];
   for (const key of ["accent", "contrast", "ink", "opaqueWindows", "surface"]) {
@@ -63,7 +104,11 @@ function chromeThemeToToml(sectionName, theme) {
   }
   if (theme.fonts) {
     lines.push("", `[desktop.${sectionName}.fonts]`);
-    for (const [key, value] of Object.entries(theme.fonts)) lines.push(`${key} = ${tomlString(value)}`);
+    for (const [key, value] of Object.entries(theme.fonts)) {
+      // null/omitted = keep the Codex default font — never write "null".
+      if (value == null) continue;
+      lines.push(`${key} = ${tomlString(value)}`);
+    }
   }
   if (theme.semanticColors) {
     lines.push("", `[desktop.${sectionName}.semanticColors]`);
@@ -89,8 +134,7 @@ export async function backupNativeTheme() {
   for (const prefix of SECTION_PREFIXES) {
     backup.sections[prefix] = stripSections(text, prefix).removed;
   }
-  const themeLine = text.match(/^appearanceTheme\s*=\s*.*$/m);
-  backup.appearanceTheme = themeLine ? themeLine[0] : null;
+  backup.appearanceTheme = desktopAppearanceLine(text);
   await fs.mkdir(path.dirname(BACKUP_PATH), { recursive: true });
   await fs.writeFile(BACKUP_PATH, `${JSON.stringify(backup, null, 2)}\n`, "utf8");
   return true;
@@ -110,17 +154,7 @@ export async function applyNativeTheme(codexTheme) {
   }
 
   if (typeof codexTheme.appearanceTheme === "string") {
-    const line = `appearanceTheme = ${tomlString(codexTheme.appearanceTheme)}`;
-    if (/^appearanceTheme\s*=/m.test(text)) {
-      text = text.replace(/^appearanceTheme\s*=\s*.*$/m, line);
-    } else {
-      // Top-level keys must sit before the first TOML table; a config with no
-      // appearanceTheme yet still has to end up with the requested value.
-      const firstSection = text.match(/^\[/m);
-      text = firstSection
-        ? `${text.slice(0, firstSection.index)}${line}\n${text.slice(firstSection.index)}`
-        : `${text.trimEnd()}\n${line}\n`;
-    }
+    text = setDesktopAppearance(text, `appearanceTheme = ${tomlString(codexTheme.appearanceTheme)}`);
   }
 
   const tmp = `${CONFIG_PATH}.cts-tmp`;
@@ -138,14 +172,9 @@ export async function restoreNativeTheme() {
     const original = backup.sections?.[prefix];
     if (original && original.trim()) text = `${text.trimEnd()}\n\n${original.trim()}\n`;
   }
-  if (backup.appearanceTheme) {
-    text = /^appearanceTheme\s*=/m.test(text)
-      ? text.replace(/^appearanceTheme\s*=\s*.*$/m, backup.appearanceTheme)
-      : text;
-  } else {
-    // The pristine baseline had no appearanceTheme — drop the one we inserted.
-    text = text.replace(/^appearanceTheme\s*=\s*.*\n?/m, "");
-  }
+  // Symmetric with apply: restore the pristine [desktop] value, or drop the
+  // key we inserted when the baseline had none.
+  text = setDesktopAppearance(text, backup.appearanceTheme || null);
   const tmp = `${CONFIG_PATH}.cts-tmp`;
   await fs.writeFile(tmp, text, "utf8");
   await fs.rename(tmp, CONFIG_PATH);
