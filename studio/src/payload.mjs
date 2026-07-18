@@ -6,10 +6,16 @@ import path from "node:path";
 import crypto from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { loadTheme, inlineAssets } from "./theme.mjs";
+import {
+  createComposerOverflowAnnotator,
+  selectComposerSurfaces,
+} from "./composer-overflow.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 export const STUDIO_VERSION = "0.1.0";
 const RUNTIME_TEMPLATE = path.join(here, "runtime", "theme-runtime.js");
+const COMPOSER_ANNOTATOR_SOURCE = `(${createComposerOverflowAnnotator.toString()})`;
+const COMPOSER_SURFACE_SELECTOR_SOURCE = `(${selectComposerSurfaces.toString()})`;
 
 // Runtime-owned composer overflow contract. Theme art is allowed to extend
 // beyond the shell without turning the shell into a scroll container; only the
@@ -48,10 +54,14 @@ export async function buildPayload(themeDir) {
   // packed CSS, so runtime-only compatibility fixes re-inject into renderers
   // that already carry the same theme.
   const stamp = crypto.createHash("sha1")
-    .update(template).update(cssWithAssets).update(theme.chromeHtml ?? "")
+    .update(template).update(COMPOSER_ANNOTATOR_SOURCE)
+    .update(COMPOSER_SURFACE_SELECTOR_SOURCE)
+    .update(cssWithAssets).update(theme.chromeHtml ?? "")
     .update(JSON.stringify(theme.config))
     .digest("hex").slice(0, 12);
   const payload = template
+    .replace("__CTS_CREATE_COMPOSER_OVERFLOW_ANNOTATOR__", () => COMPOSER_ANNOTATOR_SOURCE)
+    .replace("__CTS_SELECT_COMPOSER_SURFACES__", () => COMPOSER_SURFACE_SELECTOR_SOURCE)
     .replace("__CTS_CSS_JSON__", () => JSON.stringify(cssWithAssets))
     .replace("__CTS_THEME_JSON__", () => JSON.stringify(theme.config))
     .replace("__CTS_CHROME_JSON__", () => JSON.stringify(theme.chromeHtml))
@@ -74,6 +84,8 @@ export const REMOVE_EXPRESSION = `(() => {
   document.documentElement?.removeAttribute('data-cts-shell');
   document.querySelectorAll('.cts-windows-menu-bar').forEach((node) => node.classList.remove('cts-windows-menu-bar'));
   document.querySelectorAll('[data-cts-menu-region]').forEach((node) => node.removeAttribute('data-cts-menu-region'));
+  document.querySelectorAll('[data-cts-composer-overflow]').forEach((node) => node.removeAttribute('data-cts-composer-overflow'));
+  document.querySelectorAll('[data-cts-composer-mode]').forEach((node) => node.removeAttribute('data-cts-composer-mode'));
   document.documentElement?.style.removeProperty('--cts-windows-menu-height');
   document.documentElement?.style.removeProperty('--cts-windows-sidebar-padding-top');
   document.documentElement?.style.removeProperty('--cts-windows-main-padding-top');
@@ -91,6 +103,8 @@ export const VERIFY_REMOVED_EXPRESSION = `(() =>
   !document.documentElement.classList.contains('codex-theme-studio') &&
   !document.querySelector('.cts-windows-menu-bar') &&
   !document.querySelector('[data-cts-menu-region]') &&
+  !document.querySelector('[data-cts-composer-overflow]') &&
+  !document.querySelector('[data-cts-composer-mode]') &&
   !document.documentElement.style.getPropertyValue('--cts-windows-menu-height') &&
   !document.documentElement.style.getPropertyValue('--cts-windows-sidebar-padding-top') &&
   !document.documentElement.style.getPropertyValue('--cts-windows-main-padding-top') &&
@@ -130,7 +144,8 @@ export function verifyExpression(expectedVersion = STUDIO_VERSION) {
       : hostVersion === '26.715.31925'
         ? { audited: true, profile: 'composer-two-or-three-layer', composerLanePolicy: 'optional' }
         : { audited: false, profile: 'capability-adaptive', composerLanePolicy: 'optional' };
-    const composerNodes = [...document.querySelectorAll('.composer-surface-chrome')];
+    const selectComposerSurfaces = ${COMPOSER_SURFACE_SELECTOR_SOURCE};
+    const composerNodes = selectComposerSurfaces(document);
     const composerNode = composerNodes.find((node) => {
       const r = node.getBoundingClientRect();
       const style = getComputedStyle(node);
@@ -143,6 +158,7 @@ export function verifyExpression(expectedVersion = STUDIO_VERSION) {
       : [];
     const composerOverflow = composerNode ? {
       shellRole: composerNode.getAttribute('data-cts-composer-overflow'),
+      mode: composerNode.getAttribute('data-cts-composer-mode'),
       shellOverflowY: getComputedStyle(composerNode).overflowY,
       laneCount: composerLanes.length,
       laneOverflowYs: composerLanes.map((node) => getComputedStyle(node).overflowY),
@@ -151,6 +167,15 @@ export function verifyExpression(expectedVersion = STUDIO_VERSION) {
       editorCount: composerNode.querySelectorAll('[data-cts-composer-overflow="editor"]').length,
       editorOverflowY: composerEditor ? getComputedStyle(composerEditor).overflowY : null,
     } : null;
+    if (composerOverflow) {
+      composerOverflow.modeValid = composerOverflow.mode === 'single-line' ||
+        composerOverflow.mode === 'scrolling';
+      composerOverflow.editorValid = composerOverflow.mode === 'single-line'
+        ? composerOverflow.editorCount === 0
+        : composerOverflow.mode === 'scrolling' &&
+          composerOverflow.editorCount === 1 &&
+          composerOverflow.editorOverflowY === 'auto';
+    }
     const sidebar = box(document.querySelector('aside.app-shell-left-panel'));
     const result = {
       installed: document.documentElement.classList.contains('codex-theme-studio'),
@@ -180,8 +205,8 @@ export function verifyExpression(expectedVersion = STUDIO_VERSION) {
       result.composerOverflow?.shellOverflowY === 'clip' &&
       result.composerOverflow?.lanesValid === true &&
       result.composerOverflow?.lanePolicyValid === true &&
-      result.composerOverflow?.editorCount >= 1 &&
-      result.composerOverflow?.editorOverflowY === 'auto' &&
+      result.composerOverflow?.modeValid === true &&
+      result.composerOverflow?.editorValid === true &&
       Boolean(result.sidebar?.visible) &&
       !result.documentOverflow.x
     );

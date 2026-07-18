@@ -10,9 +10,10 @@
 | `26.715.31925` | 5551 | `composer-two-or-three-layer` | 可选；存在时必须为 `visible` | 真实 App 验证通过 |
 | 其他版本 | — | `capability-adaptive` | 按实时 DOM 探测 | 标记为未审计 |
 
-两个已审计版本都要求 shell 为 `overflow-y: clip`，有限高度 editor 为
-`overflow-y: auto`。这能保留多行输入滚动，同时避免皮肤的 Composer 装饰把整个输入框变成
-滚动容器。
+两个已审计版本都要求 shell 为 `overflow-y: clip`。多行布局的有限高度 editor 必须为
+`overflow-y: auto`；单行布局不伪造滚动 editor。运行时优先从 `[data-codex-composer]`
+反查主输入框，避免把 PR 评论卡等复用 `.composer-surface-chrome` 的静态表面当成验收对象。
+这能保留多行输入滚动，同时避免皮肤的 Composer 装饰把整个输入框变成滚动容器。
 
 每次 Codex 更新后应先比对镜像仓库的 Delta，再运行两类回归：
 
