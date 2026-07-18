@@ -3,6 +3,7 @@ import test from "node:test";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 import { loadTheme } from "../src/theme.mjs";
 import { buildPayload } from "../src/payload.mjs";
@@ -82,7 +83,7 @@ test("the loader rejects non-video motion formats and bad keys", async (t) => {
 
 test("the runtime template accepts and consumes the motion argument", async () => {
   const template = await fs.readFile(
-    path.join(path.dirname(new URL(import.meta.url).pathname), "..", "src", "runtime", "theme-runtime.js"),
+    path.join(path.dirname(fileURLToPath(import.meta.url)), "..", "src", "runtime", "theme-runtime.js"),
     "utf8",
   );
   assert.match(template, /\(\(cssText, themeConfig, chromeHtml, motionAssets\) => \{/);
