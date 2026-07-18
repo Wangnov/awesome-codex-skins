@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 2,
+  "id": "yao-deer-spirit-grove",
+  "name": "瑶 — 鹿灵梦境",
+  "description": "《王者荣耀》瑶全覆盖主题：月夜森林、鹿灵微光、青玉藤蔓、粉紫雾与黑羽组成主页跃林全身像和任务页枝头阅卷独立姿态，并完整替换 16 类图标及四类 Retina 鼠标指针。",
+  "version": "1.1.0",
+  "author": "wangnov",
+  "codexVerified": "26.715.21425",
+  "category": "games",
+  "appearance": "dual",
+  "license": "personal-use",
+  "previews": [
+    "previews/home.webp",
+    "previews/task.webp"
+  ],
+  "colors": {
+    "primary": "#7fe3c1",
+    "glow": "#d9b8ff",
+    "mystic": "#a753a5",
+    "midnight": "#101c24",
+    "panel": "#193129",
+    "secondary": "#3f6a58",
+    "metal": "#d9efe6",
+    "paper": "#f3f5e8",
+    "ink": "#23342e",
+    "ink-light": "#f7fff9",
+    "positive": "#72c891",
+    "negative": "#ca667f",
+    "gold": "#e9c97a",
+    "line": "rgba(127,227,193,.24)"
+  },
+  "strings": {
+    "hero-title": "借你一鹿，守你一程。",
+    "hero-sub": "DEER SPIRIT • FOREST RESONANCE"
+  },
+  "codexTheme": {
+    "appearanceTheme": "dark",
+    "codeThemeIds": {
+      "dark": "absolutely",
+      "light": "absolutely"
+    },
+    "dark": {
+      "accent": "#7fe3c1",
+      "contrast": 62,
+      "ink": "#f7fff9",
+      "opaqueWindows": true,
+      "surface": "#101c24",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Kaiti SC, Songti SC, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#72c891",
+        "diffRemoved": "#ca667f",
+        "skill": "#e9c97a"
+      }
+    },
+    "light": {
+      "accent": "#319579",
+      "contrast": 62,
+      "ink": "#23342e",
+      "opaqueWindows": true,
+      "surface": "#f3f5e8",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Kaiti SC, Songti SC, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#5a9c73",
+        "diffRemoved": "#a55b6d",
+        "skill": "#aa9962"
+      }
+    }
+  },
+  "assets": {
+    "wall": "assets/wall.webp",
+    "sidebar-texture": "assets/sidebar-texture.webp",
+    "yao-home": "assets/yao-home.webp",
+    "yao-task": "assets/yao-task.webp",
+    "intro": "assets/intro.webp",
+    "composer-deck": "assets/composer-deck.webp",
+    "deck-slim": "assets/deck-slim.webp",
+    "pill": "assets/pill.webp",
+    "card-deer-light": "assets/card-deer-light.webp",
+    "card-vine-guard": "assets/card-vine-guard.webp",
+    "card-dream-orb": "assets/card-dream-orb.webp",
+    "card-forest-path": "assets/card-forest-path.webp",
+    "watermark": "assets/watermark.webp",
+    "crest": "assets/crest.webp",
+    "logo-codex": "assets/logo-codex.webp",
+    "logo-chatgpt": "assets/logo-chatgpt.webp",
+    "logo-chatgpt-work": "assets/logo-chatgpt-work.webp",
+    "deer-charm": "assets/deer-charm.webp",
+    "deer-charm-off": "assets/deer-charm-off.webp",
+    "cursor-default": "assets/cursor-default.webp",
+    "cursor-default-2x": "assets/cursor-default-2x.webp",
+    "cursor-pointer": "assets/cursor-pointer.webp",
+    "cursor-pointer-2x": "assets/cursor-pointer-2x.webp",
+    "cursor-text": "assets/cursor-text.webp",
+    "cursor-text-2x": "assets/cursor-text-2x.webp",
+    "cursor-grab": "assets/cursor-grab.webp",
+    "cursor-grab-2x": "assets/cursor-grab-2x.webp",
+    "icon-new-task": "assets/icon-new-task.webp",
+    "icon-scheduled": "assets/icon-scheduled.webp",
+    "icon-plugins": "assets/icon-plugins.webp",
+    "icon-sites": "assets/icon-sites.webp",
+    "icon-pull-request": "assets/icon-pull-request.webp",
+    "icon-chat": "assets/icon-chat.webp",
+    "icon-search": "assets/icon-search.webp",
+    "icon-explore": "assets/icon-explore.webp",
+    "icon-build": "assets/icon-build.webp",
+    "icon-review": "assets/icon-review.webp",
+    "icon-fix": "assets/icon-fix.webp",
+    "icon-attach": "assets/icon-attach.webp",
+    "icon-mic": "assets/icon-mic.webp",
+    "icon-model": "assets/icon-model.webp",
+    "icon-settings": "assets/icon-settings.webp",
+    "icon-folder": "assets/icon-folder.webp"
+  },
+  "chrome": "chrome.html",
+  "css": "theme.css"
+}

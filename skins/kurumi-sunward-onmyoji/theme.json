@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 2,
+  "id": "kurumi-sunward-onmyoji",
+  "name": "土御门胡桃 — 日轮净域",
+  "description": "《永劫无间》土御门胡桃全覆盖双模式主题：以日轮阴阳寮、月白障子、黑漆朱绳、庇护光线与净天地花阵为主轴，提供主页持伞全身与任务页张伞施愈双人物卡、四张独立建议卡、16 类功能图标、四类 Retina 鼠标指针及双状态光伞发送机关。",
+  "version": "1.0.0",
+  "author": "wangnov",
+  "codexVerified": "26.715.21425",
+  "category": "games",
+  "appearance": "dual",
+  "license": "personal-use",
+  "previews": [
+    "previews/home.webp",
+    "previews/task.webp"
+  ],
+  "colors": {
+    "primary": "#65c8b6",
+    "glow": "#f2d9c6",
+    "mystic": "#b84643",
+    "midnight": "#110e13",
+    "panel": "#1d171c",
+    "secondary": "#38262e",
+    "metal": "#c4b7a9",
+    "paper": "#f7f0e8",
+    "ink": "#33282e",
+    "ink-light": "#fff8f0",
+    "positive": "#57a986",
+    "negative": "#c95459",
+    "gold": "#d4ae65",
+    "line": "rgba(101,200,182,.24)"
+  },
+  "strings": {
+    "hero-title": "日轮花开，净域长明",
+    "hero-sub": "HEALING RAY · PURIFIED CIRCLE"
+  },
+  "codexTheme": {
+    "appearanceTheme": "dark",
+    "codeThemeIds": {
+      "dark": "absolutely",
+      "light": "absolutely"
+    },
+    "dark": {
+      "accent": "#65c8b6",
+      "contrast": 64,
+      "ink": "#fff8f0",
+      "opaqueWindows": true,
+      "surface": "#110e13",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Songti SC, Avenir Next, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#57a986",
+        "diffRemoved": "#c95459",
+        "skill": "#d4ae65"
+      }
+    },
+    "light": {
+      "accent": "#3a8f83",
+      "contrast": 62,
+      "ink": "#33282e",
+      "opaqueWindows": true,
+      "surface": "#f7f0e8",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Songti SC, Avenir Next, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#57a986",
+        "diffRemoved": "#c95459",
+        "skill": "#b84643"
+      }
+    }
+  },
+  "assets": {
+    "wall": "assets/wall.webp",
+    "sidebar-texture": "assets/sidebar-texture.webp",
+    "kurumi-home": "assets/kurumi-home.webp",
+    "kurumi-task": "assets/kurumi-task.webp",
+    "intro": "assets/intro.webp",
+    "composer-deck": "assets/composer-deck.webp",
+    "deck-slim": "assets/deck-slim.webp",
+    "pill": "assets/pill.webp",
+    "card-healing-ray": "assets/card-healing-ray.webp",
+    "card-light-parasol": "assets/card-light-parasol.webp",
+    "card-purified-circle": "assets/card-purified-circle.webp",
+    "card-spirit-blossom": "assets/card-spirit-blossom.webp",
+    "watermark": "assets/watermark.webp",
+    "crest": "assets/crest.webp",
+    "logo-codex": "assets/logo-codex.webp",
+    "logo-chatgpt": "assets/logo-chatgpt.webp",
+    "logo-chatgpt-work": "assets/logo-chatgpt-work.webp",
+    "light-parasol": "assets/light-parasol.webp",
+    "light-parasol-off": "assets/light-parasol-off.webp",
+    "cursor-default": "assets/cursor-default.webp",
+    "cursor-default-2x": "assets/cursor-default-2x.webp",
+    "cursor-pointer": "assets/cursor-pointer.webp",
+    "cursor-pointer-2x": "assets/cursor-pointer-2x.webp",
+    "cursor-text": "assets/cursor-text.webp",
+    "cursor-text-2x": "assets/cursor-text-2x.webp",
+    "cursor-grab": "assets/cursor-grab.webp",
+    "cursor-grab-2x": "assets/cursor-grab-2x.webp",
+    "icon-new-task": "assets/icon-new-task.webp",
+    "icon-scheduled": "assets/icon-scheduled.webp",
+    "icon-plugins": "assets/icon-plugins.webp",
+    "icon-sites": "assets/icon-sites.webp",
+    "icon-pull-request": "assets/icon-pull-request.webp",
+    "icon-chat": "assets/icon-chat.webp",
+    "icon-search": "assets/icon-search.webp",
+    "icon-explore": "assets/icon-explore.webp",
+    "icon-build": "assets/icon-build.webp",
+    "icon-review": "assets/icon-review.webp",
+    "icon-fix": "assets/icon-fix.webp",
+    "icon-attach": "assets/icon-attach.webp",
+    "icon-mic": "assets/icon-mic.webp",
+    "icon-model": "assets/icon-model.webp",
+    "icon-settings": "assets/icon-settings.webp",
+    "icon-folder": "assets/icon-folder.webp"
+  },
+  "chrome": "chrome.html",
+  "css": "theme.css"
+}

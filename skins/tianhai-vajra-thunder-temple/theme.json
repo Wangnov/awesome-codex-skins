@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 2,
+  "id": "tianhai-vajra-thunder-temple",
+  "name": "天海 — 雷霆伏魔",
+  "description": "《永劫无间》天海全覆盖双模式主题：以伏魔金刚殿、古铜金钟、僧黄经布与雷霆愿力为主轴，提供主页持杖全身与任务页金钟手印双人物卡、四张独立建议卡、16 类功能图标、四类 Retina 鼠标指针及双状态金钟发送机关。",
+  "version": "1.0.0",
+  "author": "wangnov",
+  "codexVerified": "26.715.21425",
+  "category": "games",
+  "appearance": "dual",
+  "license": "personal-use",
+  "previews": [
+    "previews/home.webp",
+    "previews/task.webp"
+  ],
+  "colors": {
+    "primary": "#d9a441",
+    "glow": "#f5ddb0",
+    "mystic": "#a64030",
+    "midnight": "#0d0c0a",
+    "panel": "#1b1812",
+    "secondary": "#362c1e",
+    "metal": "#b6a174",
+    "paper": "#f3ead4",
+    "ink": "#29231a",
+    "ink-light": "#f7edda",
+    "positive": "#5c8d69",
+    "negative": "#c75b4c",
+    "gold": "#d6ad58",
+    "line": "rgba(217,164,65,.24)"
+  },
+  "strings": {
+    "hero-title": "一念济世，金刚伏魔",
+    "hero-sub": "DIVINE BELL · VAJRA'S CALL"
+  },
+  "codexTheme": {
+    "appearanceTheme": "dark",
+    "codeThemeIds": {
+      "dark": "absolutely",
+      "light": "absolutely"
+    },
+    "dark": {
+      "accent": "#d9a441",
+      "contrast": 64,
+      "ink": "#f7edda",
+      "opaqueWindows": true,
+      "surface": "#0d0c0a",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Songti SC, Avenir Next, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#5c8d69",
+        "diffRemoved": "#c75b4c",
+        "skill": "#d6ad58"
+      }
+    },
+    "light": {
+      "accent": "#9b6b1d",
+      "contrast": 62,
+      "ink": "#29231a",
+      "opaqueWindows": true,
+      "surface": "#f3ead4",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Songti SC, Avenir Next, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#5c8d69",
+        "diffRemoved": "#c75b4c",
+        "skill": "#a64030"
+      }
+    }
+  },
+  "assets": {
+    "wall": "assets/wall.webp",
+    "sidebar-texture": "assets/sidebar-texture.webp",
+    "tianhai-home": "assets/tianhai-home.webp",
+    "tianhai-task": "assets/tianhai-task.webp",
+    "intro": "assets/intro.webp",
+    "composer-deck": "assets/composer-deck.webp",
+    "deck-slim": "assets/deck-slim.webp",
+    "pill": "assets/pill.webp",
+    "card-divine-bell": "assets/card-divine-bell.webp",
+    "card-vajra-grip": "assets/card-vajra-grip.webp",
+    "card-thunder-wrath": "assets/card-thunder-wrath.webp",
+    "card-karma-wheel": "assets/card-karma-wheel.webp",
+    "watermark": "assets/watermark.webp",
+    "crest": "assets/crest.webp",
+    "logo-codex": "assets/logo-codex.webp",
+    "logo-chatgpt": "assets/logo-chatgpt.webp",
+    "logo-chatgpt-work": "assets/logo-chatgpt-work.webp",
+    "divine-bell": "assets/divine-bell.webp",
+    "divine-bell-off": "assets/divine-bell-off.webp",
+    "cursor-default": "assets/cursor-default.webp",
+    "cursor-default-2x": "assets/cursor-default-2x.webp",
+    "cursor-pointer": "assets/cursor-pointer.webp",
+    "cursor-pointer-2x": "assets/cursor-pointer-2x.webp",
+    "cursor-text": "assets/cursor-text.webp",
+    "cursor-text-2x": "assets/cursor-text-2x.webp",
+    "cursor-grab": "assets/cursor-grab.webp",
+    "cursor-grab-2x": "assets/cursor-grab-2x.webp",
+    "icon-new-task": "assets/icon-new-task.webp",
+    "icon-scheduled": "assets/icon-scheduled.webp",
+    "icon-plugins": "assets/icon-plugins.webp",
+    "icon-sites": "assets/icon-sites.webp",
+    "icon-pull-request": "assets/icon-pull-request.webp",
+    "icon-chat": "assets/icon-chat.webp",
+    "icon-search": "assets/icon-search.webp",
+    "icon-explore": "assets/icon-explore.webp",
+    "icon-build": "assets/icon-build.webp",
+    "icon-review": "assets/icon-review.webp",
+    "icon-fix": "assets/icon-fix.webp",
+    "icon-attach": "assets/icon-attach.webp",
+    "icon-mic": "assets/icon-mic.webp",
+    "icon-model": "assets/icon-model.webp",
+    "icon-settings": "assets/icon-settings.webp",
+    "icon-folder": "assets/icon-folder.webp"
+  },
+  "chrome": "chrome.html",
+  "css": "theme.css"
+}

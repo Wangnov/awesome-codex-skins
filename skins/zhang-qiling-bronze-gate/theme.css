@@ -1,0 +1,894 @@
+/* ============================================================
+   Zhang Qiling — Changbai Bronze Gate, material UI v2
+
+   Visual rule: every thematic surface comes from a raster asset generated for
+   this theme. CSS mounts, stretches and switches those assets; it does not draw
+   ornamental gradients, vector motifs, borders, icons, plaques or textures.
+   ============================================================ */
+
+html.codex-theme-studio {
+  color-scheme: light !important;
+}
+
+html.codex-theme-studio[data-cts-shell="dark"] {
+  color-scheme: dark !important;
+}
+
+/* Four independent, materialized Retina cursor assets. */
+html.codex-theme-studio,
+html.codex-theme-studio body {
+  cursor: image-set(var(--cts-asset-cursor-default) 1x, var(--cts-asset-cursor-default-2x) 2x) 6 5, default !important;
+}
+
+html.codex-theme-studio :is(
+  input:not(:is([type="button"], [type="submit"], [type="reset"], [type="checkbox"], [type="radio"], [type="range"], [type="file"])),
+  textarea,
+  [contenteditable="true"],
+  .ProseMirror,
+  p,
+  pre,
+  code,
+  blockquote,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6
+) {
+  cursor: image-set(var(--cts-asset-cursor-text) 1x, var(--cts-asset-cursor-text-2x) 2x) 16 16, text !important;
+}
+
+html.codex-theme-studio :is(
+  a[href],
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [role="link"],
+  [role="menuitem"],
+  [role="option"],
+  [role="tab"],
+  label[for],
+  summary,
+  select,
+  input:is([type="button"], [type="submit"], [type="reset"], [type="checkbox"], [type="radio"], [type="range"], [type="file"])
+),
+html.codex-theme-studio :is(
+  a[href],
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  [role="link"],
+  [role="menuitem"],
+  [role="option"],
+  [role="tab"],
+  label[for],
+  summary
+) * {
+  cursor: image-set(var(--cts-asset-cursor-pointer) 1x, var(--cts-asset-cursor-pointer-2x) 2x) 12 4, pointer !important;
+}
+
+html.codex-theme-studio :is(
+  [draggable="true"],
+  [data-dnd-kit-draggable],
+  [data-rbd-draggable-id],
+  [class~="cursor-grab"],
+  [class~="cursor-grabbing"]
+),
+html.codex-theme-studio :is(
+  [draggable="true"],
+  [data-dnd-kit-draggable],
+  [data-rbd-draggable-id],
+  [class~="cursor-grab"],
+  [class~="cursor-grabbing"]
+) * {
+  cursor: image-set(var(--cts-asset-cursor-grab) 1x, var(--cts-asset-cursor-grab-2x) 2x) 16 16, grab !important;
+}
+
+/* ------------------------------------------------ global material surfaces */
+
+html.codex-theme-studio body {
+  background-color: var(--cts-color-paper) !important;
+  background-image: var(--cts-asset-wall-light) !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: cover !important;
+  background-attachment: fixed !important;
+  color: var(--cts-color-ink) !important;
+}
+
+html.codex-theme-studio[data-cts-shell="dark"] body {
+  background-color: var(--cts-color-midnight) !important;
+  background-image: var(--cts-asset-wall) !important;
+  color: var(--cts-color-ink-light) !important;
+}
+
+html.codex-theme-studio .app-theme,
+html.codex-theme-studio [role="main"],
+html.codex-theme-studio [role="main"] [class~="bg-token-main-surface-primary"],
+html.codex-theme-studio main.main-surface > header,
+html.codex-theme-studio main.main-surface > header.app-header-tint {
+  background-color: transparent !important;
+  background-image: none !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+html.codex-theme-studio main.main-surface,
+html.codex-theme-studio div.main-surface {
+  isolation: isolate;
+  position: relative !important;
+  overflow: hidden !important;
+  background-color: var(--cts-color-paper) !important;
+  background-image: var(--cts-asset-wall-light) !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: cover !important;
+  box-shadow: none !important;
+}
+
+html.codex-theme-studio[data-cts-shell="dark"] main.main-surface,
+html.codex-theme-studio[data-cts-shell="dark"] div.main-surface {
+  background-color: var(--cts-color-midnight) !important;
+  background-image: var(--cts-asset-wall) !important;
+}
+
+html.codex-theme-studio .app-shell-main-content-frame {
+  border-top: 0 !important;
+}
+
+html.codex-theme-studio .app-shell-main-content-top-fade {
+  display: none !important;
+}
+
+html.codex-theme-studio main.main-surface > header.app-header-tint {
+  z-index: 30 !important;
+}
+
+html.codex-theme-studio main.main-surface > header.app-header-tint + div {
+  position: relative;
+  z-index: 1;
+}
+
+html.codex-theme-studio :focus-visible {
+  outline: 2px solid var(--cts-color-primary) !important;
+  outline-offset: 2px;
+}
+
+/* ------------------------------------------------ dual character presence */
+
+html.codex-theme-studio main.main-surface::before,
+html.codex-theme-studio div.main-surface::before {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  right: clamp(-24px, -1vw, 0px);
+  bottom: 0;
+  width: clamp(250px, 27vw, 470px);
+  height: clamp(420px, 80vh, 880px);
+  pointer-events: none;
+  background-image: var(--cts-asset-qiling-home);
+  background-position: right bottom;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+html.codex-theme-studio div.main-surface::before {
+  width: clamp(360px, 40vw, 720px);
+  height: clamp(500px, 88vh, 980px);
+  background-image: var(--cts-asset-qiling-task);
+}
+
+html.codex-theme-studio div.main-surface > * {
+  position: relative;
+  z-index: 1;
+}
+
+html.codex-theme-studio main.main-surface:not(.cts-home-shell)::before,
+html.codex-theme-studio main.main-surface.cts-home-shell:has(aside[data-app-shell-focus-area="right-panel"])::before {
+  content: none;
+}
+
+html.codex-theme-studio main.main-surface:not(.cts-home-shell) .thread-scroll-container {
+  background-color: transparent !important;
+  background-image: var(--cts-asset-qiling-task) !important;
+  background-position: right clamp(12px, 2vw, 34px) bottom clamp(8px, 1.5vh, 20px) !important;
+  background-repeat: no-repeat !important;
+  background-size: auto min(63vh, 680px) !important;
+}
+
+html.codex-theme-studio main.main-surface:has(aside[data-app-shell-focus-area="right-panel"]):not(.cts-home-shell) .thread-scroll-container {
+  background-image: none !important;
+}
+
+/* ------------------------------------------------ left sidebar material */
+
+html.codex-theme-studio .app-shell-left-panel {
+  isolation: isolate;
+  position: relative !important;
+  background-color: #0b1012 !important;
+  background-image: var(--cts-asset-sidebar-texture) !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: cover !important;
+  color: var(--cts-color-ink-light) !important;
+  box-shadow: none !important;
+}
+
+html.codex-theme-studio .app-shell-left-panel::before {
+  content: none !important;
+}
+
+html.codex-theme-studio .app-shell-left-panel::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  bottom: 80px;
+  width: 120px;
+  height: 120px;
+  transform: translateX(-50%);
+  pointer-events: none;
+  background-image: var(--cts-asset-watermark);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  opacity: .13;
+}
+
+html.codex-theme-studio .app-shell-left-panel :is(nav, header, footer, div) {
+  background-color: transparent !important;
+}
+
+html.codex-theme-studio .app-shell-left-panel :is(button, a, span, p, h1, h2, h3, label, div) {
+  color: var(--cts-color-ink-light) !important;
+}
+
+html.codex-theme-studio .app-shell-left-panel :is(button, a):hover,
+html.codex-theme-studio .app-shell-left-panel [aria-current="page"],
+html.codex-theme-studio .app-shell-left-panel [class~="bg-token-list-hover-background"] {
+  background-color: rgba(180, 183, 174, .13) !important;
+}
+
+html.codex-theme-studio .app-shell-left-panel :is(input, [role="searchbox"]) {
+  min-height: 34px;
+  padding-inline: 14px !important;
+  background-color: transparent !important;
+  background-image: var(--cts-asset-pill) !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: 100% 100% !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  color: var(--cts-color-ink-light) !important;
+  caret-color: var(--cts-color-metal) !important;
+}
+
+html.codex-theme-studio .app-shell-left-panel input::placeholder {
+  color: rgba(236, 232, 220, .48) !important;
+}
+
+/* ------------------------------------------------ 16 raster relic icons */
+
+html.codex-theme-studio svg[data-cts-glyph] > * {
+  opacity: 0 !important;
+}
+
+html.codex-theme-studio svg[data-cts-glyph] {
+  color: transparent !important;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  transform-origin: center;
+  transition: filter .16s ease, transform .16s ease, opacity .16s ease;
+}
+
+html.codex-theme-studio svg[data-cts-glyph="new-task"] { background-image: var(--cts-asset-icon-new-task); }
+html.codex-theme-studio svg[data-cts-glyph="scheduled"] { background-image: var(--cts-asset-icon-scheduled); }
+html.codex-theme-studio svg[data-cts-glyph="plugins"] { background-image: var(--cts-asset-icon-plugins); }
+html.codex-theme-studio svg[data-cts-glyph="sites"] { background-image: var(--cts-asset-icon-sites); }
+html.codex-theme-studio svg[data-cts-glyph="pull-request"] { background-image: var(--cts-asset-icon-pull-request); }
+html.codex-theme-studio svg[data-cts-glyph="chat"] { background-image: var(--cts-asset-icon-chat); }
+html.codex-theme-studio svg[data-cts-glyph="search"] { background-image: var(--cts-asset-icon-search); }
+html.codex-theme-studio svg[data-cts-glyph="explore"] { background-image: var(--cts-asset-icon-explore); }
+html.codex-theme-studio svg[data-cts-glyph="build"] { background-image: var(--cts-asset-icon-build); }
+html.codex-theme-studio svg[data-cts-glyph="review"] { background-image: var(--cts-asset-icon-review); }
+html.codex-theme-studio svg[data-cts-glyph="fix"] { background-image: var(--cts-asset-icon-fix); }
+html.codex-theme-studio svg[data-cts-glyph="attach"] { background-image: var(--cts-asset-icon-attach); }
+html.codex-theme-studio svg[data-cts-glyph="mic"] { background-image: var(--cts-asset-icon-mic); }
+html.codex-theme-studio svg[data-cts-glyph="model"] { background-image: var(--cts-asset-icon-model); }
+html.codex-theme-studio svg[data-cts-glyph="settings"] { background-image: var(--cts-asset-icon-settings); }
+html.codex-theme-studio svg[data-cts-glyph="folder"] { background-image: var(--cts-asset-icon-folder); }
+
+html.codex-theme-studio :is(button, a):hover svg[data-cts-glyph] {
+  filter: brightness(1.13);
+  transform: translateY(-1px) scale(1.05);
+}
+
+html.codex-theme-studio :is(button:disabled, [aria-disabled="true"]) svg[data-cts-glyph] {
+  filter: saturate(.45) brightness(.7);
+  opacity: .56;
+}
+
+/* ------------------------------------------------ home cards: four physical archive plates */
+
+html.codex-theme-studio .cts-home div:has(> [data-testid="home-icon"]) > * {
+  visibility: hidden !important;
+}
+
+html.codex-theme-studio .cts-home .group\/home-suggestions {
+  gap: 18px !important;
+}
+
+html.codex-theme-studio div[class*="composer-suggestion-inline-inset"] {
+  z-index: 2 !important;
+}
+
+html.codex-theme-studio .cts-home .group\/home-suggestions .grid > div {
+  min-width: 0 !important;
+  height: auto !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  overflow: visible !important;
+}
+
+html.codex-theme-studio .cts-home .group\/home-suggestions button {
+  position: relative !important;
+  isolation: isolate;
+  width: 100% !important;
+  min-height: 0 !important;
+  aspect-ratio: 1.72 / 1;
+  padding: 12px 16px 16px !important;
+  align-items: flex-start !important;
+  justify-content: flex-end !important;
+  overflow: visible !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background-color: transparent !important;
+  color: var(--cts-color-ink-light) !important;
+  box-shadow: none !important;
+  transition: transform .18s ease !important;
+}
+
+html.codex-theme-studio .cts-home .group\/home-suggestions button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  transition: filter .18s ease;
+}
+
+html.codex-theme-studio .cts-home .group\/home-suggestions button::after {
+  content: none !important;
+}
+
+html.codex-theme-studio .cts-home .group\/home-suggestions .grid > div:nth-child(1) button::before { background-image: var(--cts-asset-card-black-gold-blade); }
+html.codex-theme-studio .cts-home .group\/home-suggestions .grid > div:nth-child(2) button::before { background-image: var(--cts-asset-card-ghost-seal); }
+html.codex-theme-studio .cts-home .group\/home-suggestions .grid > div:nth-child(3) button::before { background-image: var(--cts-asset-card-qilin); }
+html.codex-theme-studio .cts-home .group\/home-suggestions .grid > div:nth-child(4) button::before { background-image: var(--cts-asset-card-bronze-gate); }
+
+html.codex-theme-studio .cts-home .group\/home-suggestions button:is(:hover, :focus-visible) {
+  transform: translateY(-3px);
+}
+
+html.codex-theme-studio .cts-home .group\/home-suggestions button:is(:hover, :focus-visible)::before {
+  filter: brightness(1.09);
+}
+
+html.codex-theme-studio .cts-home .group\/home-suggestions button > span:first-child {
+  display: none !important;
+}
+
+html.codex-theme-studio .cts-home .group\/home-suggestions button > span:last-child {
+  min-height: 32px !important;
+  margin-top: auto !important;
+}
+
+html.codex-theme-studio .cts-home .group\/home-suggestions button :is(span, p, div, h3) {
+  max-width: 100% !important;
+  color: var(--cts-color-ink-light) !important;
+  font-size: clamp(13px, .84vw, 15px) !important;
+  line-height: 1.2 !important;
+}
+
+/* ChatGPT Work uses a list instead of the personal four-card grid. */
+html.codex-theme-studio .cts-home .group\/home-suggestions:not(:has(.grid)) > div > div {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)) !important;
+  gap: 16px !important;
+  padding-left: 0 !important;
+  min-height: 0 !important;
+}
+
+html.codex-theme-studio .cts-home .group\/home-suggestions:not(:has(.grid)) > div > div > div {
+  min-width: 0;
+}
+
+html.codex-theme-studio .cts-home .group\/home-suggestions:not(:has(.grid)) button.group\/home-suggestion-list-item {
+  align-items: flex-end !important;
+}
+
+html.codex-theme-studio .cts-home .group\/home-suggestions:not(:has(.grid)) > div > div > div:nth-child(1) button::before { background-image: var(--cts-asset-card-black-gold-blade); }
+html.codex-theme-studio .cts-home .group\/home-suggestions:not(:has(.grid)) > div > div > div:nth-child(2) button::before { background-image: var(--cts-asset-card-ghost-seal); }
+html.codex-theme-studio .cts-home .group\/home-suggestions:not(:has(.grid)) > div > div > div:nth-child(3) button::before { background-image: var(--cts-asset-card-qilin); }
+
+/* ------------------------------------------------ composer: material frame and inset writing surface */
+
+html.codex-theme-studio .composer-surface-chrome {
+  position: relative !important;
+  z-index: 1;
+  overflow: clip !important;
+  overflow-clip-margin: 16px !important;
+  background-color: transparent !important;
+  background-image: var(--cts-asset-deck-slim) !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  /* Crop the asset's authored transparent safe area without slicing its frame. */
+  background-size: 132% 175% !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: var(--cts-color-ink-light) !important;
+}
+
+html.codex-theme-studio [class*="_WorkTriggerMeasurement"] {
+  top: auto !important;
+  bottom: 0 !important;
+}
+
+html.codex-theme-studio main.main-surface.cts-home-shell .thread-scroll-container,
+html.codex-theme-studio main.main-surface.cts-home-shell [class*="container-type"] {
+  overflow-y: hidden !important;
+}
+
+html.codex-theme-studio div:has(> .composer-surface-chrome) {
+  isolation: isolate;
+  position: relative !important;
+}
+
+html.codex-theme-studio div:has(> .composer-surface-chrome)::before {
+  content: none !important;
+}
+
+html.codex-theme-studio .composer-surface-chrome,
+html.codex-theme-studio .composer-surface-chrome :is(p, span, div, textarea, [contenteditable], button, label) {
+  font-family: -apple-system, "SF Pro Text", "PingFang SC", system-ui, sans-serif !important;
+}
+
+html.codex-theme-studio .composer-surface-chrome :is(textarea, [contenteditable], p, span, div) {
+  color: var(--cts-color-ink-light) !important;
+  caret-color: var(--cts-color-metal) !important;
+}
+
+html.codex-theme-studio .composer-surface-chrome :is(textarea, [contenteditable])::placeholder,
+html.codex-theme-studio .composer-surface-chrome :is([class*="placeholder"], [data-placeholder]),
+html.codex-theme-studio .composer-surface-chrome .ProseMirror [data-placeholder]::before,
+html.codex-theme-studio .composer-surface-chrome .ProseMirror p::before {
+  color: rgba(236, 232, 220, .5) !important;
+}
+
+html.codex-theme-studio .composer-surface-chrome button {
+  color: var(--cts-color-ink-light) !important;
+}
+
+html.codex-theme-studio .composer-surface-chrome button:hover {
+  background-color: rgba(180, 183, 174, .14) !important;
+}
+
+/* The native send hit target itself carries the Ghost Seal material. */
+html.codex-theme-studio .composer-surface-chrome button[class*="size-token-button-composer"] {
+  background-color: transparent !important;
+  background-image: var(--cts-asset-ghost-seal) !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: 32px 32px !important;
+  box-shadow: none !important;
+  transition: transform .16s ease !important;
+}
+
+html.codex-theme-studio .composer-surface-chrome button[class*="size-token-button-composer"] svg {
+  opacity: 0 !important;
+}
+
+html.codex-theme-studio .composer-surface-chrome button[class*="size-token-button-composer"]:hover {
+  background-color: transparent !important;
+  transform: scale(1.07);
+}
+
+html.codex-theme-studio .composer-surface-chrome button[class*="size-token-button-composer"]:disabled {
+  background-image: var(--cts-asset-ghost-seal-off) !important;
+}
+
+html.codex-theme-studio div:has(> .composer-surface-chrome)::after {
+  content: none !important;
+}
+
+/* ------------------------------------------------ three material logo plaques */
+
+html.codex-theme-studio .app-shell-left-panel [data-cts-logo] {
+  position: relative !important;
+  display: flex !important;
+  align-items: center;
+  inline-size: 100%;
+  min-inline-size: 0;
+  min-height: 52px;
+  padding-right: 38px !important;
+  color: transparent !important;
+}
+
+html.codex-theme-studio .app-shell-left-panel [data-cts-logo] :is(span, div, b, i, p) {
+  color: transparent !important;
+  text-shadow: none !important;
+}
+
+html.codex-theme-studio .app-shell-left-panel [data-cts-logo]::before {
+  content: "";
+  position: absolute;
+  inset: 4px 38px 4px 0;
+  pointer-events: none;
+  background-position: left center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  transition: filter .16s ease, transform .16s ease;
+}
+
+html.codex-theme-studio .app-shell-left-panel [data-cts-logo="codex"]::before { background-image: var(--cts-asset-logo-codex); }
+html.codex-theme-studio .app-shell-left-panel [data-cts-logo="chatgpt"]::before { background-image: var(--cts-asset-logo-chatgpt); }
+html.codex-theme-studio .app-shell-left-panel [data-cts-logo="chatgpt-work"]::before { background-image: var(--cts-asset-logo-chatgpt-work); }
+
+html.codex-theme-studio .app-shell-left-panel [data-cts-logo]:is(:hover, :focus-visible, [data-state="open"])::before {
+  filter: brightness(1.1);
+  transform: translateY(-1px);
+}
+
+html.codex-theme-studio .app-shell-left-panel [data-cts-logo]::after {
+  content: none;
+}
+
+html.codex-theme-studio .app-shell-left-panel [data-cts-logo] > svg {
+  color: var(--cts-color-metal) !important;
+  opacity: .82 !important;
+}
+
+/* ------------------------------------------------ material selector plates */
+
+html.codex-theme-studio main button:has([class*="_dropdownLabel"]) {
+  position: relative !important;
+  isolation: isolate;
+  min-width: max-content;
+  padding-inline: 16px !important;
+  overflow: clip !important;
+  background-color: transparent !important;
+  background-image: var(--cts-asset-pill) !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: 132% 170% !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  transition: transform .15s ease !important;
+}
+
+html.codex-theme-studio main button:has([class*="_dropdownLabel"])::before {
+  content: none !important;
+}
+
+html.codex-theme-studio main button:has([class*="_dropdownLabel"]),
+html.codex-theme-studio main button:has([class*="_dropdownLabel"]) * {
+  color: var(--cts-color-ink-light) !important;
+  opacity: 1 !important;
+  -webkit-text-fill-color: var(--cts-color-ink-light) !important;
+}
+
+html.codex-theme-studio main button:has([class*="_dropdownLabel"]):hover {
+  transform: translateY(-1px);
+}
+
+html.codex-theme-studio main button:has([class*="_dropdownLabel"]) [class*="_dropdownLabelText"] {
+  max-width: none !important;
+  overflow: visible !important;
+}
+
+html.codex-theme-studio div.z-0:has([class*="_dropdownLabel"]) {
+  z-index: 12 !important;
+}
+
+html.codex-theme-studio div.z-0:has([class*="_dropdownLabel"]) :is(div) {
+  background-color: transparent !important;
+}
+
+html.codex-theme-studio [class*="horizontal-scroll-fade-mask"]:has([class*="_dropdownLabel"]) {
+  padding: 8px 14px !important;
+  margin: -8px -14px !important;
+}
+
+/* ------------------------------------------------ hero chrome and material intro */
+
+html.codex-theme-studio #cts-chrome {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  color: var(--cts-color-ink);
+}
+
+html.codex-theme-studio[data-cts-shell="dark"] #cts-chrome {
+  color: var(--cts-color-ink-light);
+}
+
+html.codex-theme-studio #cts-stage {
+  position: absolute;
+  inset: 0;
+  display: none;
+}
+
+html.codex-theme-studio #cts-stage.cts-home-shell {
+  display: block;
+}
+
+html.codex-theme-studio .cts-gate-orbit {
+  position: absolute;
+  right: clamp(270px, 30vw, 520px);
+  top: 18%;
+  width: clamp(82px, 8vw, 138px);
+  aspect-ratio: 1;
+  background-image: var(--cts-asset-crest);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  opacity: .55;
+}
+
+html.codex-theme-studio .cts-hero {
+  position: absolute;
+  left: clamp(56px, 8vw, 150px);
+  top: 28%;
+  width: min(47vw, 720px);
+  display: none;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  text-align: left;
+}
+
+html.codex-theme-studio #cts-stage.cts-home-shell .cts-hero {
+  display: flex;
+}
+
+html.codex-theme-studio .cts-hero-title {
+  color: var(--cts-color-ink);
+  font-family: "Songti SC", "STSong", "Noto Serif CJK SC", "PingFang SC", serif;
+  font-size: clamp(34px, 4.1vw, 58px);
+  font-weight: 600;
+  letter-spacing: .115em;
+  line-height: 1.1;
+  text-wrap: balance;
+}
+
+html.codex-theme-studio[data-cts-shell="dark"] .cts-hero-title {
+  color: rgba(241, 233, 218, .9);
+}
+
+html.codex-theme-studio .cts-hero-sub {
+  color: rgba(27, 36, 37, .66);
+  font-family: "Avenir Next Condensed", "SF Pro Text", "PingFang SC", sans-serif;
+  font-size: 12px;
+  font-variant-caps: all-small-caps;
+  letter-spacing: .22em;
+  white-space: nowrap;
+}
+
+html.codex-theme-studio[data-cts-shell="dark"] .cts-hero-sub {
+  color: rgba(180, 183, 174, .7);
+}
+
+html.codex-theme-studio #cts-intro {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483000;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  pointer-events: none;
+  background-color: #080c0e;
+  animation: cts-material-intro-out 2.6s ease forwards;
+}
+
+html.codex-theme-studio #cts-intro::before,
+html.codex-theme-studio .cts-intro-rays,
+html.codex-theme-studio .cts-intro-flash {
+  display: none !important;
+}
+
+html.codex-theme-studio .cts-intro-figure {
+  width: min(82vw, 980px);
+  aspect-ratio: 1536 / 640;
+  background-image: var(--cts-asset-intro);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  animation: cts-material-intro-figure 2.6s cubic-bezier(.2, .72, .24, 1) forwards;
+}
+
+@keyframes cts-material-intro-figure {
+  0%, 16% { transform: translateY(10%) scale(.92); opacity: 0; }
+  42%, 78% { transform: translateY(0) scale(1); opacity: 1; }
+  100% { transform: translateY(-2%) scale(1.03); opacity: 0; }
+}
+
+@keyframes cts-material-intro-out {
+  0%, 86% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ------------------------------------------------ functional overlays stay restrained */
+
+html.codex-theme-studio :is(
+  [role="menu"],
+  [role="listbox"],
+  [data-radix-popper-content-wrapper] > div,
+  [data-radix-menu-content],
+  [role="dialog"],
+  section[class*="_floatingSurface_"]
+) {
+  background-color: var(--cts-color-paper) !important;
+  background-image: none !important;
+  color: var(--cts-color-ink) !important;
+}
+
+html.codex-theme-studio[data-cts-shell="dark"] :is(
+  [role="menu"],
+  [role="listbox"],
+  [data-radix-popper-content-wrapper] > div,
+  [data-radix-menu-content],
+  [role="dialog"],
+  section[class*="_floatingSurface_"]
+) {
+  background-color: var(--cts-color-panel) !important;
+  color: var(--cts-color-ink-light) !important;
+}
+
+html.codex-theme-studio :is([role="menu"], [role="listbox"], [data-radix-menu-content]) :is([role="menuitem"], [role="option"]):is(:hover, [data-highlighted]) {
+  background-color: rgba(120, 159, 152, .16) !important;
+}
+
+html.codex-theme-studio[data-cts-shell="dark"] [role="dialog"] :is(h1, h2, h3, p, span, label, div),
+html.codex-theme-studio[data-cts-shell="dark"] :is([role="menu"], [role="listbox"], [data-radix-menu-content]) :is([role="menuitem"], [role="option"], button, a) {
+  color: var(--cts-color-ink-light) !important;
+}
+
+html.codex-theme-studio main.main-surface:not(.cts-home-shell) article {
+  background-color: rgba(230, 224, 210, .86);
+}
+
+html.codex-theme-studio[data-cts-shell="dark"] main.main-surface:not(.cts-home-shell) article {
+  background-color: rgba(20, 29, 31, .84);
+}
+
+/* ------------------------------------------------ right panel receives the second pose */
+
+html.codex-theme-studio main.main-surface aside[data-app-shell-focus-area="right-panel"] {
+  background-color: var(--cts-color-paper) !important;
+  background-image: var(--cts-asset-qiling-task), var(--cts-asset-wall-light) !important;
+  background-position: right 8px bottom 8px, center !important;
+  background-repeat: no-repeat !important;
+  background-size: min(96%, 520px) auto, cover !important;
+  backdrop-filter: none !important;
+  box-shadow: none !important;
+}
+
+html.codex-theme-studio main.main-surface.cts-home-shell aside[data-app-shell-focus-area="right-panel"] {
+  background-image: var(--cts-asset-qiling-home), var(--cts-asset-wall-light) !important;
+  background-size: min(90%, 440px) auto, cover !important;
+}
+
+html.codex-theme-studio[data-cts-shell="dark"] main.main-surface aside[data-app-shell-focus-area="right-panel"] {
+  background-color: var(--cts-color-panel) !important;
+  background-image: var(--cts-asset-qiling-task), var(--cts-asset-wall) !important;
+}
+
+html.codex-theme-studio[data-cts-shell="dark"] main.main-surface.cts-home-shell aside[data-app-shell-focus-area="right-panel"] {
+  background-image: var(--cts-asset-qiling-home), var(--cts-asset-wall) !important;
+}
+
+html.codex-theme-studio main.main-surface aside[data-app-shell-focus-area="right-panel"] [class~="bg-token-main-surface-primary"] {
+  background: transparent !important;
+  backdrop-filter: none !important;
+}
+
+/* ------------------------------------------------ responsive composition */
+
+html.codex-theme-studio main.main-surface:has(aside[data-app-shell-focus-area="right-panel"]) .cts-hero {
+  left: 6%;
+  top: 26%;
+  width: 32%;
+  gap: 8px;
+}
+
+html.codex-theme-studio main.main-surface:has(aside[data-app-shell-focus-area="right-panel"]) .cts-hero-title {
+  font-size: clamp(22px, 2.1vw, 32px);
+  letter-spacing: .05em;
+  white-space: normal;
+}
+
+html.codex-theme-studio main.main-surface:has(aside[data-app-shell-focus-area="right-panel"]) .cts-hero-sub {
+  font-size: 10px;
+  letter-spacing: .1em;
+  white-space: normal;
+}
+
+@media (max-width: 1120px) {
+  html.codex-theme-studio main.main-surface.cts-home-shell::before {
+    width: clamp(190px, 23vw, 310px);
+    opacity: .9;
+  }
+
+  html.codex-theme-studio main.main-surface.cts-home-shell .cts-hero {
+    left: 7%;
+    width: 46%;
+  }
+
+  html.codex-theme-studio main.main-surface.cts-home-shell .cts-hero-title {
+    font-size: clamp(27px, 3.2vw, 36px);
+  }
+
+  html.codex-theme-studio main.main-surface:not(.cts-home-shell) .thread-scroll-container {
+    background-size: auto min(52vh, 520px) !important;
+  }
+
+  html.codex-theme-studio div.main-surface::before {
+    width: clamp(300px, 36vw, 520px);
+    height: min(74vh, 680px);
+  }
+}
+
+@media (max-width: 860px) {
+  html.codex-theme-studio main.main-surface:not(.cts-home-shell) .thread-scroll-container {
+    background-position: right 8px top 72px !important;
+    background-size: auto min(43vh, 380px) !important;
+  }
+
+  html.codex-theme-studio div.main-surface::before {
+    right: -18px;
+    width: min(48vw, 370px);
+    height: min(58vh, 520px);
+  }
+
+  html.codex-theme-studio .app-shell-left-panel [data-cts-logo] {
+    min-height: 44px;
+  }
+}
+
+@media (max-height: 760px) {
+  html.codex-theme-studio main.main-surface.cts-home-shell::before {
+    bottom: 122px;
+    height: 62vh;
+  }
+
+  html.codex-theme-studio main.main-surface.cts-home-shell .cts-hero {
+    top: 25%;
+  }
+
+  html.codex-theme-studio .cts-home .group\/home-suggestions button {
+    aspect-ratio: 1.9 / 1;
+  }
+
+  html.codex-theme-studio main.main-surface:not(.cts-home-shell) .thread-scroll-container {
+    background-size: auto min(56vh, 500px) !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.codex-theme-studio #cts-intro {
+    display: none !important;
+  }
+
+  html.codex-theme-studio .cts-home .group\/home-suggestions button,
+  html.codex-theme-studio div:has(> .composer-surface-chrome)::after,
+  html.codex-theme-studio svg[data-cts-glyph] {
+    transition: none !important;
+  }
+}

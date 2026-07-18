@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 2,
+  "id": "ji-canghai-blazing-gallant",
+  "name": "季沧海 — 烈豪焚夜",
+  "description": "《永劫无间》季沧海全覆盖双模式主题：以焚夜酒馆、焦铁靛布、旧铜阔刀与酒焰疾行主轴，提供主页持刀举壶全身与任务页燎原冲拳双人物卡、四张独立建议卡、16 类功能图标、四类 Retina 鼠标指针及双状态火酒葫芦发送机关。",
+  "version": "1.0.0",
+  "author": "wangnov",
+  "codexVerified": "26.715.21425",
+  "category": "games",
+  "appearance": "dual",
+  "license": "personal-use",
+  "previews": [
+    "previews/home.webp",
+    "previews/task.webp"
+  ],
+  "colors": {
+    "primary": "#ef6b2e",
+    "glow": "#ffc078",
+    "mystic": "#9f342f",
+    "midnight": "#090d15",
+    "panel": "#121a29",
+    "secondary": "#29354a",
+    "metal": "#9b8c7a",
+    "paper": "#efe7db",
+    "ink": "#282a31",
+    "ink-light": "#f6eee5",
+    "positive": "#5f906e",
+    "negative": "#d05848",
+    "gold": "#bc8b4b",
+    "line": "rgba(239,107,46,.24)"
+  },
+  "strings": {
+    "hero-title": "举杯纵火，快意江湖",
+    "hero-sub": "FLAME FORCE · FIRE FRENZY"
+  },
+  "codexTheme": {
+    "appearanceTheme": "dark",
+    "codeThemeIds": {
+      "dark": "absolutely",
+      "light": "absolutely"
+    },
+    "dark": {
+      "accent": "#ef6b2e",
+      "contrast": 64,
+      "ink": "#f6eee5",
+      "opaqueWindows": true,
+      "surface": "#090d15",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Songti SC, Avenir Next, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#5f906e",
+        "diffRemoved": "#d05848",
+        "skill": "#bc8b4b"
+      }
+    },
+    "light": {
+      "accent": "#b54a22",
+      "contrast": 62,
+      "ink": "#282a31",
+      "opaqueWindows": true,
+      "surface": "#efe7db",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Songti SC, Avenir Next, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#5f906e",
+        "diffRemoved": "#d05848",
+        "skill": "#9f342f"
+      }
+    }
+  },
+  "assets": {
+    "wall": "assets/wall.webp",
+    "sidebar-texture": "assets/sidebar-texture.webp",
+    "ji-canghai-home": "assets/ji-canghai-home.webp",
+    "ji-canghai-task": "assets/ji-canghai-task.webp",
+    "intro": "assets/intro.webp",
+    "composer-deck": "assets/composer-deck.webp",
+    "deck-slim": "assets/deck-slim.webp",
+    "pill": "assets/pill.webp",
+    "card-flame-force": "assets/card-flame-force.webp",
+    "card-fire-frenzy": "assets/card-fire-frenzy.webp",
+    "card-wine-gourd": "assets/card-wine-gourd.webp",
+    "card-gallant-blade": "assets/card-gallant-blade.webp",
+    "watermark": "assets/watermark.webp",
+    "crest": "assets/crest.webp",
+    "logo-codex": "assets/logo-codex.webp",
+    "logo-chatgpt": "assets/logo-chatgpt.webp",
+    "logo-chatgpt-work": "assets/logo-chatgpt-work.webp",
+    "ember-gourd": "assets/ember-gourd.webp",
+    "ember-gourd-off": "assets/ember-gourd-off.webp",
+    "cursor-default": "assets/cursor-default.webp",
+    "cursor-default-2x": "assets/cursor-default-2x.webp",
+    "cursor-pointer": "assets/cursor-pointer.webp",
+    "cursor-pointer-2x": "assets/cursor-pointer-2x.webp",
+    "cursor-text": "assets/cursor-text.webp",
+    "cursor-text-2x": "assets/cursor-text-2x.webp",
+    "cursor-grab": "assets/cursor-grab.webp",
+    "cursor-grab-2x": "assets/cursor-grab-2x.webp",
+    "icon-new-task": "assets/icon-new-task.webp",
+    "icon-scheduled": "assets/icon-scheduled.webp",
+    "icon-plugins": "assets/icon-plugins.webp",
+    "icon-sites": "assets/icon-sites.webp",
+    "icon-pull-request": "assets/icon-pull-request.webp",
+    "icon-chat": "assets/icon-chat.webp",
+    "icon-search": "assets/icon-search.webp",
+    "icon-explore": "assets/icon-explore.webp",
+    "icon-build": "assets/icon-build.webp",
+    "icon-review": "assets/icon-review.webp",
+    "icon-fix": "assets/icon-fix.webp",
+    "icon-attach": "assets/icon-attach.webp",
+    "icon-mic": "assets/icon-mic.webp",
+    "icon-model": "assets/icon-model.webp",
+    "icon-settings": "assets/icon-settings.webp",
+    "icon-folder": "assets/icon-folder.webp"
+  },
+  "chrome": "chrome.html",
+  "css": "theme.css"
+}

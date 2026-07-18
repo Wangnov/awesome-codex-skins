@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 2,
+  "id": "wuchen-twofold-transit",
+  "name": "无尘 — 两仪通玄",
+  "description": "《永劫无间》无尘全覆盖双模式主题：以黑白道藏、两仪飞剑、星移阵门和青玉天机为主轴，提供主页结印全身与任务页开阵近景双人物卡、四张独立建议卡、16 类功能图标、四类 Retina 鼠标指针及双状态星移阵盘发送机关。",
+  "version": "1.0.0",
+  "author": "wangnov",
+  "codexVerified": "26.715.21425",
+  "category": "games",
+  "appearance": "dual",
+  "license": "personal-use",
+  "previews": [
+    "previews/home.webp",
+    "previews/task.webp"
+  ],
+  "colors": {
+    "primary": "#61ad9e",
+    "glow": "#dce7de",
+    "mystic": "#3f7f75",
+    "midnight": "#0d1516",
+    "panel": "#142122",
+    "secondary": "#263738",
+    "metal": "#aeb7b0",
+    "paper": "#eef0e9",
+    "ink": "#202b2b",
+    "ink-light": "#f1f3ed",
+    "positive": "#4f9271",
+    "negative": "#ba5e62",
+    "gold": "#b89b61",
+    "line": "rgba(97,173,158,.24)"
+  },
+  "strings": {
+    "hero-title": "两仪化剑，一念移星",
+    "hero-sub": "TAOIST SAGE · STARSHIFT"
+  },
+  "codexTheme": {
+    "appearanceTheme": "dark",
+    "codeThemeIds": {
+      "dark": "absolutely",
+      "light": "absolutely"
+    },
+    "dark": {
+      "accent": "#61ad9e",
+      "contrast": 64,
+      "ink": "#f1f3ed",
+      "opaqueWindows": true,
+      "surface": "#0d1516",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Songti SC, Avenir Next, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#4f9271",
+        "diffRemoved": "#ba5e62",
+        "skill": "#b89b61"
+      }
+    },
+    "light": {
+      "accent": "#34766c",
+      "contrast": 62,
+      "ink": "#202b2b",
+      "opaqueWindows": true,
+      "surface": "#eef0e9",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Songti SC, Avenir Next, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#4f9271",
+        "diffRemoved": "#ba5e62",
+        "skill": "#3f7f75"
+      }
+    }
+  },
+  "assets": {
+    "wall": "assets/wall.webp",
+    "sidebar-texture": "assets/sidebar-texture.webp",
+    "wuchen-home": "assets/wuchen-home.webp",
+    "wuchen-task": "assets/wuchen-task.webp",
+    "intro": "assets/intro.webp",
+    "composer-deck": "assets/composer-deck.webp",
+    "deck-slim": "assets/deck-slim.webp",
+    "pill": "assets/pill.webp",
+    "card-twofold-blades": "assets/card-twofold-blades.webp",
+    "card-starshift-gate": "assets/card-starshift-gate.webp",
+    "card-heavenly-scroll": "assets/card-heavenly-scroll.webp",
+    "card-sword-rain": "assets/card-sword-rain.webp",
+    "watermark": "assets/watermark.webp",
+    "crest": "assets/crest.webp",
+    "logo-codex": "assets/logo-codex.webp",
+    "logo-chatgpt": "assets/logo-chatgpt.webp",
+    "logo-chatgpt-work": "assets/logo-chatgpt-work.webp",
+    "starshift-disc": "assets/starshift-disc.webp",
+    "starshift-disc-off": "assets/starshift-disc-off.webp",
+    "cursor-default": "assets/cursor-default.webp",
+    "cursor-default-2x": "assets/cursor-default-2x.webp",
+    "cursor-pointer": "assets/cursor-pointer.webp",
+    "cursor-pointer-2x": "assets/cursor-pointer-2x.webp",
+    "cursor-text": "assets/cursor-text.webp",
+    "cursor-text-2x": "assets/cursor-text-2x.webp",
+    "cursor-grab": "assets/cursor-grab.webp",
+    "cursor-grab-2x": "assets/cursor-grab-2x.webp",
+    "icon-new-task": "assets/icon-new-task.webp",
+    "icon-scheduled": "assets/icon-scheduled.webp",
+    "icon-plugins": "assets/icon-plugins.webp",
+    "icon-sites": "assets/icon-sites.webp",
+    "icon-pull-request": "assets/icon-pull-request.webp",
+    "icon-chat": "assets/icon-chat.webp",
+    "icon-search": "assets/icon-search.webp",
+    "icon-explore": "assets/icon-explore.webp",
+    "icon-build": "assets/icon-build.webp",
+    "icon-review": "assets/icon-review.webp",
+    "icon-fix": "assets/icon-fix.webp",
+    "icon-attach": "assets/icon-attach.webp",
+    "icon-mic": "assets/icon-mic.webp",
+    "icon-model": "assets/icon-model.webp",
+    "icon-settings": "assets/icon-settings.webp",
+    "icon-folder": "assets/icon-folder.webp"
+  },
+  "chrome": "chrome.html",
+  "css": "theme.css"
+}

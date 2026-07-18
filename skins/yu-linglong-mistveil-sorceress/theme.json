@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 2,
+  "id": "yu-linglong-mistveil-sorceress",
+  "name": "玉玲珑 — 雾隐妖罗",
+  "description": "《永劫无间》玉玲珑神品时装〖雾隐妖罗〗全覆盖双模式主题：以破画惊梦、人形与妖心形切换、魄灵花和魂灯息为主轴，提供主页月白人形与任务页冰蓝妖心形两张独立人物卡、四张剧情建议卡、16 类功能图标、四类 Retina 鼠标指针及双状态摄魂灯发送机关。",
+  "version": "1.0.0",
+  "author": "wangnov",
+  "codexVerified": "26.715.31925",
+  "category": "games",
+  "appearance": "dual",
+  "license": "personal-use",
+  "previews": [
+    "previews/home.webp",
+    "previews/task.webp"
+  ],
+  "colors": {
+    "primary": "#a98ce8",
+    "glow": "#91c6ff",
+    "mystic": "#7356a8",
+    "midnight": "#090d1b",
+    "panel": "#11182d",
+    "secondary": "#26304d",
+    "metal": "#b8bdcc",
+    "paper": "#eeeef4",
+    "ink": "#242838",
+    "ink-light": "#f4f3fa",
+    "positive": "#4f9279",
+    "negative": "#c45d76",
+    "gold": "#c7aa68",
+    "line": "rgba(169,140,232,.24)"
+  },
+  "strings": {
+    "hero-title": "浮卷惊梦，雾隐摄魂",
+    "hero-sub": "MISTVEIL SORCERESS · WRAITH BLOOM"
+  },
+  "codexTheme": {
+    "appearanceTheme": "dark",
+    "codeThemeIds": {
+      "dark": "absolutely",
+      "light": "absolutely"
+    },
+    "dark": {
+      "accent": "#a98ce8",
+      "contrast": 64,
+      "ink": "#f4f3fa",
+      "opaqueWindows": true,
+      "surface": "#090d1b",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Songti SC, Avenir Next, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#4f9279",
+        "diffRemoved": "#c45d76",
+        "skill": "#c7aa68"
+      }
+    },
+    "light": {
+      "accent": "#7356a8",
+      "contrast": 62,
+      "ink": "#242838",
+      "opaqueWindows": true,
+      "surface": "#eeeef4",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Songti SC, Avenir Next, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#4f9279",
+        "diffRemoved": "#c45d76",
+        "skill": "#7356a8"
+      }
+    }
+  },
+  "assets": {
+    "wall": "assets/wall.webp",
+    "sidebar-texture": "assets/sidebar-texture.webp",
+    "mistveil-home": "assets/mistveil-home.webp",
+    "mistveil-task": "assets/mistveil-task.webp",
+    "intro": "assets/intro.webp",
+    "composer-deck": "assets/composer-deck.webp",
+    "deck-slim": "assets/deck-slim.webp",
+    "pill": "assets/pill.webp",
+    "card-scroll-dream": "assets/card-scroll-dream.webp",
+    "card-mist-form": "assets/card-mist-form.webp",
+    "card-soul-bloom": "assets/card-soul-bloom.webp",
+    "card-lantern-whisper": "assets/card-lantern-whisper.webp",
+    "watermark": "assets/watermark.webp",
+    "crest": "assets/crest.webp",
+    "logo-codex": "assets/logo-codex.webp",
+    "logo-chatgpt": "assets/logo-chatgpt.webp",
+    "logo-chatgpt-work": "assets/logo-chatgpt-work.webp",
+    "soul-lantern": "assets/soul-lantern.webp",
+    "soul-lantern-off": "assets/soul-lantern-off.webp",
+    "cursor-default": "assets/cursor-default.webp",
+    "cursor-default-2x": "assets/cursor-default-2x.webp",
+    "cursor-pointer": "assets/cursor-pointer.webp",
+    "cursor-pointer-2x": "assets/cursor-pointer-2x.webp",
+    "cursor-text": "assets/cursor-text.webp",
+    "cursor-text-2x": "assets/cursor-text-2x.webp",
+    "cursor-grab": "assets/cursor-grab.webp",
+    "cursor-grab-2x": "assets/cursor-grab-2x.webp",
+    "icon-new-task": "assets/icon-new-task.webp",
+    "icon-scheduled": "assets/icon-scheduled.webp",
+    "icon-plugins": "assets/icon-plugins.webp",
+    "icon-sites": "assets/icon-sites.webp",
+    "icon-pull-request": "assets/icon-pull-request.webp",
+    "icon-chat": "assets/icon-chat.webp",
+    "icon-search": "assets/icon-search.webp",
+    "icon-explore": "assets/icon-explore.webp",
+    "icon-build": "assets/icon-build.webp",
+    "icon-review": "assets/icon-review.webp",
+    "icon-fix": "assets/icon-fix.webp",
+    "icon-attach": "assets/icon-attach.webp",
+    "icon-mic": "assets/icon-mic.webp",
+    "icon-model": "assets/icon-model.webp",
+    "icon-settings": "assets/icon-settings.webp",
+    "icon-folder": "assets/icon-folder.webp"
+  },
+  "chrome": "chrome.html",
+  "css": "theme.css"
+}

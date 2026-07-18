@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 2,
+  "id": "naraka-wanxiang-five-aspects",
+  "name": "万象 · 五相征神",
+  "description": "《永劫无间》征神之路万象五行首领全覆盖主题：狱炎、魁石、烁金、溟祸与苍帝组成首页五相列阵和任务页轮值图谱，并完整覆盖建议卡、输入框、品牌、16 类功能图标及五类 Retina 鼠标指针。",
+  "version": "1.0.0",
+  "author": "wangnov",
+  "codexVerified": "26.715.21425",
+  "category": "games",
+  "appearance": "dual",
+  "license": "personal-use",
+  "previews": [
+    "previews/home.webp",
+    "previews/task.webp"
+  ],
+  "colors": {
+    "primary": "#d0ad67",
+    "glow": "#efd699",
+    "mystic": "#7c3e2e",
+    "midnight": "#101315",
+    "panel": "#1b1d1b",
+    "secondary": "#566e4d",
+    "metal": "#a38243",
+    "paper": "#e9e1d1",
+    "ink": "#29231e",
+    "ink-light": "#ece3d2",
+    "positive": "#6f8b61",
+    "negative": "#b94a32",
+    "fire": "#e06b45",
+    "earth": "#a58a65",
+    "gold": "#d2b56b",
+    "water": "#5a9bb3",
+    "wood": "#7f9a6d",
+    "line": "rgba(163,130,67,.28)"
+  },
+  "strings": {
+    "hero-title": "万象 · 五相征神",
+    "hero-sub": "木生火 · 火生土 · 土生金 · 金生水 · 水生木"
+  },
+  "codexTheme": {
+    "appearanceTheme": "dark",
+    "codeThemeIds": {
+      "dark": "absolutely",
+      "light": "absolutely"
+    },
+    "dark": {
+      "accent": "#d0ad67",
+      "contrast": 64,
+      "ink": "#ece3d2",
+      "opaqueWindows": true,
+      "surface": "#101315",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Songti SC, Noto Serif CJK SC, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#7f9a6d",
+        "diffRemoved": "#e06b45",
+        "skill": "#d2b56b"
+      }
+    },
+    "light": {
+      "accent": "#7c3e2e",
+      "contrast": 64,
+      "ink": "#29231e",
+      "opaqueWindows": true,
+      "surface": "#e9e1d1",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Songti SC, Noto Serif CJK SC, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#566e4d",
+        "diffRemoved": "#a4402d",
+        "skill": "#83672e"
+      }
+    }
+  },
+  "assets": {
+    "wall": "assets/wall.webp",
+    "sidebar-texture": "assets/sidebar-texture.webp",
+    "wanxiang-home": "assets/wanxiang-home.webp",
+    "wanxiang-task": "assets/wanxiang-task.webp",
+    "intro": "assets/intro.webp",
+    "composer-deck": "assets/composer-deck.webp",
+    "deck-slim": "assets/deck-slim.webp",
+    "pill": "assets/pill.webp",
+    "card-yuyan": "assets/card-yuyan.webp",
+    "card-kuishi": "assets/card-kuishi.webp",
+    "card-shuojin": "assets/card-shuojin.webp",
+    "card-minghuo": "assets/card-minghuo.webp",
+    "watermark": "assets/watermark.webp",
+    "crest": "assets/crest.webp",
+    "logo-codex": "assets/logo-codex.webp",
+    "logo-chatgpt-work": "assets/logo-chatgpt-work.webp",
+    "mask-seal": "assets/mask-seal.webp",
+    "mask-seal-off": "assets/mask-seal-off.webp",
+    "cursor-default": "assets/cursor-default.webp",
+    "cursor-default-2x": "assets/cursor-default-2x.webp",
+    "cursor-pointer": "assets/cursor-pointer.webp",
+    "cursor-pointer-2x": "assets/cursor-pointer-2x.webp",
+    "cursor-text": "assets/cursor-text.webp",
+    "cursor-text-2x": "assets/cursor-text-2x.webp",
+    "cursor-grab": "assets/cursor-grab.webp",
+    "cursor-grab-2x": "assets/cursor-grab-2x.webp",
+    "cursor-grabbing": "assets/cursor-grabbing.webp",
+    "cursor-grabbing-2x": "assets/cursor-grabbing-2x.webp",
+    "cursor-wait": "assets/cursor-wait.webp",
+    "cursor-wait-2x": "assets/cursor-wait-2x.webp",
+    "icon-new-task": "assets/icon-new-task.webp",
+    "icon-scheduled": "assets/icon-scheduled.webp",
+    "icon-plugins": "assets/icon-plugins.webp",
+    "icon-sites": "assets/icon-sites.webp",
+    "icon-pull-request": "assets/icon-pull-request.webp",
+    "icon-chat": "assets/icon-chat.webp",
+    "icon-search": "assets/icon-search.webp",
+    "icon-explore": "assets/icon-explore.webp",
+    "icon-build": "assets/icon-build.webp",
+    "icon-review": "assets/icon-review.webp",
+    "icon-fix": "assets/icon-fix.webp",
+    "icon-attach": "assets/icon-attach.webp",
+    "icon-mic": "assets/icon-mic.webp",
+    "icon-model": "assets/icon-model.webp",
+    "icon-settings": "assets/icon-settings.webp",
+    "icon-folder": "assets/icon-folder.webp"
+  },
+  "chrome": "chrome.html",
+  "css": "theme.css"
+}
