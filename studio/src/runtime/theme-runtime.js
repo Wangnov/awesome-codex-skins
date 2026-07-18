@@ -17,6 +17,10 @@
   const SHELL_ATTR = "data-cts-shell";
   const WINDOWS_MENU_CLASS = "cts-windows-menu-bar";
   const WINDOWS_MENU_REGION_ATTR = "data-cts-menu-region";
+  const COMPOSER_OVERFLOW_ATTR = "data-cts-composer-overflow";
+  const COMPOSER_MODE_ATTR = "data-cts-composer-mode";
+  const createComposerOverflowAnnotator = __CTS_CREATE_COMPOSER_OVERFLOW_ANNOTATOR__;
+  const selectComposerSurfaces = __CTS_SELECT_COMPOSER_SURFACES__;
   const RUNTIME_CSS = `
 html.codex-theme-studio .cts-windows-menu-bar {
   position: absolute !important;
@@ -62,6 +66,10 @@ html.codex-theme-studio .cts-windows-menu-bar [data-cts-menu-region="main"] {
   if (previous?.appliedVars) {
     for (const name of previous.appliedVars) document.documentElement?.style.removeProperty(name);
   }
+  document.querySelectorAll(`[${COMPOSER_OVERFLOW_ATTR}]`)
+    .forEach((node) => node.removeAttribute(COMPOSER_OVERFLOW_ATTR));
+  document.querySelectorAll(`[${COMPOSER_MODE_ATTR}]`)
+    .forEach((node) => node.removeAttribute(COMPOSER_MODE_ATTR));
 
   // Split the chrome fragment into its layers: "overlay" floats above the UI
   // (fixed, z31), "stage" is scenery mounted inside main UNDER the content.
@@ -146,6 +154,17 @@ html.codex-theme-studio .cts-windows-menu-bar [data-cts-menu-region="main"] {
     container.dataset.ctsIcon = icon;
     svg.dataset.ctsGlyph = icon;
   };
+
+  // Codex 26.715.31251 introduced a scrollable composer shell, text lane and
+  // finite-height editor root. Later builds can switch the same nodes between
+  // single-line and multiline layouts. The shared helper measures native
+  // capabilities without letting our own hardening roles contaminate them.
+  const annotateComposerOverflow = createComposerOverflowAnnotator({
+    overflowAttribute: COMPOSER_OVERFLOW_ATTR,
+    modeAttribute: COMPOSER_MODE_ATTR,
+    readStyle: (node) => getComputedStyle(node),
+    viewportSignature: () => `${innerWidth}x${innerHeight}`,
+  });
 
   const annotateIcons = () => {
     const aside = document.querySelector(".app-shell-left-panel");
@@ -272,6 +291,7 @@ html.codex-theme-studio .cts-windows-menu-bar [data-cts-menu-region="main"] {
     if (shellMain) setClass(shellMain, "cts-home-shell", Boolean(home));
 
     annotateIcons();
+    annotateComposerOverflow(selectComposerSurfaces(document));
 
     const fillTexts = (rootNode) => {
       for (const node of rootNode.querySelectorAll("[data-cts-text]")) {
@@ -369,6 +389,10 @@ html.codex-theme-studio .cts-windows-menu-bar [data-cts-menu-region="main"] {
     document.querySelectorAll("[data-cts-logo]").forEach((node) => node.removeAttribute("data-cts-logo"));
     document.querySelectorAll(`.${WINDOWS_MENU_CLASS}`).forEach((node) => node.classList.remove(WINDOWS_MENU_CLASS));
     document.querySelectorAll(`[${WINDOWS_MENU_REGION_ATTR}]`).forEach((node) => node.removeAttribute(WINDOWS_MENU_REGION_ATTR));
+    document.querySelectorAll(`[${COMPOSER_OVERFLOW_ATTR}]`)
+      .forEach((node) => node.removeAttribute(COMPOSER_OVERFLOW_ATTR));
+    document.querySelectorAll(`[${COMPOSER_MODE_ATTR}]`)
+      .forEach((node) => node.removeAttribute(COMPOSER_MODE_ATTR));
     document.getElementById(STYLE_ID)?.remove();
     document.getElementById(CHROME_ID)?.remove();
     document.getElementById(STAGE_ID)?.remove();
