@@ -40,8 +40,9 @@ Tiers · 分级: **Certified** = CI green + maintainer verified on a real Codex 
 | 溟祸 · 沉渊逆潮 | `naraka-wanxiang-minghuo-abyssal-tide` | 1.0.0 | @Wangnov | 26.715.31925 | dual |
 | 烁金 · 天人雷铸 | `naraka-wanxiang-shuojin-thunder-forge` | 1.0.0 | @Wangnov | 26.715.31925 | dual |
 | 狱炎 · 烬狱刀冢 | `naraka-wanxiang-yuyan-ember-prison` | 1.0.0 | @Wangnov | 26.715.31925 | dual |
+| 宁红夜 — 赤练无明 | `ning-hongye-crimson-night` | 1.1.0 | @Wangnov | 26.715.21425 | dual |
 | NERV EVA-00 Rei Prototype Terminal | `rei-eva00` | 1.0.0 | @Wangnov | 26.707.91948 | dual |
-| Roswaal Mansion — Rem Companion | `rem-rezero` | 1.0.0 | @Wangnov | 26.707.91948 |  |
+| Roswaal Mansion — Rem Companion | `rem-rezero` | 1.2.1 | @Wangnov | 26.707.91948 | dual |
 | San Tibo | `san-tibo` | 1.0.0 | @Wangnov | 26.707.91948 | dual |
 | 少司缘 — 司缘堂 | `shaosiyuan-fateweave` | 1.1.0 | @Wangnov | 26.715.21425 | dual |
 | NERV EVA-01 Shinji Synchronization Terminal | `shinji-eva01` | 1.0.0 | @Wangnov | 26.707.91948 | dual |
