@@ -33,6 +33,12 @@ import {
 import { buildPayload, REMOVE_EXPRESSION, VERIFY_REMOVED_EXPRESSION, verifyExpression, STUDIO_VERSION } from "../src/payload.mjs";
 import { listThemes, resolveThemeDir, loadTheme } from "../src/theme.mjs";
 import { applyNativeTheme, restoreNativeTheme, hasBackup } from "../src/native-theme.mjs";
+import {
+  CODEX_THEME_VARIANTS,
+  buildCodexThemeShareString,
+  validateCodexTheme,
+  verifyCodexThemeShareString,
+} from "../src/codex-theme-schema.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = path.resolve(here, "..");
@@ -165,7 +171,17 @@ async function cmdStatus() {
 }
 
 async function cmdStart(argv) {
-  const flags = parseFlags(argv, { theme: String, port: asPort, "restart-existing": Boolean, foreground: Boolean, "no-native-theme": Boolean });
+  const flags = parseFlags(argv, {
+    theme: String,
+    port: asPort,
+    appearance: String,
+    "restart-existing": Boolean,
+    foreground: Boolean,
+    "no-native-theme": Boolean,
+  });
+  if (flags.appearance && !["dark", "light", "system"].includes(flags.appearance)) {
+    throw new Error("--appearance must be dark, light, or system");
+  }
   const previousState = await readState();
   const app = await discoverManagedCodexApp(previousState?.appBundle);
   await ensureStateRoot();
@@ -182,6 +198,7 @@ async function cmdStart(argv) {
   if (currentTheme && !flags["no-native-theme"]) {
     try {
       codexTheme = (await loadTheme(await resolveThemeDir(THEMES_ROOT, currentTheme))).codexTheme;
+      if (codexTheme && flags.appearance) codexTheme = { ...codexTheme, appearanceTheme: flags.appearance };
     } catch { /* theme dir missing — ignore */ }
   }
 
@@ -482,11 +499,22 @@ async function cmdPack(argv) {
   const manifest = JSON.parse(await fs.readFile(path.join(dir, "theme.json"), "utf8"));
 
   const problems = [];
+  // Codex App Manager consumes packs through CSS data-URL variables, whose
+  // real-world Chromium budget is ~1.4MB per asset. Motion assets ride a
+  // separate non-CSS channel, so only the loader's 24MB cap applies to them.
+  const managerAssetLimit = 1_400_000;
+  const managerTotalAssetLimit = 24 * 1024 * 1024;
+  // semver.org's canonical pattern — rejects empty/zero-padded pre-release ids.
+  const semverPattern = /^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+([0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$/;
   if (path.basename(dir) !== theme.config.id) {
     problems.push(`directory name (${path.basename(dir)}) != theme id (${theme.config.id})`);
   }
   const version = typeof manifest.version === "string" && manifest.version.trim();
   if (!version) problems.push("missing `version` (semver) in theme.json");
+  else if (!semverPattern.test(version)) problems.push(`invalid semver in \`version\`: ${version}`);
+  if (typeof manifest.description !== "string" || !manifest.description.trim()) {
+    problems.push("missing top-level `description`");
+  }
   const previews = Array.isArray(manifest.previews) ? manifest.previews : [];
   if (!previews.length) {
     problems.push("missing `previews` — run `codex-theme preview-shot <id>` first");
@@ -495,9 +523,75 @@ async function cmdPack(argv) {
     const stat = await fs.stat(path.join(dir, rel)).catch(() => null);
     if (!stat?.isFile()) problems.push(`preview not found: ${rel}`);
     else if (stat.size > 1024 * 1024) problems.push(`preview over 1MB hard cap: ${rel}`);
+    if (!/^previews\/.+\.webp$/i.test(String(rel))) {
+      problems.push(`preview must be a WebP below previews/: ${rel}`);
+    }
   }
-  if (!manifest.codexVerified) {
+  if (typeof manifest.codexVerified !== "string" || !manifest.codexVerified.trim()) {
     problems.push("missing `codexVerified` — record the Codex version you verified against");
+  }
+  const authorValid = typeof manifest.author === "string"
+    ? Boolean(manifest.author.trim())
+    : Boolean(manifest.author?.name && typeof manifest.author.name === "string");
+  if (!authorValid) problems.push("missing top-level `author`");
+  if (!["dark", "light", "dual"].includes(manifest.appearance)) {
+    problems.push("top-level `appearance` must be dark, light, or dual");
+  }
+  if (typeof manifest.license !== "string" || !manifest.license.trim()) {
+    problems.push("missing top-level `license`");
+  }
+  if (Object.hasOwn(manifest, "metadata")) {
+    problems.push("legacy nested `metadata` is not accepted; move delivery fields to the top level");
+  }
+  if (manifest.appearance !== "dual") {
+    problems.push("pack-ready themes must use top-level `appearance: dual`");
+  }
+  // codexTheme stays optional per SPEC §2; when present it must be complete.
+  const nativeThemeProblems = manifest.codexTheme === undefined ? [] : validateCodexTheme(manifest.codexTheme, {
+    requireCodeThemeIds: true,
+    minimumContrast: 4.5,
+  });
+  problems.push(...nativeThemeProblems);
+  const nativeShareStrings = {};
+  if (manifest.codexTheme && !nativeThemeProblems.length) {
+    for (const variant of CODEX_THEME_VARIANTS) {
+      try {
+        const shareString = buildCodexThemeShareString(manifest.codexTheme, variant);
+        if (!verifyCodexThemeShareString(shareString, variant)) {
+          problems.push(`codexTheme.${variant} failed codex-theme-v1 round-trip verification`);
+        } else {
+          nativeShareStrings[variant] = shareString;
+        }
+      } catch (error) {
+        problems.push(`codexTheme.${variant} cannot serialize as codex-theme-v1: ${error.message}`);
+      }
+    }
+  }
+  let totalAssetBytes = 0;
+  for (const [key, asset] of Object.entries(theme.assets)) {
+    totalAssetBytes += asset.bytes;
+    const relative = manifest.assets?.[key];
+    if (path.extname(String(relative)).toLowerCase() !== ".webp") {
+      problems.push(`asset ${key} must be WebP: ${relative}`);
+    }
+    if (asset.bytes > managerAssetLimit) {
+      problems.push(`asset ${key} exceeds Codex App Manager limit (${asset.bytes} > ${managerAssetLimit})`);
+    }
+  }
+  if (totalAssetBytes > managerTotalAssetLimit) {
+    problems.push(`combined assets exceed Codex App Manager limit (${totalAssetBytes} > ${managerTotalAssetLimit})`);
+  }
+  // Motion assets must stay meaningful on hosts that ignore them: every key
+  // has to be one the runtime actually consumes, and the intro video needs a
+  // static `intro` art so non-motion hosts keep an opening moment.
+  const RUNTIME_MOTION_KEYS = new Set(["intro-video"]);
+  for (const key of Object.keys(theme.motionAssets ?? {})) {
+    if (!RUNTIME_MOTION_KEYS.has(key)) {
+      problems.push(`motion asset ${key} is not consumed by the runtime (known: ${[...RUNTIME_MOTION_KEYS].join(", ")})`);
+    }
+  }
+  if (theme.motionAssets?.["intro-video"] && !theme.assets?.intro) {
+    problems.push("motion asset intro-video requires a static `intro` asset as its fallback");
   }
   if (problems.length) {
     out({ ok: false, problems });
@@ -521,7 +615,30 @@ async function cmdPack(argv) {
     });
   });
   const stat = await fs.stat(archive);
-  out({ ok: true, archive, bytes: stat.size, id: theme.config.id, version, previews });
+  // Budgets above are per-category; the importer's hard cap is on the archive.
+  const MAX_ARCHIVE_BYTES = 50 * 1024 * 1024;
+  if (stat.size > MAX_ARCHIVE_BYTES) {
+    await fs.rm(archive, { force: true });
+    out({ ok: false, problems: [`archive exceeds the 50 MB importer cap (${stat.size} bytes)`] });
+    process.exitCode = 2;
+    return;
+  }
+  out({
+    ok: true,
+    archive,
+    bytes: stat.size,
+    id: theme.config.id,
+    version,
+    previews,
+    motionAssets: Object.keys(theme.motionAssets ?? {}),
+    nativeTheme: manifest.codexTheme
+      ? {
+          defaultAppearance: manifest.codexTheme.appearanceTheme,
+          codeThemeIds: manifest.codexTheme.codeThemeIds,
+          shareStringsVerified: Object.keys(nativeShareStrings),
+        }
+      : null,
+  });
 }
 
 // ------------------------------------------------------------- watch daemon
@@ -656,7 +773,7 @@ try {
       break;
     }
     default:
-      console.error("Usage: codex-theme <start|use|off|stop|status|themes|verify|screenshot> [flags]");
+      console.error("Usage: codex-theme <start|use|off|stop|status|themes|verify|screenshot|preview-shot|pack> [flags]");
       process.exitCode = command ? 1 : 0;
   }
 } catch (error) {

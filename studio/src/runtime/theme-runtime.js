@@ -5,7 +5,7 @@
 // here must be guarded by a value comparison — writing the same value to
 // style/class/attributes still dirties style state in Chromium and causes
 // visible repaint flashes (e.g. whenever a dropdown portal mounts).
-((cssText, themeConfig, chromeHtml) => {
+((cssText, themeConfig, chromeHtml, motionAssets) => {
   const STATE_KEY = "__CODEX_THEME_STUDIO__";
   const DISABLED_KEY = "__CODEX_THEME_STUDIO_DISABLED__";
   const STYLE_ID = "cts-style";
@@ -43,6 +43,7 @@ html.codex-theme-studio .cts-windows-menu-bar [data-cts-menu-region="main"] {
 }`;
   const VERSION = __CTS_VERSION_JSON__;
   const STAMP = __CTS_STAMP_JSON__;
+  const MOTION = motionAssets && typeof motionAssets === "object" ? motionAssets : {};
   const THEME = themeConfig && typeof themeConfig === "object" ? themeConfig : {};
 
   window[DISABLED_KEY] = false;
@@ -478,19 +479,62 @@ html.codex-theme-studio .cts-windows-menu-bar [data-cts-menu-region="main"] {
       if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
       if (document.getElementById(INTRO_ID) || !document.body) return;
       // Theme-agnostic convention: themes register their intro art as the
-      // asset key "intro"; --cts-asset-tiga-punch is the legacy fallback.
+      // asset key "intro"; --cts-asset-tiga-punch is the legacy fallback. An
+      // optional "intro-video" motion asset takes priority while the static
+      // art remains its poster/fallback when playback is unavailable.
       const styles = getComputedStyle(document.documentElement);
       const art = styles.getPropertyValue("--cts-asset-intro") || styles.getPropertyValue("--cts-asset-tiga-punch");
-      if (!art || !art.trim()) return;
+      const videoSrc = typeof MOTION["intro-video"] === "string" ? MOTION["intro-video"] : "";
+      if ((!art || !art.trim()) && !videoSrc) return;
+      const durationValue = styles.getPropertyValue("--cts-intro-duration").trim();
+      const durationMatch = durationValue.match(/^(\d+(?:\.\d+)?)(ms|s)$/i);
+      const durationMs = durationMatch
+        ? Math.min(15000, Math.max(1000, Number(durationMatch[1]) * (durationMatch[2].toLowerCase() === "s" ? 1000 : 1)))
+        : 2500;
       const intro = document.createElement("div");
       intro.id = INTRO_ID;
       intro.setAttribute("aria-hidden", "true");
       intro.innerHTML = '<i class="cts-intro-rays"></i><b class="cts-intro-figure"></b><u class="cts-intro-flash"></u>';
+      let video = null;
+      if (videoSrc) {
+        video = document.createElement("video");
+        video.className = "cts-intro-video";
+        video.src = videoSrc;
+        video.autoplay = true;
+        video.muted = true;
+        video.defaultMuted = true;
+        video.playsInline = true;
+        video.preload = "auto";
+        video.controls = false;
+        video.disablePictureInPicture = true;
+        video.setAttribute("muted", "");
+        video.setAttribute("playsinline", "");
+        video.addEventListener("error", () => {
+          const mediaError = video.error;
+          intro.dataset.ctsVideoError = mediaError
+            ? `${mediaError.code}:${mediaError.message || "media error"}`
+            : "media error";
+          video.remove();
+        }, { once: true });
+        intro.prepend(video);
+      }
       document.body.appendChild(intro);
-      setTimeout(() => intro.remove(), 2500);
+      setTimeout(() => intro.remove(), durationMs + 120);
+      if (video) {
+        try {
+          const playing = video.play();
+          playing?.catch?.((error) => {
+            intro.dataset.ctsVideoError = `${error?.name || "play"}:${error?.message || "rejected"}`;
+            video.remove();
+          });
+        } catch (error) {
+          intro.dataset.ctsVideoError = `${error?.name || "play"}:${error?.message || "failed"}`;
+          video.remove();
+        }
+      }
     } catch { /* cosmetic only */ }
   };
   if (previous?.stamp !== STAMP) playIntro();
 
   return { installed: true, version: VERSION, themeId: THEME.id || "custom" };
-})(__CTS_CSS_JSON__, __CTS_THEME_JSON__, __CTS_CHROME_JSON__)
+})(__CTS_CSS_JSON__, __CTS_THEME_JSON__, __CTS_CHROME_JSON__, __CTS_MOTION_JSON__)

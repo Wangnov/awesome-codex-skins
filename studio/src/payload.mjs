@@ -44,9 +44,17 @@ export async function buildPayload(themeDir) {
     fs.readFile(RUNTIME_TEMPLATE, "utf8"),
     inlineAssets(theme),
   ]);
+  // Motion assets skip the stylesheet: multi-megabyte videos blow past the
+  // CSS data-URL budget, so they ride a dedicated JSON slot consumed by the
+  // runtime's <video> mount instead.
+  const motionDataUrls = {};
+  for (const key of Object.keys(theme.motionAssets ?? {})) {
+    if (dataUrls[key]) motionDataUrls[key] = dataUrls[key];
+  }
   // Asset variables ride inside the stylesheet as data: URLs — immune to the
   // blob revocation races that break late-loading images (e.g. border-image).
   const assetVariables = Object.entries(dataUrls)
+    .filter(([key]) => !Object.hasOwn(motionDataUrls, key))
     .map(([key, url]) => `  --cts-asset-${key}: url("${url}");`)
     .join("\n");
   const cssWithAssets = `:root.codex-theme-studio {\n${assetVariables}\n}\n\n${theme.css}\n\n${RUNTIME_HARDENING_CSS}`;
@@ -58,6 +66,7 @@ export async function buildPayload(themeDir) {
     .update(COMPOSER_SURFACE_SELECTOR_SOURCE)
     .update(cssWithAssets).update(theme.chromeHtml ?? "")
     .update(JSON.stringify(theme.config))
+    .update(JSON.stringify(motionDataUrls))
     .digest("hex").slice(0, 12);
   const payload = template
     .replace("__CTS_CREATE_COMPOSER_OVERFLOW_ANNOTATOR__", () => COMPOSER_ANNOTATOR_SOURCE)
@@ -65,6 +74,7 @@ export async function buildPayload(themeDir) {
     .replace("__CTS_CSS_JSON__", () => JSON.stringify(cssWithAssets))
     .replace("__CTS_THEME_JSON__", () => JSON.stringify(theme.config))
     .replace("__CTS_CHROME_JSON__", () => JSON.stringify(theme.chromeHtml))
+    .replace("__CTS_MOTION_JSON__", () => JSON.stringify(motionDataUrls))
     .replace("__CTS_VERSION_JSON__", () => JSON.stringify(STUDIO_VERSION))
     .replace("__CTS_STAMP_JSON__", () => JSON.stringify(`${STUDIO_VERSION}:${theme.config.id}:${stamp}`));
   return {

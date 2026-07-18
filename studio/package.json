@@ -10,7 +10,7 @@
     "node": ">=20"
   },
   "scripts": {
-    "check": "node --check bin/codex-theme.mjs && node --check src/cdp.mjs && node --check src/codex-app.mjs && node --check src/composer-overflow.mjs && node --check src/theme.mjs && node --check src/payload.mjs && node --check src/state.mjs",
+    "check": "node --check bin/codex-theme.mjs && node --check src/cdp.mjs && node --check src/codex-app.mjs && node --check src/codex-theme-schema.mjs && node --check src/composer-overflow.mjs && node --check src/theme.mjs && node --check src/payload.mjs && node --check src/state.mjs",
     "test": "node --test test/*.test.mjs"
   },
   "license": "MIT"
