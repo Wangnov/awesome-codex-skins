@@ -17,6 +17,7 @@
   const SHELL_ATTR = "data-cts-shell";
   const WINDOWS_MENU_CLASS = "cts-windows-menu-bar";
   const WINDOWS_MENU_REGION_ATTR = "data-cts-menu-region";
+  const COMPOSER_OVERFLOW_ATTR = "data-cts-composer-overflow";
   const RUNTIME_CSS = `
 html.codex-theme-studio .cts-windows-menu-bar {
   position: absolute !important;
@@ -62,6 +63,8 @@ html.codex-theme-studio .cts-windows-menu-bar [data-cts-menu-region="main"] {
   if (previous?.appliedVars) {
     for (const name of previous.appliedVars) document.documentElement?.style.removeProperty(name);
   }
+  document.querySelectorAll(`[${COMPOSER_OVERFLOW_ATTR}]`)
+    .forEach((node) => node.removeAttribute(COMPOSER_OVERFLOW_ATTR));
 
   // Split the chrome fragment into its layers: "overlay" floats above the UI
   // (fixed, z31), "stage" is scenery mounted inside main UNDER the content.
@@ -145,6 +148,48 @@ html.codex-theme-studio .cts-windows-menu-bar [data-cts-menu-region="main"] {
     if (!svg) return;
     container.dataset.ctsIcon = icon;
     svg.dataset.ctsGlyph = icon;
+  };
+
+  // Codex 26.715.31251 introduced a scrollable composer shell, text lane and
+  // finite-height editor root. In 26.715.31925 the text lane is optional and
+  // can vary with renderer state. Keep only the editor as the scroll owner and
+  // discover intermediate lanes from the live DOM instead of assuming one
+  // version-specific nesting shape.
+  const annotateComposerOverflow = (composers) => {
+    const desired = new Map();
+    for (const composer of composers) {
+      desired.set(composer, "shell");
+      const editable = composer.querySelector(
+        '.ProseMirror[contenteditable="true"], [contenteditable="true"], textarea'
+      );
+      let fallback = null;
+      let editorScrollRoot = null;
+      for (let node = editable; node && node !== composer; node = node.parentElement) {
+        const style = getComputedStyle(node);
+        const scrollable = node.getAttribute(COMPOSER_OVERFLOW_ATTR) === "lane" ||
+          /^(auto|scroll)$/.test(style.overflowY);
+        const maxHeight = Number.parseFloat(style.maxHeight);
+        const finiteHeight = style.maxHeight !== "none" && Number.isFinite(maxHeight) && maxHeight > 0;
+        if (scrollable && !fallback) fallback = node;
+        if (scrollable && finiteHeight) {
+          editorScrollRoot = node;
+          break;
+        }
+      }
+      editorScrollRoot ??= fallback;
+      if (editorScrollRoot) {
+        desired.set(editorScrollRoot, "editor");
+        for (let node = editorScrollRoot.parentElement; node && node !== composer; node = node.parentElement) {
+          if (node.getAttribute(COMPOSER_OVERFLOW_ATTR) === "lane" ||
+              /^(auto|scroll)$/.test(getComputedStyle(node).overflowY)) desired.set(node, "lane");
+        }
+      }
+    }
+
+    for (const node of document.querySelectorAll(`[${COMPOSER_OVERFLOW_ATTR}]`)) {
+      if (!desired.has(node)) node.removeAttribute(COMPOSER_OVERFLOW_ATTR);
+    }
+    for (const [node, role] of desired) setAttr(node, COMPOSER_OVERFLOW_ATTR, role);
   };
 
   const annotateIcons = () => {
@@ -272,6 +317,7 @@ html.codex-theme-studio .cts-windows-menu-bar [data-cts-menu-region="main"] {
     if (shellMain) setClass(shellMain, "cts-home-shell", Boolean(home));
 
     annotateIcons();
+    annotateComposerOverflow([...document.querySelectorAll(".composer-surface-chrome")]);
 
     const fillTexts = (rootNode) => {
       for (const node of rootNode.querySelectorAll("[data-cts-text]")) {
@@ -369,6 +415,8 @@ html.codex-theme-studio .cts-windows-menu-bar [data-cts-menu-region="main"] {
     document.querySelectorAll("[data-cts-logo]").forEach((node) => node.removeAttribute("data-cts-logo"));
     document.querySelectorAll(`.${WINDOWS_MENU_CLASS}`).forEach((node) => node.classList.remove(WINDOWS_MENU_CLASS));
     document.querySelectorAll(`[${WINDOWS_MENU_REGION_ATTR}]`).forEach((node) => node.removeAttribute(WINDOWS_MENU_REGION_ATTR));
+    document.querySelectorAll(`[${COMPOSER_OVERFLOW_ATTR}]`)
+      .forEach((node) => node.removeAttribute(COMPOSER_OVERFLOW_ATTR));
     document.getElementById(STYLE_ID)?.remove();
     document.getElementById(CHROME_ID)?.remove();
     document.getElementById(STAGE_ID)?.remove();

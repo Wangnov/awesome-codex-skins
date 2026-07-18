@@ -11,6 +11,27 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 export const STUDIO_VERSION = "0.1.0";
 const RUNTIME_TEMPLATE = path.join(here, "runtime", "theme-runtime.js");
 
+// Runtime-owned composer overflow contract. Theme art is allowed to extend
+// beyond the shell without turning the shell into a scroll container; only the
+// finite-height editor root may scroll vertically. Appended after theme CSS so
+// old packages and theme-local `overflow-x` rules cannot reintroduce the bug.
+export const RUNTIME_HARDENING_CSS = `
+html.codex-theme-studio [data-cts-composer-overflow="shell"] {
+  overflow: clip !important;
+  overflow-clip-margin: 64px !important;
+}
+
+html.codex-theme-studio [data-cts-composer-overflow="lane"] {
+  overflow: visible !important;
+}
+
+html.codex-theme-studio [data-cts-composer-overflow="editor"] {
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain !important;
+}
+`;
+
 export async function buildPayload(themeDir) {
   const theme = await loadTheme(themeDir);
   const [template, dataUrls] = await Promise.all([
@@ -22,9 +43,10 @@ export async function buildPayload(themeDir) {
   const assetVariables = Object.entries(dataUrls)
     .map(([key, url]) => `  --cts-asset-${key}: url("${url}");`)
     .join("\n");
-  const cssWithAssets = `:root.codex-theme-studio {\n${assetVariables}\n}\n\n${theme.css}`;
-  // Fingerprint the executable payload, including the renderer runtime, so a
-  // runtime-only compatibility fix re-injects into already-themed renderers.
+  const cssWithAssets = `:root.codex-theme-studio {\n${assetVariables}\n}\n\n${theme.css}\n\n${RUNTIME_HARDENING_CSS}`;
+  // Fingerprint the executable payload, including the renderer runtime and
+  // packed CSS, so runtime-only compatibility fixes re-inject into renderers
+  // that already carry the same theme.
   const stamp = crypto.createHash("sha1")
     .update(template).update(cssWithAssets).update(theme.chromeHtml ?? "")
     .update(JSON.stringify(theme.config))
@@ -95,16 +117,52 @@ export function verifyExpression(expectedVersion = STUDIO_VERSION) {
     };
     const chrome = document.getElementById('cts-chrome');
     const state = window.__CODEX_THEME_STUDIO__;
-    const composer = box(document.querySelector('.composer-surface-chrome'));
+    const hostVersion = (() => {
+      try {
+        const value = window.electronBridge?.getSentryInitOptions?.()?.appVersion;
+        return typeof value === 'string' && /^\\d+\\./.test(value) ? value : null;
+      } catch {
+        return null;
+      }
+    })();
+    const hostCompatibility = hostVersion === '26.715.31251'
+      ? { audited: true, profile: 'composer-three-layer', composerLanePolicy: 'required' }
+      : hostVersion === '26.715.31925'
+        ? { audited: true, profile: 'composer-two-or-three-layer', composerLanePolicy: 'optional' }
+        : { audited: false, profile: 'capability-adaptive', composerLanePolicy: 'optional' };
+    const composerNodes = [...document.querySelectorAll('.composer-surface-chrome')];
+    const composerNode = composerNodes.find((node) => {
+      const r = node.getBoundingClientRect();
+      const style = getComputedStyle(node);
+      return r.width > 0 && r.height > 0 && style.display !== 'none' && style.visibility !== 'hidden';
+    }) ?? composerNodes[0] ?? null;
+    const composer = box(composerNode);
+    const composerEditor = composerNode?.querySelector('[data-cts-composer-overflow="editor"]') ?? null;
+    const composerLanes = composerNode
+      ? [...composerNode.querySelectorAll('[data-cts-composer-overflow="lane"]')]
+      : [];
+    const composerOverflow = composerNode ? {
+      shellRole: composerNode.getAttribute('data-cts-composer-overflow'),
+      shellOverflowY: getComputedStyle(composerNode).overflowY,
+      laneCount: composerLanes.length,
+      laneOverflowYs: composerLanes.map((node) => getComputedStyle(node).overflowY),
+      lanesValid: composerLanes.every((node) => getComputedStyle(node).overflowY === 'visible'),
+      lanePolicyValid: hostCompatibility.composerLanePolicy !== 'required' || composerLanes.length >= 1,
+      editorCount: composerNode.querySelectorAll('[data-cts-composer-overflow="editor"]').length,
+      editorOverflowY: composerEditor ? getComputedStyle(composerEditor).overflowY : null,
+    } : null;
     const sidebar = box(document.querySelector('aside.app-shell-left-panel'));
     const result = {
       installed: document.documentElement.classList.contains('codex-theme-studio'),
       themeId: document.documentElement.getAttribute('data-cts-theme'),
       version: state?.version ?? null,
+      hostVersion,
+      hostCompatibility,
       stylePresent: Boolean(document.getElementById('cts-style')),
       chromePresent: Boolean(chrome),
       chromePointerEvents: chrome ? getComputedStyle(chrome).pointerEvents : null,
       composer,
+      composerOverflow,
       sidebar,
       viewport: { width: innerWidth, height: innerHeight },
       documentOverflow: {
@@ -118,6 +176,12 @@ export function verifyExpression(expectedVersion = STUDIO_VERSION) {
       result.stylePresent &&
       (!result.chromePresent || result.chromePointerEvents === 'none') &&
       Boolean(result.composer?.visible) &&
+      result.composerOverflow?.shellRole === 'shell' &&
+      result.composerOverflow?.shellOverflowY === 'clip' &&
+      result.composerOverflow?.lanesValid === true &&
+      result.composerOverflow?.lanePolicyValid === true &&
+      result.composerOverflow?.editorCount >= 1 &&
+      result.composerOverflow?.editorOverflowY === 'auto' &&
       Boolean(result.sidebar?.visible) &&
       !result.documentOverflow.x
     );
