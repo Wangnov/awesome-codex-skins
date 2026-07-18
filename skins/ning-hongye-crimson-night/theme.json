@@ -1,0 +1,125 @@
+{
+  "schemaVersion": 2,
+  "id": "ning-hongye-crimson-night",
+  "name": "宁红夜 — 赤练无明",
+  "description": "《永劫无间》宁红夜全覆盖双模式主题：以昆仑盲剑客、赤练蛇纹、阴神之眼和宿命红绳为主轴，提供真实视频开屏、主页全身守阵与任务页结印近景双人物卡、四张独立建议卡、16 类功能图标、四类 Retina 鼠标指针及双状态蛇眼发送机关。",
+  "version": "1.1.0",
+  "author": "wangnov",
+  "codexVerified": "26.715.21425",
+  "category": "games",
+  "appearance": "dual",
+  "license": "personal-use",
+  "previews": [
+    "previews/home.webp",
+    "previews/task.webp"
+  ],
+  "colors": {
+    "primary": "#d94a57",
+    "glow": "#d7a0ff",
+    "mystic": "#7440a8",
+    "midnight": "#100c0f",
+    "panel": "#1d1016",
+    "secondary": "#3a2029",
+    "metal": "#b9b4b1",
+    "paper": "#f3ece5",
+    "ink": "#2a1e22",
+    "ink-light": "#f5ede7",
+    "positive": "#568c6d",
+    "negative": "#d15961",
+    "gold": "#a970e8",
+    "line": "rgba(217,74,87,.24)"
+  },
+  "strings": {
+    "hero-title": "赤练无明，直视宿命",
+    "hero-sub": "KUNLUN BLIND SWORD · MOONBANE'S EYE"
+  },
+  "codexTheme": {
+    "appearanceTheme": "dark",
+    "codeThemeIds": {
+      "dark": "absolutely",
+      "light": "absolutely"
+    },
+    "dark": {
+      "accent": "#d94a57",
+      "contrast": 64,
+      "ink": "#f5ede7",
+      "opaqueWindows": true,
+      "surface": "#100c0f",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Songti SC, Avenir Next, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#568c6d",
+        "diffRemoved": "#d15961",
+        "skill": "#a970e8"
+      }
+    },
+    "light": {
+      "accent": "#a92e3e",
+      "contrast": 62,
+      "ink": "#2a1e22",
+      "opaqueWindows": true,
+      "surface": "#f3ece5",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Songti SC, Avenir Next, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#3f7655",
+        "diffRemoved": "#a92e3e",
+        "skill": "#7440a8"
+      }
+    }
+  },
+  "assets": {
+    "wall": "assets/wall.webp",
+    "sidebar-texture": "assets/sidebar-texture.webp",
+    "ning-home": "assets/ning-home.webp",
+    "ning-task": "assets/ning-task.webp",
+    "intro": "assets/intro.webp",
+    "composer-deck": "assets/composer-deck.webp",
+    "deck-slim": "assets/deck-slim.webp",
+    "pill": "assets/pill.webp",
+    "card-yin-eye": "assets/card-yin-eye.webp",
+    "card-kunlun-seal": "assets/card-kunlun-seal.webp",
+    "card-red-chain": "assets/card-red-chain.webp",
+    "card-fate-blade": "assets/card-fate-blade.webp",
+    "watermark": "assets/watermark.webp",
+    "crest": "assets/crest.webp",
+    "logo-codex": "assets/logo-codex.webp",
+    "logo-chatgpt": "assets/logo-chatgpt.webp",
+    "logo-chatgpt-work": "assets/logo-chatgpt-work.webp",
+    "yin-eye": "assets/yin-eye.webp",
+    "yin-eye-off": "assets/yin-eye-off.webp",
+    "cursor-default": "assets/cursor-default.webp",
+    "cursor-default-2x": "assets/cursor-default-2x.webp",
+    "cursor-pointer": "assets/cursor-pointer.webp",
+    "cursor-pointer-2x": "assets/cursor-pointer-2x.webp",
+    "cursor-text": "assets/cursor-text.webp",
+    "cursor-text-2x": "assets/cursor-text-2x.webp",
+    "cursor-grab": "assets/cursor-grab.webp",
+    "cursor-grab-2x": "assets/cursor-grab-2x.webp",
+    "icon-new-task": "assets/icon-new-task.webp",
+    "icon-scheduled": "assets/icon-scheduled.webp",
+    "icon-plugins": "assets/icon-plugins.webp",
+    "icon-sites": "assets/icon-sites.webp",
+    "icon-pull-request": "assets/icon-pull-request.webp",
+    "icon-chat": "assets/icon-chat.webp",
+    "icon-search": "assets/icon-search.webp",
+    "icon-explore": "assets/icon-explore.webp",
+    "icon-build": "assets/icon-build.webp",
+    "icon-review": "assets/icon-review.webp",
+    "icon-fix": "assets/icon-fix.webp",
+    "icon-attach": "assets/icon-attach.webp",
+    "icon-mic": "assets/icon-mic.webp",
+    "icon-model": "assets/icon-model.webp",
+    "icon-settings": "assets/icon-settings.webp",
+    "icon-folder": "assets/icon-folder.webp"
+  },
+  "motionAssets": {
+    "intro-video": "assets/intro-video.mp4"
+  },
+  "chrome": "chrome.html",
+  "css": "theme.css"
+}
