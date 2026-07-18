@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 2,
+  "id": "gundam-rx78",
+  "name": "White Base — RX-78-2 Launch Deck",
+  "description": "机动战士高达 RX-78-2 陪伴主题：White Base 发进甲板、月神钛合金、联邦蓝红黄信号和哈罗双状态构成主页全身与任务页半身的双姿态工作台。",
+  "version": "1.0.1",
+  "author": "wangnov",
+  "codexVerified": "26.707.91948",
+  "appearance": "dual",
+  "license": "personal-use",
+  "previews": [
+    "previews/home.webp",
+    "previews/task.webp"
+  ],
+  "colors": {
+    "primary": "#66d7ff",
+    "glow": "#baf4ff",
+    "signal": "#e94b4b",
+    "cobalt": "#2858a6",
+    "midnight": "#0b1424",
+    "panel": "#14243a",
+    "titanium": "#cbd2d6",
+    "paper": "#e9eef0",
+    "ink": "#202936",
+    "ink-light": "#f1f6f8",
+    "positive": "#62bd91",
+    "negative": "#e16b6b",
+    "yellow": "#f1c84f",
+    "line": "rgba(102, 215, 255, .22)"
+  },
+  "strings": {
+    "hero-title": "高达，站上大地",
+    "hero-sub": "WHITE BASE • RX-78-2 STANDBY"
+  },
+  "codexTheme": {
+    "appearanceTheme": "dark",
+    "codeThemeIds": {
+      "dark": "absolutely",
+      "light": "absolutely"
+    },
+    "dark": {
+      "accent": "#66d7ff",
+      "contrast": 62,
+      "ink": "#f1f6f8",
+      "opaqueWindows": true,
+      "surface": "#0b1424",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "DIN Alternate, Avenir Next, SF Pro Text, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#62bd91",
+        "diffRemoved": "#e16b6b",
+        "skill": "#f1c84f"
+      }
+    },
+    "light": {
+      "accent": "#2858a6",
+      "contrast": 62,
+      "ink": "#202936",
+      "opaqueWindows": true,
+      "surface": "#e9eef0",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "DIN Alternate, Avenir Next, SF Pro Text, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#3e8262",
+        "diffRemoved": "#aa4747",
+        "skill": "#8a6d00"
+      }
+    }
+  },
+  "assets": {
+    "wall": "assets/wall.webp",
+    "sidebar-texture": "assets/sidebar-texture.webp",
+    "gundam-home": "assets/gundam-home.webp",
+    "gundam-task": "assets/gundam-task.webp",
+    "intro": "assets/intro.webp",
+    "composer-deck": "assets/composer-deck.webp",
+    "deck-slim": "assets/deck-slim.webp",
+    "card-white-base": "assets/card-white-base.webp",
+    "card-targeting": "assets/card-targeting.webp",
+    "card-core-fighter": "assets/card-core-fighter.webp",
+    "card-last-shooting": "assets/card-last-shooting.webp",
+    "pill": "assets/pill.webp",
+    "watermark": "assets/watermark.webp",
+    "crest": "assets/crest.webp",
+    "logo-codex": "assets/logo-codex.webp",
+    "logo-chatgpt-work": "assets/logo-chatgpt-work.webp",
+    "haro": "assets/haro.webp",
+    "haro-off": "assets/haro-off.webp",
+    "icon-new-task": "assets/icon-new-task.webp",
+    "icon-scheduled": "assets/icon-scheduled.webp",
+    "icon-plugins": "assets/icon-plugins.webp",
+    "icon-sites": "assets/icon-sites.webp",
+    "icon-pull-request": "assets/icon-pull-request.webp",
+    "icon-chat": "assets/icon-chat.webp",
+    "icon-search": "assets/icon-search.webp",
+    "icon-explore": "assets/icon-explore.webp",
+    "icon-build": "assets/icon-build.webp",
+    "icon-review": "assets/icon-review.webp",
+    "icon-fix": "assets/icon-fix.webp",
+    "icon-attach": "assets/icon-attach.webp",
+    "icon-mic": "assets/icon-mic.webp",
+    "icon-model": "assets/icon-model.webp",
+    "icon-settings": "assets/icon-settings.webp",
+    "icon-folder": "assets/icon-folder.webp"
+  },
+  "chrome": "chrome.html",
+  "css": "theme.css"
+}

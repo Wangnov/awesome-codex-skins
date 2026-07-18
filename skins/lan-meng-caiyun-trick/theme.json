@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 2,
+  "id": "lan-meng-caiyun-trick",
+  "name": "蓝梦 — 彩云戏法",
+  "description": "《永劫无间》蓝梦全覆盖双模式主题：以市井戏法、青玉戏布、红金彩球与纸鸟灯彩为主轴，提供主页完整站姿与任务页抛球近景双人物卡、四张独立建议卡、16 类功能图标、四类 Retina 鼠标指针及双状态戏球发送机关。",
+  "version": "1.0.0",
+  "author": "wangnov",
+  "codexVerified": "26.715.21425",
+  "appearance": "dual",
+  "license": "personal-use",
+  "previews": [
+    "previews/home.webp",
+    "previews/task.webp"
+  ],
+  "colors": {
+    "primary": "#2baea3",
+    "glow": "#f0c76b",
+    "mystic": "#cb4c42",
+    "midnight": "#0c1718",
+    "panel": "#122425",
+    "secondary": "#203c3b",
+    "metal": "#b6aa91",
+    "paper": "#f3efe3",
+    "ink": "#1d2928",
+    "ink-light": "#f6f0df",
+    "positive": "#4d9b70",
+    "negative": "#c84f45",
+    "gold": "#d0a54f",
+    "line": "rgba(43,174,163,.24)"
+  },
+  "strings": {
+    "hero-title": "彩云作幕，一球入梦",
+    "hero-sub": "WANDERING ILLUSIONIST · TRICK BALL"
+  },
+  "codexTheme": {
+    "appearanceTheme": "dark",
+    "codeThemeIds": {
+      "dark": "absolutely",
+      "light": "absolutely"
+    },
+    "dark": {
+      "accent": "#2baea3",
+      "contrast": 64,
+      "ink": "#f6f0df",
+      "opaqueWindows": true,
+      "surface": "#0c1718",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Songti SC, Avenir Next, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#4d9b70",
+        "diffRemoved": "#c84f45",
+        "skill": "#d0a54f"
+      }
+    },
+    "light": {
+      "accent": "#167f78",
+      "contrast": 62,
+      "ink": "#1d2928",
+      "opaqueWindows": true,
+      "surface": "#f3efe3",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Songti SC, Avenir Next, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#4d9b70",
+        "diffRemoved": "#c84f45",
+        "skill": "#cb4c42"
+      }
+    }
+  },
+  "assets": {
+    "wall": "assets/wall.webp",
+    "sidebar-texture": "assets/sidebar-texture.webp",
+    "lan-meng-home": "assets/lan-meng-home.webp",
+    "lan-meng-task": "assets/lan-meng-task.webp",
+    "intro": "assets/intro.webp",
+    "composer-deck": "assets/composer-deck.webp",
+    "deck-slim": "assets/deck-slim.webp",
+    "pill": "assets/pill.webp",
+    "card-trick-ball": "assets/card-trick-ball.webp",
+    "card-magic-carpet": "assets/card-magic-carpet.webp",
+    "card-paper-birds": "assets/card-paper-birds.webp",
+    "card-late-morning": "assets/card-late-morning.webp",
+    "watermark": "assets/watermark.webp",
+    "crest": "assets/crest.webp",
+    "logo-codex": "assets/logo-codex.webp",
+    "logo-chatgpt": "assets/logo-chatgpt.webp",
+    "logo-chatgpt-work": "assets/logo-chatgpt-work.webp",
+    "trick-ball": "assets/trick-ball.webp",
+    "trick-ball-off": "assets/trick-ball-off.webp",
+    "cursor-default": "assets/cursor-default.webp",
+    "cursor-default-2x": "assets/cursor-default-2x.webp",
+    "cursor-pointer": "assets/cursor-pointer.webp",
+    "cursor-pointer-2x": "assets/cursor-pointer-2x.webp",
+    "cursor-text": "assets/cursor-text.webp",
+    "cursor-text-2x": "assets/cursor-text-2x.webp",
+    "cursor-grab": "assets/cursor-grab.webp",
+    "cursor-grab-2x": "assets/cursor-grab-2x.webp",
+    "icon-new-task": "assets/icon-new-task.webp",
+    "icon-scheduled": "assets/icon-scheduled.webp",
+    "icon-plugins": "assets/icon-plugins.webp",
+    "icon-sites": "assets/icon-sites.webp",
+    "icon-pull-request": "assets/icon-pull-request.webp",
+    "icon-chat": "assets/icon-chat.webp",
+    "icon-search": "assets/icon-search.webp",
+    "icon-explore": "assets/icon-explore.webp",
+    "icon-build": "assets/icon-build.webp",
+    "icon-review": "assets/icon-review.webp",
+    "icon-fix": "assets/icon-fix.webp",
+    "icon-attach": "assets/icon-attach.webp",
+    "icon-mic": "assets/icon-mic.webp",
+    "icon-model": "assets/icon-model.webp",
+    "icon-settings": "assets/icon-settings.webp",
+    "icon-folder": "assets/icon-folder.webp"
+  },
+  "chrome": "chrome.html",
+  "css": "theme.css"
+}

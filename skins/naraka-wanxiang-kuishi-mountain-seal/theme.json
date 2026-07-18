@@ -1,0 +1,129 @@
+{
+  "schemaVersion": 2,
+  "id": "naraka-wanxiang-kuishi-mountain-seal",
+  "name": "魁石 · 镇岳山门",
+  "description": "《永劫无间》征神之路土万象·魁石专属全覆盖主题：以层岩甲、镇岳巨拳、峡谷断层与地脉压力为核心，完整覆盖主页、任务页、建议卡、16 类功能图标及六类 Retina 鼠标指针。",
+  "version": "1.0.0",
+  "author": "wangnov",
+  "codexVerified": "26.715.31925",
+  "appearance": "dual",
+  "license": "personal-use",
+  "previews": [
+    "previews/home.webp",
+    "previews/task.webp"
+  ],
+  "colors": {
+    "primary": "#9c7748",
+    "glow": "#d2b681",
+    "mystic": "#67462f",
+    "midnight": "#15130f",
+    "panel": "#242019",
+    "secondary": "#66543d",
+    "metal": "#8d704f",
+    "paper": "#e7ddca",
+    "ink": "#2c241b",
+    "ink-light": "#eee5d4",
+    "positive": "#667b58",
+    "negative": "#ad5937",
+    "signal": "#c6a36a",
+    "phase-1": "#493d2e",
+    "phase-2": "#70583a",
+    "phase-3": "#9c7748",
+    "phase-4": "#ad5937",
+    "phase-5": "#c6a36a",
+    "line": "rgba(156,119,72,.28)"
+  },
+  "strings": {
+    "hero-title": "魁石 · 镇岳山门",
+    "hero-sub": "拳镇山河 · 地脉不移"
+  },
+  "codexTheme": {
+    "appearanceTheme": "dark",
+    "codeThemeIds": {
+      "dark": "absolutely",
+      "light": "absolutely"
+    },
+    "dark": {
+      "accent": "#9c7748",
+      "contrast": 64,
+      "ink": "#eee5d4",
+      "opaqueWindows": true,
+      "surface": "#15130f",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Songti SC, Noto Serif CJK SC, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#667b58",
+        "diffRemoved": "#ad5937",
+        "skill": "#c6a36a"
+      }
+    },
+    "light": {
+      "accent": "#67462f",
+      "contrast": 64,
+      "ink": "#2c241b",
+      "opaqueWindows": true,
+      "surface": "#e7ddca",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Songti SC, Noto Serif CJK SC, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#66543d",
+        "diffRemoved": "#ad5937",
+        "skill": "#9c7748"
+      }
+    }
+  },
+  "assets": {
+    "wall": "assets/wall.webp",
+    "sidebar-texture": "assets/sidebar-texture.webp",
+    "boss-home": "assets/boss-home.webp",
+    "boss-task": "assets/boss-task.webp",
+    "intro": "assets/intro.webp",
+    "composer-deck": "assets/composer-deck.webp",
+    "deck-slim": "assets/deck-slim.webp",
+    "pill": "assets/pill.webp",
+    "card-1": "assets/card-1.webp",
+    "card-2": "assets/card-2.webp",
+    "card-3": "assets/card-3.webp",
+    "card-4": "assets/card-4.webp",
+    "watermark": "assets/watermark.webp",
+    "crest": "assets/crest.webp",
+    "logo-codex": "assets/logo-codex.webp",
+    "logo-chatgpt-work": "assets/logo-chatgpt-work.webp",
+    "send-on": "assets/send-on.webp",
+    "send-off": "assets/send-off.webp",
+    "cursor-default": "assets/cursor-default.webp",
+    "cursor-default-2x": "assets/cursor-default-2x.webp",
+    "cursor-pointer": "assets/cursor-pointer.webp",
+    "cursor-pointer-2x": "assets/cursor-pointer-2x.webp",
+    "cursor-text": "assets/cursor-text.webp",
+    "cursor-text-2x": "assets/cursor-text-2x.webp",
+    "cursor-grab": "assets/cursor-grab.webp",
+    "cursor-grab-2x": "assets/cursor-grab-2x.webp",
+    "cursor-grabbing": "assets/cursor-grabbing.webp",
+    "cursor-grabbing-2x": "assets/cursor-grabbing-2x.webp",
+    "cursor-wait": "assets/cursor-wait.webp",
+    "cursor-wait-2x": "assets/cursor-wait-2x.webp",
+    "icon-new-task": "assets/icon-new-task.webp",
+    "icon-scheduled": "assets/icon-scheduled.webp",
+    "icon-plugins": "assets/icon-plugins.webp",
+    "icon-sites": "assets/icon-sites.webp",
+    "icon-pull-request": "assets/icon-pull-request.webp",
+    "icon-chat": "assets/icon-chat.webp",
+    "icon-search": "assets/icon-search.webp",
+    "icon-explore": "assets/icon-explore.webp",
+    "icon-build": "assets/icon-build.webp",
+    "icon-review": "assets/icon-review.webp",
+    "icon-fix": "assets/icon-fix.webp",
+    "icon-attach": "assets/icon-attach.webp",
+    "icon-mic": "assets/icon-mic.webp",
+    "icon-model": "assets/icon-model.webp",
+    "icon-settings": "assets/icon-settings.webp",
+    "icon-folder": "assets/icon-folder.webp"
+  },
+  "chrome": "chrome.html",
+  "css": "theme.css"
+}

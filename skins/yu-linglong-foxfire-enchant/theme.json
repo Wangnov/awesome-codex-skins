@@ -1,0 +1,121 @@
+{
+  "schemaVersion": 2,
+  "id": "yu-linglong-foxfire-enchant",
+  "name": "玉玲珑 — 迷魂狐影",
+  "description": "《永劫无间》玉玲珑全覆盖双模式主题：以天狐魂魄、月池祭台、紫蓝狐火和摄魂灵器为主轴，提供主页慵懒全身与任务页施咒近景双人物卡、四张独立建议卡、16 类功能图标、四类 Retina 鼠标指针及双状态狐魂灵珠发送机关。",
+  "version": "1.0.0",
+  "author": "wangnov",
+  "codexVerified": "26.715.21425",
+  "appearance": "dual",
+  "license": "personal-use",
+  "previews": [
+    "previews/home.webp",
+    "previews/task.webp"
+  ],
+  "colors": {
+    "primary": "#9a68d8",
+    "glow": "#73d0dc",
+    "mystic": "#633ca1",
+    "midnight": "#100d1b",
+    "panel": "#1b1429",
+    "secondary": "#332448",
+    "metal": "#b8aebd",
+    "paper": "#f3edf6",
+    "ink": "#2b2134",
+    "ink-light": "#f5edf8",
+    "positive": "#4e9278",
+    "negative": "#c75579",
+    "gold": "#c29b57",
+    "line": "rgba(154,104,216,.24)"
+  },
+  "strings": {
+    "hero-title": "狐火照魂，玲珑入梦",
+    "hero-sub": "HEAVENLY FOX · ENCHANT"
+  },
+  "codexTheme": {
+    "appearanceTheme": "dark",
+    "codeThemeIds": {
+      "dark": "absolutely",
+      "light": "absolutely"
+    },
+    "dark": {
+      "accent": "#9a68d8",
+      "contrast": 64,
+      "ink": "#f5edf8",
+      "opaqueWindows": true,
+      "surface": "#100d1b",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Songti SC, Avenir Next, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#4e9278",
+        "diffRemoved": "#c75579",
+        "skill": "#c29b57"
+      }
+    },
+    "light": {
+      "accent": "#7040aa",
+      "contrast": 62,
+      "ink": "#2b2134",
+      "opaqueWindows": true,
+      "surface": "#f3edf6",
+      "fonts": {
+        "code": "SF Mono",
+        "ui": "Songti SC, Avenir Next, PingFang SC"
+      },
+      "semanticColors": {
+        "diffAdded": "#4e9278",
+        "diffRemoved": "#c75579",
+        "skill": "#633ca1"
+      }
+    }
+  },
+  "assets": {
+    "wall": "assets/wall.webp",
+    "sidebar-texture": "assets/sidebar-texture.webp",
+    "yu-linglong-home": "assets/yu-linglong-home.webp",
+    "yu-linglong-task": "assets/yu-linglong-task.webp",
+    "intro": "assets/intro.webp",
+    "composer-deck": "assets/composer-deck.webp",
+    "deck-slim": "assets/deck-slim.webp",
+    "pill": "assets/pill.webp",
+    "card-tail-assault": "assets/card-tail-assault.webp",
+    "card-foxfire-array": "assets/card-foxfire-array.webp",
+    "card-soul-orb": "assets/card-soul-orb.webp",
+    "card-enchant": "assets/card-enchant.webp",
+    "watermark": "assets/watermark.webp",
+    "crest": "assets/crest.webp",
+    "logo-codex": "assets/logo-codex.webp",
+    "logo-chatgpt": "assets/logo-chatgpt.webp",
+    "logo-chatgpt-work": "assets/logo-chatgpt-work.webp",
+    "fox-soul-orb": "assets/fox-soul-orb.webp",
+    "fox-soul-orb-off": "assets/fox-soul-orb-off.webp",
+    "cursor-default": "assets/cursor-default.webp",
+    "cursor-default-2x": "assets/cursor-default-2x.webp",
+    "cursor-pointer": "assets/cursor-pointer.webp",
+    "cursor-pointer-2x": "assets/cursor-pointer-2x.webp",
+    "cursor-text": "assets/cursor-text.webp",
+    "cursor-text-2x": "assets/cursor-text-2x.webp",
+    "cursor-grab": "assets/cursor-grab.webp",
+    "cursor-grab-2x": "assets/cursor-grab-2x.webp",
+    "icon-new-task": "assets/icon-new-task.webp",
+    "icon-scheduled": "assets/icon-scheduled.webp",
+    "icon-plugins": "assets/icon-plugins.webp",
+    "icon-sites": "assets/icon-sites.webp",
+    "icon-pull-request": "assets/icon-pull-request.webp",
+    "icon-chat": "assets/icon-chat.webp",
+    "icon-search": "assets/icon-search.webp",
+    "icon-explore": "assets/icon-explore.webp",
+    "icon-build": "assets/icon-build.webp",
+    "icon-review": "assets/icon-review.webp",
+    "icon-fix": "assets/icon-fix.webp",
+    "icon-attach": "assets/icon-attach.webp",
+    "icon-mic": "assets/icon-mic.webp",
+    "icon-model": "assets/icon-model.webp",
+    "icon-settings": "assets/icon-settings.webp",
+    "icon-folder": "assets/icon-folder.webp"
+  },
+  "chrome": "chrome.html",
+  "css": "theme.css"
+}
