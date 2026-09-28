@@ -1,24 +1,80 @@
+// ---------------------------------------------------------------------------
+// GENERATED FILE — do not hand-edit.
+//
+// Vendored verbatim from Wangnov/Codex-App-Manager, the canonical
+// codex-theme-engine runtime implementation, at commit 1775548e547920ff6c207539057de9565a1e6e3d:
+//   crates/codex-theme-engine/src/runtime/composer-overflow.mjs
+//
+// To pick up a newer runtime, bump the commit in studio/RUNTIME_SOURCE.json
+// and run: node scripts/sync-runtime.mjs
+// ---------------------------------------------------------------------------
+
 // Shared Composer capability detection. These functions are serialized into
 // the renderer payload, so keep them self-contained (no module-scope reads).
 
 export function selectComposerSurfaces(root) {
+  // Codex 26.730.61309 introduced the CSS-module surface; the adjacent
+  // 26.727.51351 still used the legacy class (see docs/composer-compatibility.md).
+  // Detect capabilities rather than trusting a version hint or module hash.
+  const current = "[data-composer-surface-variant][data-composer-layout]";
+  const surfaceSelector = `${current}, .composer-surface-chrome`;
+  const editorSelector = '[data-codex-composer], .ProseMirror[contenteditable="true"], ' +
+    '[contenteditable="true"], textarea';
   const unique = (nodes) => [...new Set(nodes.filter(Boolean))];
+  const ownsEditor = (surface) => {
+    if (surface.hasAttribute?.("data-cts-composer-surface-compat") && !surface.matches(current)) {
+      return false;
+    }
+    const editor = surface.querySelector(editorSelector);
+    // Nested surfaces and static utility/review cards must not get a second
+    // frame. Prefer the surface immediately enclosing the actual editor.
+    return Boolean(editor && (!editor.closest || editor.closest(surfaceSelector) === surface));
+  };
   const marked = unique(
     [...root.querySelectorAll("[data-codex-composer]")]
-      .map((node) => node.closest?.(".composer-surface-chrome")),
+      .map((node) => node.closest?.(surfaceSelector)),
   );
   const rooted = unique([
+    ...root.querySelectorAll(`[data-codex-composer-root] ${current}`),
     ...root.querySelectorAll("[data-codex-composer-root] .composer-surface-chrome"),
   ]);
-  const preferred = unique([...marked, ...rooted]);
+  const preferred = unique([...marked, ...rooted]).filter(ownsEditor);
   if (preferred.length) return preferred;
 
   // Older renderers may not expose the stable Composer markers. Retain a
   // capability fallback, but exclude static surfaces that contain no editor.
-  return [...root.querySelectorAll(".composer-surface-chrome")].filter((surface) =>
-    surface.querySelector(
-      '.ProseMirror[contenteditable="true"], [contenteditable="true"], textarea',
-    ));
+  return unique([
+    ...root.querySelectorAll(current),
+    ...root.querySelectorAll(".composer-surface-chrome"),
+  ]).filter(ownsEditor);
+}
+
+export function clearComposerSurfaceCompat(root) {
+  for (const node of root.querySelectorAll("[data-cts-composer-surface-compat]")) {
+    node.classList.remove("composer-surface-chrome");
+    node.removeAttribute("data-cts-composer-surface-compat");
+  }
+}
+
+export function reconcileComposerSurfaces(root) {
+  const surfaces = selectComposerSurfaces(root);
+  const desired = new Set(surfaces.filter((node) =>
+    node.matches("[data-composer-surface-variant][data-composer-layout]")));
+  // Own only aliases we add, so cleanup never removes a native legacy class.
+  // Reconcile on route changes and when React reuses or replaces the surface.
+  for (const node of root.querySelectorAll("[data-cts-composer-surface-compat]")) {
+    if (!desired.has(node)) {
+      node.classList.remove("composer-surface-chrome");
+      node.removeAttribute("data-cts-composer-surface-compat");
+    }
+  }
+  for (const node of desired) {
+    if (!node.classList.contains("composer-surface-chrome")) {
+      node.classList.add("composer-surface-chrome");
+      node.setAttribute("data-cts-composer-surface-compat", "true");
+    }
+  }
+  return surfaces;
 }
 
 export function createComposerOverflowAnnotator({
@@ -27,7 +83,7 @@ export function createComposerOverflowAnnotator({
   readStyle,
   viewportSignature,
 }) {
-  const cache = new WeakMap();
+  let cache = new WeakMap();
   const annotatedNodes = new Set();
   const modeNodes = new Set();
 
@@ -46,7 +102,10 @@ export function createComposerOverflowAnnotator({
 
   const nodeSignature = (node) => {
     const className = typeof node.className === "string" ? node.className : "";
-    return `${node.tagName || ""}\u0000${className}\u0000${node.getAttribute("style") || ""}`;
+    const layout = node.getAttribute("data-composer-layout") || "";
+    const overflow = node.getAttribute("data-composer-surface-overflow") || "";
+    return `${node.tagName || ""}\u0000${className}\u0000${node.getAttribute("style") || ""}` +
+      `\u0000${layout}\u0000${overflow}`;
   };
 
   const classify = (composer, path, signature) => {
@@ -113,7 +172,7 @@ export function createComposerOverflowAnnotator({
     return value;
   };
 
-  return (composers) => {
+  const annotate = (composers) => {
     const desiredRoles = new Map();
     const desiredModes = new Map();
 
@@ -164,4 +223,14 @@ export function createComposerOverflowAnnotator({
       modeNodes.add(node);
     }
   };
+
+  // Computed overflow can change without altering any node in the Composer
+  // path (for example through an ancestor class, stylesheet, or media query).
+  // Let the runtime discard structural classifications when those external
+  // style inputs change while retaining the cache for ordinary ensure passes.
+  annotate.invalidate = () => {
+    cache = new WeakMap();
+  };
+
+  return annotate;
 }

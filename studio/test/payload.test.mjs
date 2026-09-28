@@ -17,6 +17,9 @@ const evaluateVerify = ({
   const commentCard = {
     getBoundingClientRect: () => ({ x: 0, y: 0, width: 180, height: 80 }),
     computedStyle: { display: "block", visibility: "visible", overflowY: "visible" },
+    // The vendored selectComposerSurfaces() only picks surfaces that own an
+    // editor descendant — a static PR comment card must report none.
+    querySelector: () => null,
   };
   const composer = {
     getAttribute(name) {
@@ -24,8 +27,13 @@ const evaluateVerify = ({
       if (name === "data-cts-composer-mode") return mode;
       return null;
     },
+    hasAttribute: () => false,
+    classList: { contains: (name) => name === "composer-surface-chrome" },
     querySelector(selector) {
-      return selector === '[data-cts-composer-overflow="editor"]' ? editor : null;
+      if (selector === '[data-cts-composer-overflow="editor"]') return editor;
+      // ownsEditor()'s editor-presence probe (real selectComposerSurfaces()).
+      if (selector.includes("data-codex-composer")) return { closest: null };
+      return null;
     },
     querySelectorAll(selector) {
       if (selector === '[data-cts-composer-overflow="lane"]') return lanes;
@@ -39,6 +47,12 @@ const evaluateVerify = ({
   const sidebar = {
     getBoundingClientRect: () => ({ x: 0, y: 0, width: 240, height: 800 }),
     computedStyle: { display: "block", visibility: "visible", overflowY: "visible" },
+  };
+  const mainSurface = {
+    hasAttribute: (name) => name === "data-app-shell-main-surface",
+    classList: { contains: (name) => name === "main-surface" },
+    getBoundingClientRect: () => ({ x: 0, y: 0, width: 1024, height: 768 }),
+    computedStyle: { display: "block", visibility: "visible" },
   };
   const documentElement = {
     classList: { contains: (name) => name === "codex-theme-studio" },
@@ -56,7 +70,11 @@ const evaluateVerify = ({
       if (selector === ".composer-surface-chrome") return [commentCard, composer];
       return [];
     },
-    querySelector: (selector) => selector === "aside.app-shell-left-panel" ? sidebar : null,
+    querySelector: (selector) => {
+      if (selector === "aside.app-shell-left-panel") return sidebar;
+      if (selector === "main[data-app-shell-main-surface], main.main-surface") return mainSurface;
+      return null;
+    },
     getElementById: (id) => id === "cts-style" ? {} : null,
   };
   const window = {
@@ -88,10 +106,17 @@ test("verification selects the audited composer policy for each Codex build", ()
   assert.match(expression, /26\.715\.31925/);
   assert.match(expression, /composer-two-or-three-layer/);
   assert.match(expression, /composerLanePolicy: 'optional'/);
+  assert.match(expression, /26\.727\.51351/);
+  assert.match(expression, /composer-current-multiline/);
   assert.match(expression, /lanePolicyValid/);
   assert.match(expression, /data-codex-composer/);
   assert.match(expression, /modeValid/);
   assert.match(expression, /editorValid/);
+  assert.match(expression, /mainSurfaceMode/);
+  assert.match(expression, /mainSurfaceCompatible/);
+  assert.match(expression, /stageAttachedToMainSurface/);
+  assert.match(expression, /composerSurfaceMode/);
+  assert.match(expression, /composerSurfaceCompatible/);
   assert.doesNotMatch(expression, /laneCount >= 1/);
 });
 
@@ -102,6 +127,11 @@ test("verification accepts a correctly hardened single-line Composer", () => {
   assert.equal(result.composerOverflow.modeValid, true);
   assert.equal(result.composerOverflow.editorValid, true);
   assert.equal(result.composerOverflow.editorCount, 0);
+  // The main-surface bug this port fixes: studio must find the real shell
+  // main (compat-tagged with .main-surface), not an unrelated decoy <main>.
+  assert.equal(result.mainSurfaceCompatible, true);
+  assert.equal(result.stageAttachedToMainSurface, true);
+  assert.equal(result.composerSurfaceCompatible, true);
 });
 
 test("verification still requires the scrolling editor contract in multiline mode", () => {
