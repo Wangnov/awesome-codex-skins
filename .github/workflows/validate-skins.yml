@@ -25,9 +25,7 @@ jobs:
       - name: Install Studio CLI dependencies
         working-directory: studio
         run: npm ci
-      - name: Vendored runtime must match its pinned Codex-App-Manager commit
-        run: node scripts/sync-runtime.mjs --check
-      - name: Check and test Studio CLI
+      - name: Check and test Studio CLI (includes vendored-runtime drift check)
         working-directory: studio
         run: |
           npm run check

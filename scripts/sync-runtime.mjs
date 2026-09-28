@@ -117,6 +117,12 @@ async function main() {
     );
     process.exitCode = 1;
   }
+
+  if (!args.check) {
+    const updatedManifest = { ...manifest, lastSyncedAt: new Date().toISOString() };
+    await fs.writeFile(manifestPath, `${JSON.stringify(updatedManifest, null, 2)}\n`, "utf8");
+    console.log(`updated: studio/RUNTIME_SOURCE.json (lastSyncedAt=${updatedManifest.lastSyncedAt})`);
+  }
 }
 
 main().catch((err) => {
