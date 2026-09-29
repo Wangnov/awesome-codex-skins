@@ -104,7 +104,10 @@ jobs:
   # loopback-only CDP endpoint (same mechanism `codex-theme start` uses for a
   # contributor locally), and drive every skin's actual `apply` -> `verify` ->
   # `remove` cycle against the live renderer on whatever route that gets —
-  # asserting no uncaught renderer exception and complete removal either way.
+  # asserting each skin installs (html class, stylesheet, theme id, runtime
+  # version), no uncaught renderer exception, and complete removal. It does
+  # NOT assert verify().pass: that needs the signed-in shell (main surface,
+  # composer, left panel), which the sign-in page does not have.
   # That's a real gap the `pack` gate's static checks and the jsdom-based
   # unit tests can't cover: a skin whose payload is structurally valid but
   # crashes once it's actually running against React (a selector that wedges

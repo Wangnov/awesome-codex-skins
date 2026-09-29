@@ -25,21 +25,27 @@
 // label text, so it also collapses a mislabeled Pinned/Projects/Tasks
 // section the named pass missed.
 //
-// It is deliberately asymmetric about how it fails: it will happily report
-// "nothing found to collapse" (a section that doesn't render at all — e.g.
-// an empty account — has nothing to leak), but it will never call a capture
-// safe just because it could not *check*. A missing sidebar container, a
-// section header with no operable toggle, a toggle that never reports
-// collapsed, or any element anywhere in the sidebar that still matches a
-// "this looks like one row of a private list" pattern after every
-// discovered toggle (named or generic) was clicked — all of those fail the
-// whole check and the caller must not take the screenshot. If a contributor's
-// sidebar renders a persistent, non-collapsible private list that has no
-// toggle at all — nothing this module could find and click — refusing to
-// capture is the *correct* outcome, not a bug: there is no real-UI action
-// that would make that screenshot safe. The fix in that case is to extend
-// this module once the real markup is known (see the README/SPEC.md
-// contributing notes), not to weaken the leak scan.
+// What "fails closed" does and does not mean here. It fails closed on every
+// shape it can recognize: a missing sidebar container; NO recognizable
+// collapsible section at all after waiting for the sidebar to mount (a
+// non-English locale or a redesign that defeats both the label match and the
+// aria-expanded convention lands here — an unrecognized sidebar is refused,
+// never assumed empty); a section header with no operable toggle; a toggle
+// that never reports collapsed; and any element in the sidebar still matching
+// a "looks like one row of a private list" pattern after every discovered
+// toggle was clicked. It does NOT, and cannot, prove that no private content is
+// visible: a private list whose rows match none of the row patterns *and*
+// that sits beside at least one recognizable section would pass. The scan also
+// covers only the sidebar container — the composer's project/workspace
+// selector, header titles and the main content area are NOT scanned. The
+// result therefore also returns `visibleText`, every distinct text still
+// visible in the sidebar, so the caller can show it to the contributor, and
+// the docs tell contributors to look at the saved WebP before submitting.
+//
+// Side effects on the live app: collapsing is done to the contributor's real
+// Codex, so pinned/projects/tasks (and any other collapsible sidebar section)
+// stay collapsed afterward — Codex may persist that state. Toggles that open a
+// popup (aria-haspopup, combobox: account/workspace menus) are never clicked.
 
 // The exact three labels SPEC.md's preview requirement has always named.
 // Keeping this list short and literal (rather than guessing synonyms) means
@@ -67,6 +73,7 @@ export const PRIVATE_ROW_SELECTORS = Object.freeze([
   '[href*="/conversation" i]',
   '[href*="/project" i]',
   '[href*="/task" i]',
+  '[href*="/local/" i]',
 ]);
 
 // The one implementation, shared byte-for-byte between the unit tests (which
@@ -80,20 +87,40 @@ export const PRIVATE_ROW_SELECTORS = Object.freeze([
 // — there is only one place (the consts above) where that data lives.
 export async function collapseAndVerifySidebarPrivacy(
   doc,
-  { settleMs = 250, attempts = 8, wait, labels, rowSelector, sidebarSelector },
+  {
+    settleMs = 250, attempts = 8, mountAttempts = 20, scanOnly = false,
+    wait, labels, rowSelector, sidebarSelector,
+  },
 ) {
   const sleep = wait ?? ((ms) => new Promise((resolve) => setTimeout(resolve, ms)));
+  const view = doc.defaultView;
+  const styleOf = (node) =>
+    view && typeof view.getComputedStyle === "function" ? view.getComputedStyle(node) : node.style || {};
+  const zeroSized = (rect) => !rect || rect.width <= 0 || rect.height <= 0;
+  const clips = (style) =>
+    [style.overflow, style.overflowX, style.overflowY].some((v) => v && v !== "visible");
   const isVisible = (node) => {
     if (!node || typeof node.getBoundingClientRect !== "function") return false;
     if (typeof node.closest === "function" && node.closest('[aria-hidden="true"]')) return false;
     const rect = node.getBoundingClientRect();
-    if (!rect || rect.width <= 0 || rect.height <= 0) return false;
-    const view = doc.defaultView;
-    const style = view && typeof view.getComputedStyle === "function"
-      ? view.getComputedStyle(node)
-      : node.style || {};
+    if (zeroSized(rect)) return false;
+    const style = styleOf(node);
     if (style.display === "none" || style.visibility === "hidden") return false;
     if (style.opacity !== undefined && style.opacity !== "" && Number(style.opacity) === 0) return false;
+    // A node with its own non-zero box can still be invisible when an ancestor
+    // clips it away (a collapse implemented as height:0 / max-height:0 with
+    // overflow:hidden leaves every child's own rect intact). Walk the ancestors:
+    // any clipping ancestor that is empty, or that the node lies wholly outside
+    // of, hides it.
+    for (let anc = node.parentElement; anc; anc = anc.parentElement) {
+      const ancStyle = styleOf(anc);
+      if (ancStyle.display === "none" || ancStyle.visibility === "hidden") return false;
+      if (ancStyle.opacity !== undefined && ancStyle.opacity !== "" && Number(ancStyle.opacity) === 0) return false;
+      if (!clips(ancStyle)) continue;
+      const ar = anc.getBoundingClientRect();
+      if (zeroSized(ar)) return false;
+      if (rect.bottom <= ar.top || rect.top >= ar.bottom || rect.right <= ar.left || rect.left >= ar.right) return false;
+    }
     return true;
   };
   const ownText = (node) => {
@@ -104,24 +131,52 @@ export async function collapseAndVerifySidebarPrivacy(
       .join(" ")
       .trim();
   };
+  // Account/workspace menus and comboboxes report aria-expanded too, but they
+  // open popups rather than collapse a section; clicking them would open or
+  // close a menu, not tidy the sidebar.
+  const opensPopup = (node) => {
+    const popup = node.getAttribute && node.getAttribute("aria-haspopup");
+    return (popup !== null && popup !== undefined && popup !== "false") ||
+      (node.getAttribute && node.getAttribute("role")) === "combobox";
+  };
+  const isCollapsed = (toggle) => toggle.getAttribute && toggle.getAttribute("aria-expanded") === "false";
 
   const sidebar = doc.querySelector(sidebarSelector);
   if (!sidebar) {
-    return { ok: false, sidebarFound: false, sections: [], leaks: [], reason: "sidebar container not found" };
+    return {
+      ok: false, sidebarFound: false, sections: [], leaks: [], visibleText: [],
+      reason: "sidebar container not found",
+    };
   }
 
-  // Dispatches the same real pointer/mouse/click sequence at `toggle` and
-  // waits up to `attempts` settle rounds for `aria-expanded="false"`. Shared
-  // by the named-section pass and the generic sweep below so the two never
-  // drift apart on how a "click and wait" attempt is defined.
+  const findNamedHeader = (label) => {
+    const candidates = [...sidebar.querySelectorAll("*")].filter((node) => {
+      if ((node.children ? node.children.length : 0) > 2) return false; // headers are short, leaf-ish nodes
+      return ownText(node).toLowerCase() === label.toLowerCase();
+    });
+    return candidates.find(isVisible) || null;
+  };
+  const disclosureToggles = () =>
+    [...sidebar.querySelectorAll("[aria-expanded]")].filter((node) => isVisible(node) && !opensPopup(node));
+  // The sidebar's lists mount asynchronously after the home route settles, so
+  // a one-shot look right after route detection can see a half-built sidebar.
+  // Wait (bounded) until at least one recognizable section exists; if none
+  // ever appears the recognition check below refuses to call it safe.
+  const anyRecognizable = () =>
+    labels.some((label) => findNamedHeader(label)) || disclosureToggles().length > 0;
+  for (let i = 0; i < mountAttempts && !anyRecognizable(); i += 1) await sleep(settleMs);
+
+  // Dispatches the real pointer/mouse/click sequence at `toggle`, stopping as
+  // soon as it reports collapsed — a handler bound to both pointerdown and
+  // click must not see a second event that would toggle it back open — then
+  // waits up to `attempts` settle rounds. In scanOnly mode nothing is clicked.
   const clickToggleAndWaitCollapsed = async (toggle) => {
-    let collapsed = toggle.getAttribute && toggle.getAttribute("aria-expanded") === "false";
-    if (collapsed) return true;
+    if (scanOnly || isCollapsed(toggle)) return Boolean(isCollapsed(toggle));
     // `doc.defaultView` is `window` in both a real browser (this function
     // also ships stringified into the renderer, see below) and jsdom, so
     // this always constructs a real, dispatchable event for whichever DOM
     // is in play — never a plain object a real dispatchEvent would reject.
-    const MouseEventCtor = doc.defaultView && doc.defaultView.MouseEvent;
+    const MouseEventCtor = view && view.MouseEvent;
     for (const type of ["pointerdown", "mousedown", "mouseup", "click"]) {
       if (toggle.dispatchEvent) {
         toggle.dispatchEvent(
@@ -130,10 +185,13 @@ export async function collapseAndVerifySidebarPrivacy(
             : { type, bubbles: true, cancelable: true },
         );
       }
+      await sleep(Math.min(settleMs, 50));
+      if (isCollapsed(toggle)) break;
     }
+    let collapsed = isCollapsed(toggle);
     for (let i = 0; i < attempts && !collapsed; i += 1) {
       await sleep(settleMs);
-      collapsed = toggle.getAttribute && toggle.getAttribute("aria-expanded") === "false";
+      collapsed = isCollapsed(toggle);
     }
     return Boolean(collapsed);
   };
@@ -141,12 +199,7 @@ export async function collapseAndVerifySidebarPrivacy(
   const sections = [];
   const handledToggles = new Set();
   for (const label of labels) {
-    const all = [...sidebar.querySelectorAll("*")];
-    const candidates = all.filter((node) => {
-      if ((node.children ? node.children.length : 0) > 2) return false; // headers are short, leaf-ish nodes
-      return ownText(node).toLowerCase() === label.toLowerCase();
-    });
-    const headerNode = candidates.find(isVisible) || null;
+    const headerNode = findNamedHeader(label);
     if (!headerNode) {
       sections.push({ label, found: false, toggleFound: false, collapsed: false });
       continue;
@@ -166,17 +219,16 @@ export async function collapseAndVerifySidebarPrivacy(
     sections.push({ label, found: true, toggleFound: true, collapsed, source: "named" });
   }
 
-  // Generic sweep: the named pass above only ever looks for the three known
-  // labels, so it has no way to find (let alone collapse) a private,
-  // collapsible section it has no label for. This pass instead looks for
-  // *any* other visible toggle still reporting `aria-expanded="true"` inside
-  // the sidebar — regardless of label — and collapses it the same way. Runs
-  // in bounded rounds (collapsing one section can reveal another) rather
-  // than once, and never revisits a toggle the named pass or an earlier
-  // round already handled.
+  // Generic sweep: the named pass above only ever looks for the known labels,
+  // so it has no way to find (let alone collapse) a private, collapsible
+  // section it has no label for — or a section whose label is localized. This
+  // pass instead looks for *any* other visible disclosure toggle still
+  // reporting `aria-expanded="true"` inside the sidebar — regardless of label —
+  // and collapses it the same way. Runs in bounded rounds (collapsing one
+  // section can reveal another) and never revisits a toggle already handled.
   for (let round = 0; round < 4; round += 1) {
-    const extraToggles = [...sidebar.querySelectorAll('[aria-expanded="true"]')].filter(
-      (node) => isVisible(node) && !handledToggles.has(node),
+    const extraToggles = disclosureToggles().filter(
+      (node) => node.getAttribute("aria-expanded") === "true" && !handledToggles.has(node),
     );
     if (extraToggles.length === 0) break;
     for (const toggle of extraToggles) {
@@ -193,29 +245,48 @@ export async function collapseAndVerifySidebarPrivacy(
     .map((node) => (ownText(node) || node.textContent || "").trim().slice(0, 40))
     .filter((text) => text.length > 0);
 
+  // Everything textual still visible in the sidebar, for the caller to show to
+  // the contributor as a last human check (the row scan is a heuristic).
+  const visibleText = [];
+  for (const node of sidebar.querySelectorAll("*")) {
+    const text = ownText(node).slice(0, 60);
+    if (text && !visibleText.includes(text) && isVisible(node)) visibleText.push(text);
+    if (visibleText.length >= 80) break;
+  }
+
+  const recognizedSections =
+    sections.filter((s) => s.found && s.toggleFound).length +
+    disclosureToggles().filter((node) => !handledToggles.has(node)).length;
   const collapseFailures = sections.filter((s) => s.found && (!s.toggleFound || !s.collapsed));
-  const ok = collapseFailures.length === 0 && leaks.length === 0;
+  const ok = recognizedSections > 0 && collapseFailures.length === 0 && leaks.length === 0;
   let reason = null;
   if (!ok) {
     if (collapseFailures.some((s) => !s.toggleFound)) {
       reason = "a sidebar section header was found but has no discoverable toggle control";
     } else if (collapseFailures.length > 0) {
-      reason = "a sidebar section did not report collapsed after clicking its toggle";
-    } else {
+      reason = scanOnly
+        ? "a sidebar section is expanded again after the collapse pass"
+        : "a sidebar section did not report collapsed after clicking its toggle";
+    } else if (leaks.length > 0) {
       reason = "private-looking rows are still visible in the sidebar after collapsing";
+    } else {
+      reason =
+        "no collapsible sidebar section was recognized (non-English locale, still loading, or changed markup?) — " +
+        "refusing to assume the sidebar is empty";
     }
   }
-  return { ok, sidebarFound: true, sections, leaks, reason };
+  return { ok, sidebarFound: true, sections, recognizedSections, leaks, visibleText, reason };
 }
 
 // CDP-evaluated form: `collapseAndVerifySidebarPrivacy` stringified and
 // invoked against `document` with the canonical labels/selectors baked in as
 // JSON. Runs entirely inside the renderer via Runtime.evaluate — nothing
 // Node-specific crosses the boundary.
-export function collapseSidebarPrivacyExpression({ settleMs = 250, attempts = 8 } = {}) {
+export function collapseSidebarPrivacyExpression({ settleMs = 250, attempts = 8, scanOnly = false } = {}) {
   const options = {
     settleMs,
     attempts,
+    scanOnly,
     labels: SIDEBAR_PRIVACY_SECTION_LABELS,
     rowSelector: PRIVATE_ROW_SELECTORS.join(","),
     sidebarSelector: SIDEBAR_SELECTOR,

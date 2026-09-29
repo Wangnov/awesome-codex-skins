@@ -19,9 +19,12 @@
 // <video> element chokes on, etc).
 //
 // Usage: CODEX_APP_PATH=/path/to/ChatGPT.app node studio/scripts/ci-runtime-smoke.mjs
-// Exits non-zero if any skin fails to apply cleanly, throws a renderer
-// exception, or fails to fully remove.
+// Exits non-zero if any skin fails to install (installed class, stylesheet,
+// theme id and runtime version), throws a renderer exception, or fails to
+// fully remove. The full verify().pass (needs the signed-in shell) is NOT
+// asserted; see runSkin.
 
+import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { connectCodexTargets } from "../src/cdp.mjs";
@@ -30,6 +33,7 @@ import {
   quitCodex, DEFAULT_PORT,
 } from "../src/codex-app.mjs";
 import { buildPayload, REMOVE_EXPRESSION, VERIFY_REMOVED_EXPRESSION, verifyExpression } from "../src/payload.mjs";
+import { installedOk, pickInstallState } from "../src/smoke-assert.mjs";
 import { listThemes } from "../src/theme.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -66,6 +70,8 @@ function watchForExceptions(connected) {
   return caught;
 }
 
+const shellReached = new Set();
+
 async function runSkin(id, dir, connected, exceptions) {
   const { payload } = await buildPayload(dir);
   exceptions.length = 0;
@@ -75,17 +81,27 @@ async function runSkin(id, dir, connected, exceptions) {
   }
   await sleep(SETTLE_MS);
 
+  // Logged-out assertions only. verifyExpression().pass (the full "shell is
+  // laid out" check) requires the signed-in app shell — a visible main
+  // surface, composer and sidebar — none of which exists on the sign-in page
+  // a CI launch lands on, so it is deliberately NOT asserted here; it is only
+  // logged as informational context. What is asserted is what the injected
+  // runtime can honestly guarantee on any route: it installed itself under
+  // the expected theme id and version, and its stylesheet is present.
   for (const { target, session } of connected) {
     const deadline = Date.now() + PER_SKIN_TIMEOUT_MS;
     let result;
     while (Date.now() < deadline) {
       result = await session.evaluate(verifyExpression());
-      if (result?.pass) break;
+      if (installedOk(id, result)) break;
       await sleep(400);
     }
-    if (!result?.pass) {
-      throw new Error(`skin '${id}' failed verify() on ${target.url}: ${JSON.stringify(result)}`);
+    if (!installedOk(id, result)) {
+      throw new Error(
+        `skin '${id}' did not install on ${target.url}: ${JSON.stringify(pickInstallState(result))}`,
+      );
     }
+    if (result.pass) shellReached.add(target.url);
   }
 
   for (const { session } of connected) {
@@ -129,6 +145,12 @@ async function main() {
 
   const themes = await listThemes(SKINS_ROOT);
   if (themes.length === 0) throw new Error(`No skins found under ${SKINS_ROOT}`);
+  // listThemes silently skips directories that fail to load; a smoke test that
+  // quietly covers fewer skins than exist would be a false green.
+  const skinDirs = (await fs.readdir(SKINS_ROOT, { withFileTypes: true })).filter((e) => e.isDirectory());
+  if (skinDirs.length !== themes.length) {
+    throw new Error(`${skinDirs.length} skin dir(s) under ${SKINS_ROOT} but only ${themes.length} loaded`);
+  }
   log(`smoke-testing ${themes.length} skin(s) from ${SKINS_ROOT}`);
 
   const failures = [];
@@ -152,7 +174,10 @@ async function main() {
     process.exitCode = 1;
     return;
   }
-  log(`all ${themes.length} skin(s) passed: apply, verify, remove, no renderer exceptions`);
+  log(
+    `all ${themes.length} skin(s) passed: install, remove, no renderer exceptions ` +
+      `(full signed-in shell reached on ${shellReached.size} target(s), informational only)`,
+  );
 }
 
 main().catch((error) => {

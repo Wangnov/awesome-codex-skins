@@ -40,6 +40,11 @@ function withFakeLayout(window) {
         return { width: 0, height: 0, top: 0, left: 0, right: 0, bottom: 0, x: 0, y: 0, toJSON() {} };
       }
     }
+    // Models a clip-style collapse: height:0 zeroes only the element's OWN box,
+    // its children keep theirs (exactly why an ancestor-aware check is needed).
+    if (this.style && this.style.height === "0px") {
+      return { width: 100, height: 0, top: 0, left: 0, right: 100, bottom: 0, x: 0, y: 0, toJSON() {} };
+    }
     return { width: 100, height: 20, top: 0, left: 0, right: 100, bottom: 20, x: 0, y: 0, toJSON() {} };
   };
 }
@@ -51,18 +56,33 @@ function withFakeLayout(window) {
 function wireToggles(document) {
   for (const toggle of document.querySelectorAll("[aria-expanded][data-controls]")) {
     if (toggle.getAttribute("data-stuck") === "true") continue;
-    toggle.addEventListener("click", () => {
+    const flip = () => {
       const expanded = toggle.getAttribute("aria-expanded") === "true";
       toggle.setAttribute("aria-expanded", expanded ? "false" : "true");
       const controlled = document.getElementById(toggle.getAttribute("data-controls"));
-      if (controlled) controlled.style.display = expanded ? "none" : "";
-    });
+      if (!controlled) return;
+      if (toggle.getAttribute("data-collapse") === "clip") {
+        controlled.style.height = expanded ? "0px" : "";
+        controlled.style.overflow = expanded ? "hidden" : "";
+      } else {
+        controlled.style.display = expanded ? "none" : "";
+      }
+    };
+    toggle.addEventListener("click", flip);
+    // data-double models a handler bound to pointerdown as well as click.
+    if (toggle.getAttribute("data-double") === "true") toggle.addEventListener("pointerdown", flip);
+  }
+  // Popup triggers must never be clicked by the sweep.
+  popupClicks.length = 0;
+  for (const popup of document.querySelectorAll("[aria-haspopup]")) {
+    popup.addEventListener("click", () => popupClicks.push(popup.id));
   }
 }
+const popupClicks = [];
 
 async function loadFixture(name) {
   const html = await fs.readFile(path.join(FIXTURES, `${name}.html`), "utf8");
-  const dom = new JSDOM(`<!doctype html><html><body>${html}</body></html>`, { pretendToBeVisual: true });
+  const dom = new JSDOM(`<!doctype html><html><body>${html}</body></html>`, { pretendToBeVisual: true, runScripts: "outside-only" });
   withFakeLayout(dom.window);
   wireToggles(dom.window.document);
   return dom;
@@ -97,12 +117,107 @@ test("sections already collapsed on load pass without needing a click", async ()
   assert.equal(result.leaks.length, 0);
 });
 
-test("an account with no pinned/project/task content passes (nothing to leak)", async () => {
+test("a sidebar with no recognizable collapsible section fails closed instead of assuming it is empty", async () => {
   const dom = await loadFixture("empty-account");
   const result = await collapseAndVerifySidebarPrivacy(dom.window.document, defaultOptions());
-  assert.equal(result.ok, true);
+  assert.equal(result.ok, false);
   assert.equal(result.sidebarFound, true);
-  for (const section of result.sections) assert.equal(section.found, false, section.label);
+  assert.equal(result.recognizedSections, 0);
+  assert.match(result.reason, /no collapsible sidebar section was recognized/);
+});
+
+test("an account whose sections exist but hold no rows passes", async () => {
+  const dom = await loadFixture("empty-sections");
+  const result = await collapseAndVerifySidebarPrivacy(dom.window.document, defaultOptions());
+  assert.equal(result.ok, true);
+  assert.equal(result.leaks.length, 0);
+  assert.ok(result.recognizedSections >= 2);
+});
+
+test("a localized sidebar (labels match nothing) is still collapsed by the aria-expanded sweep", async () => {
+  const dom = await loadFixture("localized-aria");
+  const result = await collapseAndVerifySidebarPrivacy(dom.window.document, defaultOptions());
+  assert.equal(result.ok, true, JSON.stringify(result));
+  assert.deepEqual(result.sections.filter((s) => s.source === "generic").map((s) => s.label).sort(), ["置顶", "项目"]);
+  assert.equal(dom.window.document.getElementById("pinned-list").style.display, "none");
+});
+
+test("a localized sidebar with no toggle convention and plain-div rows fails closed (used to pass silently)", async () => {
+  const dom = await loadFixture("localized-no-aria");
+  const result = await collapseAndVerifySidebarPrivacy(dom.window.document, defaultOptions());
+  assert.equal(result.ok, false);
+  assert.equal(result.recognizedSections, 0);
+  assert.match(result.reason, /no collapsible sidebar section was recognized/);
+  // The remaining visible text is surfaced so a human can see what is left.
+  assert.ok(result.visibleText.includes("季度预算谈判笔记"));
+});
+
+test("waits for a late-mounting sidebar instead of judging a half-built one", async () => {
+  const dom = await loadFixture("empty-account");
+  const document = dom.window.document;
+  setTimeout(() => {
+    const section = document.createElement("section");
+    section.innerHTML =
+      '<button aria-expanded="true" data-controls="late-list">Pinned</button>' +
+      '<ul id="late-list"><li>Late thread</li></ul>';
+    document.querySelector("aside").appendChild(section);
+    wireToggles(document);
+  }, 40);
+  const result = await collapseAndVerifySidebarPrivacy(
+    document,
+    defaultOptions({ settleMs: 10, mountAttempts: 100 }),
+  );
+  assert.equal(result.ok, true, JSON.stringify(result));
+  assert.equal(document.getElementById("late-list").style.display, "none");
+});
+
+test("a collapse implemented by clipping (height:0 + overflow:hidden) is not reported as a leak", async () => {
+  const dom = await loadFixture("clip-collapse");
+  const result = await collapseAndVerifySidebarPrivacy(dom.window.document, defaultOptions());
+  assert.equal(result.ok, true, JSON.stringify(result));
+  assert.equal(result.leaks.length, 0);
+  assert.equal(dom.window.document.getElementById("pinned-wrap").style.height, "0px");
+  assert.ok(!result.visibleText.includes("Q3 budget negotiation notes"));
+});
+
+test("a handler bound to both pointerdown and click ends collapsed, not toggled back open", async () => {
+  const dom = await loadFixture("double-handler");
+  const result = await collapseAndVerifySidebarPrivacy(dom.window.document, defaultOptions());
+  assert.equal(result.ok, true, JSON.stringify(result));
+  assert.equal(dom.window.document.querySelector("[data-double]").getAttribute("aria-expanded"), "false");
+});
+
+test("popup triggers (aria-haspopup) are never clicked by the generic sweep", async () => {
+  const dom = await loadFixture("popup-toggle");
+  const result = await collapseAndVerifySidebarPrivacy(dom.window.document, defaultOptions());
+  assert.equal(result.ok, true, JSON.stringify(result));
+  assert.deepEqual(popupClicks, []);
+  assert.equal(dom.window.document.getElementById("account-menu").getAttribute("aria-expanded"), "true");
+  assert.ok(!result.sections.some((s) => s.label === "Account"));
+});
+
+test("scanOnly re-verifies without clicking, and catches a section that re-expanded after the collapse", async () => {
+  const dom = await loadFixture("full-expanded");
+  const document = dom.window.document;
+  // Nothing has been collapsed yet: scanOnly must refuse and must not click.
+  const before = await collapseAndVerifySidebarPrivacy(document, defaultOptions({ scanOnly: true }));
+  assert.equal(before.ok, false);
+  assert.match(before.reason, /expanded again/);
+  assert.equal(document.querySelector('[data-controls="pinned-list"]').getAttribute("aria-expanded"), "true");
+
+  const collapsed = await collapseAndVerifySidebarPrivacy(document, defaultOptions());
+  assert.equal(collapsed.ok, true);
+  const still = await collapseAndVerifySidebarPrivacy(document, defaultOptions({ scanOnly: true }));
+  assert.equal(still.ok, true, JSON.stringify(still));
+
+  // Simulate a post-resize re-render that re-mounts a section expanded.
+  const toggle = document.querySelector('[data-controls="tasks-list"]');
+  toggle.setAttribute("aria-expanded", "true");
+  document.getElementById("tasks-list").style.display = "";
+  const after = await collapseAndVerifySidebarPrivacy(document, defaultOptions({ scanOnly: true }));
+  assert.equal(after.ok, false);
+  assert.ok(after.leaks.length > 0);
+  assert.equal(toggle.getAttribute("aria-expanded"), "true", "scanOnly must not click");
 });
 
 test("a section header with no discoverable toggle fails closed", async () => {
@@ -182,13 +297,31 @@ test("the CDP-evaluated expression is a syntactically valid IIFE calling documen
   const source = collapseSidebarPrivacyExpression({ settleMs: 10, attempts: 2 });
   assert.match(source, /^\(async function collapseAndVerifySidebarPrivacy\(/);
   assert.match(source, /\(document, \{.*\}\)$/s);
-  // The canonical labels/selectors are baked in as JSON, not re-derived —
-  // one source of truth (the exported consts), not a second copy.
   for (const label of SIDEBAR_PRIVACY_SECTION_LABELS) assert.match(source, new RegExp(`"${label}"`));
   assert.match(source, /aside\.app-shell-left-panel/);
-  // Must not reference anything outside the expression itself — it runs
-  // through Runtime.evaluate in the renderer, with no Node.js closure.
   assert.doesNotMatch(source, /require\(|import /);
-  // Syntax check only (no `document` global here, so it is not invoked).
   assert.doesNotThrow(() => new Function(`return ${source};`));
+});
+
+// Actually evaluates the exact string shipped over CDP inside a jsdom window
+// (whose only globals are the window's own, as in the renderer), so a closure
+// reference or helper accidentally left outside the function body fails here
+// with a ReferenceError instead of at runtime in the contributor's Codex.
+test("the CDP-evaluated expression really runs in an isolated window and produces the same verdicts", async () => {
+  for (const [fixture, expectOk] of [
+    ["full-expanded", true],
+    ["clip-collapse", true],
+    ["localized-aria", true],
+    ["relabeled-leak", false],
+    ["localized-no-aria", false],
+  ]) {
+    const dom = await loadFixture(fixture);
+    const result = await dom.window.eval(collapseSidebarPrivacyExpression({ settleMs: 0, attempts: 3 }));
+    assert.equal(result.ok, expectOk, `${fixture}: ${JSON.stringify(result)}`);
+  }
+  const dom = await loadFixture("full-expanded");
+  const collapsed = await dom.window.eval(collapseSidebarPrivacyExpression({ settleMs: 0, attempts: 3 }));
+  assert.equal(collapsed.ok, true);
+  const rescan = await dom.window.eval(collapseSidebarPrivacyExpression({ settleMs: 0, scanOnly: true }));
+  assert.equal(rescan.ok, true);
 });

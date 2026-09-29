@@ -434,33 +434,52 @@ async function cmdPreviewShot(argv) {
       await new Promise((resolve) => setTimeout(resolve, 400));
     }
 
-    // Collapse pinned/projects/tasks through the real UI and verify nothing
-    // private-shaped is still visible — refuse to capture otherwise.
-    if (allowVisibleSidebar) {
-      process.stderr.write(
-        "codex-theme preview-shot: --allow-visible-sidebar set — skipping the sidebar privacy check. " +
-          "Do NOT submit a preview captured this way; it may show your real pinned chats, projects or tasks.\n",
-      );
-    } else {
-      const privacy = await session.evaluate(collapseSidebarPrivacyExpression({}));
-      if (!privacy?.ok) {
-        const detail = JSON.stringify({ sections: privacy?.sections, leaks: privacy?.leaks }, null, 2);
-        throw new Error(
-          `Refusing to capture: sidebar privacy check failed (${privacy?.reason ?? "unknown reason"}).\n` +
-            `Collapse the pinned/projects/tasks sections by hand and retry, or pass --allow-visible-sidebar ` +
-            "for local-only iteration (never for a submitted preview).\n" +
-            `Detail: ${detail}`,
-        );
-      }
-    }
-
-    // 2× capture, downscaled by Pillow for a crisp 1280×800 WebP.
+    // Apply the capture viewport FIRST. A resize can re-layout or re-render the
+    // sidebar (sections re-mounting expanded, lists populating lazily), so the
+    // privacy collapse/check must run in the exact state that gets captured,
+    // and is re-checked against the captured state right after the shot.
     await session.send("Emulation.setDeviceMetricsOverride", {
       width, height, deviceScaleFactor: 2, mobile: false,
     });
     let pngBuffer;
+    let sidebarVisibleText = null;
+    const detailOf = (r) =>
+      JSON.stringify({ sections: r?.sections, leaks: r?.leaks, visibleText: r?.visibleText }, null, 2);
     try {
+      await new Promise((resolve) => setTimeout(resolve, 600)); // let the resize re-layout settle
+      if (allowVisibleSidebar) {
+        process.stderr.write(
+          "codex-theme preview-shot: --allow-visible-sidebar set — skipping the sidebar privacy check. " +
+            "Do NOT submit a preview captured this way; it may show your real pinned chats, projects or tasks.\n",
+        );
+      } else {
+        // Collapse the sidebar's sections through the real UI and verify no
+        // private-shaped row is still visible — refuse to capture otherwise.
+        const privacy = await session.evaluate(collapseSidebarPrivacyExpression({}));
+        if (!privacy?.ok) {
+          throw new Error(
+            `Refusing to capture: sidebar privacy check failed before capture (${privacy?.reason ?? "unknown reason"}).\n` +
+              "Collapse the sidebar sections by hand and retry, or pass --allow-visible-sidebar " +
+              "for local-only iteration (never for a submitted preview).\n" +
+              `Detail: ${detailOf(privacy)}`,
+          );
+        }
+        sidebarVisibleText = privacy.visibleText;
+      }
       pngBuffer = await captureScreenshot(session, 600);
+      if (!allowVisibleSidebar) {
+        // Re-verify against the state that was actually captured, without
+        // clicking anything: if a section re-expanded or a list populated
+        // during the settle, discard the frame instead of writing it.
+        const after = await session.evaluate(collapseSidebarPrivacyExpression({ scanOnly: true, settleMs: 50 }));
+        if (!after?.ok) {
+          throw new Error(
+            `Refusing to save: the sidebar changed while capturing (${after?.reason ?? "unknown reason"}); ` +
+              `the captured frame was discarded. Retry.\nDetail: ${detailOf(after)}`,
+          );
+        }
+        sidebarVisibleText = after.visibleText;
+      }
     } finally {
       await session.send("Emulation.clearDeviceMetricsOverride").catch(() => {});
     }
@@ -501,6 +520,10 @@ async function cmdPreviewShot(argv) {
     const stat = await fs.stat(outWebp);
     out({
       ok: true, preview: outWebp, bytes: stat.size,
+      // Text still visible in the sidebar when the frame was taken. Check it,
+      // and the WebP itself (the composer's project/workspace selector and
+      // header titles are NOT covered by the privacy check), before submitting.
+      sidebarVisibleText,
       warning: stat.size > 500 * 1024 ? "preview exceeds the 500KB recommendation" : null,
       previews: manifest.previews ?? previews,
     });

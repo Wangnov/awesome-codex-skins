@@ -65,7 +65,7 @@ Phase 5 全过之后，把主题变成可分发的交付物。三步：
    - `codexVerified`：验收时的 Codex 版本，用 `/usr/bin/defaults read /Applications/Codex.app/Contents/Info.plist CFBundleShortVersionString` 读取，**不要手填**；
    - `appearance`：`"dark" | "light" | "dual"`（`codexTheme` 同时带 dark+light 即 `dual`）；
    - `license`：AI 生成的 IP 风格素材默认写 `"personal-use"`——不明版权的主题**不得**公开分发。
-2. **标准预览截图**：先用 CDP 把界面整理到标准态——**侧栏的项目、任务、置顶区全部收起**（DOM 控件按 css-recipes 的侧栏地图定位）、导航到主页、等待开屏动画结束；然后：
+2. **标准预览截图**：先导航到主页、等待开屏动画结束；**侧栏的项目、任务、置顶区不必手工收起**——`preview-shot` 默认会通过真实 UI 点击自动折叠它们（及其他 `aria-expanded` 分组）并校验侧栏无列表行，折叠失败或认不出任何分组即拒绝出图（`--allow-visible-sidebar` 仅限本地调试，此时出的图**绝不能提交**）。该检查只覆盖侧栏，不覆盖输入框处的项目/工作区选择器与页头标题：出图后必须读输出里的 `sidebarVisibleText` 并亲自查看 WebP，再交付。折叠发生在用户真实的 Codex 上，出图后侧栏保持折叠。然后：
    ```bash
    node bin/codex-theme.mjs preview-shot <id>              # → previews/home.webp（封面，1280×800 WebP）
    # 推荐再补一张对话页（先手动/CDP 进入一个对话）：
