@@ -1,0 +1,18 @@
+<aside class="app-shell-left-panel">
+  <div class="nav-chrome">
+    <button class="new-chat">New chat</button>
+  </div>
+  <!--
+    An unnamed section whose toggle exists and reports aria-expanded="true"
+    (so the generic sweep finds and clicks it) but never flips to "false"
+    (data-stuck models a broken or slow-to-react control). The generic sweep
+    must fail closed here exactly like the named pass already does for
+    stuck-toggle.html, not hang or report ok.
+  -->
+  <section>
+    <button aria-expanded="true" data-controls="recent-list" data-stuck="true">Recent</button>
+    <ul id="recent-list">
+      <li data-testid="thread-row-9">Confidential roadmap thread</li>
+    </ul>
+  </section>
+</aside>

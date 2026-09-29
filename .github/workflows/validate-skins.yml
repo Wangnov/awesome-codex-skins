@@ -20,7 +20,13 @@ permissions:
   contents: read
 
 jobs:
+  # The root-level `schedule:` trigger above exists only to run `runtime-smoke`
+  # unattended (see that job's own comment) — it must not also re-run the full
+  # pack-gate (npm test + packing all 50 skins) every day, so this job opts
+  # out of the schedule event explicitly rather than relying on `runtime-smoke`
+  # being the only job that reacts to it.
   pack-gate:
+    if: github.event_name != 'schedule'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

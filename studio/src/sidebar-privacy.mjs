@@ -15,14 +15,31 @@
 // Codex's renderer is closed-source and not vendored anywhere in this repo,
 // so this module has no ground truth for the sidebar's internal markup
 // beyond the three section labels SPEC.md itself has documented for years.
+// Two collapse passes run before the leak scan: first the three named
+// sections (by label), then a generic sweep that clicks *any other*
+// `aria-expanded="true"` toggle still visible in the sidebar. The generic
+// pass exists because the named pass has no way to find a private,
+// collapsible list it has no label for — a future "Recent"/history section,
+// a locale-specific rename, or any other section that happens to use the
+// same expand/collapse convention. It is applied generically, independent of
+// label text, so it also collapses a mislabeled Pinned/Projects/Tasks
+// section the named pass missed.
+//
 // It is deliberately asymmetric about how it fails: it will happily report
 // "nothing found to collapse" (a section that doesn't render at all — e.g.
 // an empty account — has nothing to leak), but it will never call a capture
 // safe just because it could not *check*. A missing sidebar container, a
-// section header with no operable toggle, or any element anywhere in the
-// sidebar that still matches a "this looks like one row of a private list"
-// pattern after every discovered toggle was clicked — all of those fail the
-// whole check and the caller must not take the screenshot.
+// section header with no operable toggle, a toggle that never reports
+// collapsed, or any element anywhere in the sidebar that still matches a
+// "this looks like one row of a private list" pattern after every
+// discovered toggle (named or generic) was clicked — all of those fail the
+// whole check and the caller must not take the screenshot. If a contributor's
+// sidebar renders a persistent, non-collapsible private list that has no
+// toggle at all — nothing this module could find and click — refusing to
+// capture is the *correct* outcome, not a bug: there is no real-UI action
+// that would make that screenshot safe. The fix in that case is to extend
+// this module once the real markup is known (see the README/SPEC.md
+// contributing notes), not to weaken the leak scan.
 
 // The exact three labels SPEC.md's preview requirement has always named.
 // Keeping this list short and literal (rather than guessing synonyms) means
@@ -93,7 +110,36 @@ export async function collapseAndVerifySidebarPrivacy(
     return { ok: false, sidebarFound: false, sections: [], leaks: [], reason: "sidebar container not found" };
   }
 
+  // Dispatches the same real pointer/mouse/click sequence at `toggle` and
+  // waits up to `attempts` settle rounds for `aria-expanded="false"`. Shared
+  // by the named-section pass and the generic sweep below so the two never
+  // drift apart on how a "click and wait" attempt is defined.
+  const clickToggleAndWaitCollapsed = async (toggle) => {
+    let collapsed = toggle.getAttribute && toggle.getAttribute("aria-expanded") === "false";
+    if (collapsed) return true;
+    // `doc.defaultView` is `window` in both a real browser (this function
+    // also ships stringified into the renderer, see below) and jsdom, so
+    // this always constructs a real, dispatchable event for whichever DOM
+    // is in play — never a plain object a real dispatchEvent would reject.
+    const MouseEventCtor = doc.defaultView && doc.defaultView.MouseEvent;
+    for (const type of ["pointerdown", "mousedown", "mouseup", "click"]) {
+      if (toggle.dispatchEvent) {
+        toggle.dispatchEvent(
+          MouseEventCtor
+            ? new MouseEventCtor(type, { bubbles: true, cancelable: true, composed: true })
+            : { type, bubbles: true, cancelable: true },
+        );
+      }
+    }
+    for (let i = 0; i < attempts && !collapsed; i += 1) {
+      await sleep(settleMs);
+      collapsed = toggle.getAttribute && toggle.getAttribute("aria-expanded") === "false";
+    }
+    return Boolean(collapsed);
+  };
+
   const sections = [];
+  const handledToggles = new Set();
   for (const label of labels) {
     const all = [...sidebar.querySelectorAll("*")];
     const candidates = all.filter((node) => {
@@ -115,28 +161,30 @@ export async function collapseAndVerifySidebarPrivacy(
       sections.push({ label, found: true, toggleFound: false, collapsed: false });
       continue;
     }
-    let collapsed = toggle.getAttribute && toggle.getAttribute("aria-expanded") === "false";
-    if (!collapsed) {
-      // `doc.defaultView` is `window` in both a real browser (this function
-      // also ships stringified into the renderer, see below) and jsdom, so
-      // this always constructs a real, dispatchable event for whichever DOM
-      // is in play — never a plain object a real dispatchEvent would reject.
-      const MouseEventCtor = doc.defaultView && doc.defaultView.MouseEvent;
-      for (const type of ["pointerdown", "mousedown", "mouseup", "click"]) {
-        if (toggle.dispatchEvent) {
-          toggle.dispatchEvent(
-            MouseEventCtor
-              ? new MouseEventCtor(type, { bubbles: true, cancelable: true, composed: true })
-              : { type, bubbles: true, cancelable: true },
-          );
-        }
-      }
-      for (let i = 0; i < attempts && !collapsed; i += 1) {
-        await sleep(settleMs);
-        collapsed = toggle.getAttribute && toggle.getAttribute("aria-expanded") === "false";
-      }
+    handledToggles.add(toggle);
+    const collapsed = await clickToggleAndWaitCollapsed(toggle);
+    sections.push({ label, found: true, toggleFound: true, collapsed, source: "named" });
+  }
+
+  // Generic sweep: the named pass above only ever looks for the three known
+  // labels, so it has no way to find (let alone collapse) a private,
+  // collapsible section it has no label for. This pass instead looks for
+  // *any* other visible toggle still reporting `aria-expanded="true"` inside
+  // the sidebar — regardless of label — and collapses it the same way. Runs
+  // in bounded rounds (collapsing one section can reveal another) rather
+  // than once, and never revisits a toggle the named pass or an earlier
+  // round already handled.
+  for (let round = 0; round < 4; round += 1) {
+    const extraToggles = [...sidebar.querySelectorAll('[aria-expanded="true"]')].filter(
+      (node) => isVisible(node) && !handledToggles.has(node),
+    );
+    if (extraToggles.length === 0) break;
+    for (const toggle of extraToggles) {
+      handledToggles.add(toggle);
+      const collapsed = await clickToggleAndWaitCollapsed(toggle);
+      const label = ownText(toggle) || toggle.getAttribute("aria-label") || "(unlabeled section)";
+      sections.push({ label, found: true, toggleFound: true, collapsed, source: "generic" });
     }
-    sections.push({ label, found: true, toggleFound: true, collapsed: Boolean(collapsed) });
   }
 
   await sleep(settleMs);

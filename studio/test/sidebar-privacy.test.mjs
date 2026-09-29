@@ -130,17 +130,52 @@ test("a missing sidebar container fails closed rather than reporting nothing to 
   assert.match(result.reason, /sidebar container not found/);
 });
 
-test("a relabeled section with no matching header still fails via the broad row scan", async () => {
+test("a relabeled section with no matching header and no toggle still fails via the broad row scan", async () => {
   // None of the three known labels match ("Favorites" instead of
-  // Pinned/Projects/Tasks) — this is the independent safety net: a private
-  // row is still caught even when the label-based collapse pass finds
-  // nothing to click.
+  // Pinned/Projects/Tasks), and this fixture has no aria-expanded toggle at
+  // all (unlike extra-collapsible-section.html below) — nothing for either
+  // the named pass or the generic sweep to click. This is the case where
+  // failing closed is the actually-correct outcome: a private row is still
+  // caught even when there is no real-UI action left to try.
   const dom = await loadFixture("relabeled-leak");
   const result = await collapseAndVerifySidebarPrivacy(dom.window.document, defaultOptions());
   assert.equal(result.ok, false);
   assert.equal(result.leaks.length, 1);
   assert.match(result.reason, /still visible/);
   for (const section of result.sections) assert.equal(section.found, false, section.label);
+});
+
+test("an unnamed but collapsible section is found and collapsed by the generic sweep", async () => {
+  // "Recent" isn't one of the three known labels, but it uses the same
+  // aria-expanded toggle convention as Pinned/Projects/Tasks — the generic
+  // sweep (not the named, label-based pass) is what finds and collapses it.
+  const dom = await loadFixture("extra-collapsible-section");
+  const result = await collapseAndVerifySidebarPrivacy(dom.window.document, defaultOptions());
+  assert.equal(result.ok, true);
+  assert.equal(result.leaks.length, 0);
+  const recent = result.sections.find((s) => s.label === "Recent");
+  assert.ok(recent, "expected a 'Recent' entry from the generic sweep");
+  assert.equal(recent.source, "generic");
+  assert.equal(recent.toggleFound, true);
+  assert.equal(recent.collapsed, true);
+  assert.equal(dom.window.document.getElementById("recent-list").style.display, "none");
+  // The three named sections are still handled by the named pass, not
+  // rediscovered by the generic sweep.
+  for (const label of SIDEBAR_PRIVACY_SECTION_LABELS) {
+    const section = result.sections.find((s) => s.label === label);
+    assert.equal(section.source, "named", label);
+  }
+});
+
+test("a generic-sweep toggle that never reports collapsed fails closed instead of hanging", async () => {
+  const dom = await loadFixture("stuck-generic-toggle");
+  const result = await collapseAndVerifySidebarPrivacy(dom.window.document, defaultOptions({ attempts: 2 }));
+  assert.equal(result.ok, false);
+  assert.match(result.reason, /did not report collapsed/);
+  const recent = result.sections.find((s) => s.label === "Recent");
+  assert.ok(recent, "expected a 'Recent' entry from the generic sweep");
+  assert.equal(recent.source, "generic");
+  assert.equal(recent.collapsed, false);
 });
 
 test("the CDP-evaluated expression is a syntactically valid IIFE calling document directly", () => {
