@@ -4,10 +4,17 @@
 版本档案负责收紧验收条件；实际注入始终从当前 renderer 识别 Composer shell、可选 lane
 和有限高度 editor，避免同一版本因页面状态不同而走错分支。
 
+> 下表与 `studio/src/payload.mjs` 的 `verifyExpression()` host-compatibility
+> 表手动保持一致，而该表本身又是从 Codex-App-Manager 的
+> `crates/codex-theme-engine/src/payload.rs` 移植来的——它才是运行时的权威来源
+> （见 `SPEC.md` §5、`studio/RUNTIME_SOURCE.json`）。改动这张表前，先确认
+> Manager 那边的对应版本已经审计过。
+
 | Codex 版本 | 构建号 | Composer 档案 | lane 规则 | 审计状态 |
 | --- | ---: | --- | --- | --- |
 | `26.715.31251` | 5538 | `composer-three-layer` | 多行时必须存在，且 `overflow-y: visible`；单行时不要求 | 真实 App 验证通过 |
 | `26.715.31925` | 5551 | `composer-two-or-three-layer` | 可选；存在时必须为 `visible` | 真实 App 验证通过 |
+| `26.727.51351` | — | `composer-current-multiline` | 多行时必须存在 | Manager 侧真实 App 验证通过；此版本也是 main-surface 标记从 `main.main-surface` 切换到 `main[data-app-shell-main-surface]` 的分界点 |
 | 其他版本 | — | `capability-adaptive` | 按实时 DOM 探测 | 标记为未审计 |
 
 两个已审计版本都要求 shell 为 `overflow-y: clip`。多行布局的有限高度 editor 必须为

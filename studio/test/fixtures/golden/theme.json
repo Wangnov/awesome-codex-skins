@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 2,
+  "id": "golden-fixture",
+  "name": "Golden fixture",
+  "colors": { "accent": "#abc" },
+  "strings": {},
+  "chrome": "chrome.html",
+  "assets": { "wall": "assets/wall.png" },
+  "motionAssets": { "intro-video": "assets/intro.mp4" }
+}

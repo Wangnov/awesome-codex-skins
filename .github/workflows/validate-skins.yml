@@ -22,7 +22,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: Check and test Studio CLI
+      - name: Install Studio CLI dependencies
+        working-directory: studio
+        run: npm ci
+      - name: Check and test Studio CLI (includes vendored-runtime drift check)
         working-directory: studio
         run: |
           npm run check

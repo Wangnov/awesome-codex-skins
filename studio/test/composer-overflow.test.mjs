@@ -1,3 +1,7 @@
+// Mirrors Codex-App-Manager's crates/codex-theme-engine/src/runtime/composer-overflow.test.mjs
+// (adapted from vitest's `test` import to node:test's default import) since
+// studio/src/composer-overflow.mjs is now a vendored copy of that same
+// module — see studio/RUNTIME_SOURCE.json.
 import assert from "node:assert/strict";
 import test from "node:test";
 
@@ -64,15 +68,15 @@ class FakeNode {
   }
 }
 
-test("surface selection prefers the marked primary Composer over PR comment cards", () => {
-  const commentCard = { querySelector: () => null };
+test("surface selection prefers the marked primary Composer over static cards", () => {
+  const staticCard = { querySelector: () => null };
   const primaryComposer = { querySelector: () => ({}) };
   const marker = { closest: () => primaryComposer };
   const root = {
     querySelectorAll(selector) {
       if (selector === "[data-codex-composer]") return [marker];
       if (selector === "[data-codex-composer-root] .composer-surface-chrome") return [];
-      if (selector === ".composer-surface-chrome") return [commentCard, primaryComposer];
+      if (selector === ".composer-surface-chrome") return [staticCard, primaryComposer];
       return [];
     },
   };
@@ -80,7 +84,7 @@ test("surface selection prefers the marked primary Composer over PR comment card
   assert.deepEqual(selectComposerSurfaces(root), [primaryComposer]);
 });
 
-test("surface selection fallback excludes static surfaces without an editor", () => {
+test("surface selection fallback excludes surfaces without an editor", () => {
   const staticSurface = { querySelector: () => null };
   const editableSurface = { querySelector: () => ({}) };
   const root = {
@@ -108,7 +112,7 @@ test("multiline roles are cleared when React reuses the nodes for single-line la
   }));
   editor.append(new FakeNode("div", {
     className: "ProseMirror",
-    attributes: { "contenteditable": "true", "data-codex-composer": "true" },
+    attributes: { contenteditable: "true", "data-codex-composer": "true" },
   }));
 
   const readStyle = (node) => {
@@ -146,7 +150,7 @@ test("multiline roles are cleared when React reuses the nodes for single-line la
   assert.equal(readStyle(editor).overflowY, "hidden");
 });
 
-test("three-layer lanes remain detectable when a skin masks their native overflow", () => {
+test("26.727 multiline lanes remain detectable when a skin masks native overflow", () => {
   for (const overflowY of ["visible", "hidden", "clip"]) {
     const shell = new FakeNode("div", { className: "composer-surface-chrome" });
     const wrapper = shell.append(new FakeNode("div", {
@@ -158,12 +162,12 @@ test("three-layer lanes remain detectable when a skin masks their native overflo
       nativeStyle: { overflowY },
     }));
     const editor = lane.append(new FakeNode("div", {
-      className: "editor overflow-y-auto",
+      className: "max-h-[25dvh] overflow-y-auto",
       nativeStyle: { overflowY: "auto", maxHeight: "160px" },
     }));
     editor.append(new FakeNode("div", {
       className: "ProseMirror",
-      attributes: { "contenteditable": "true", "data-codex-composer": "true" },
+      attributes: { contenteditable: "true", "data-codex-composer": "true" },
     }));
 
     const readStyle = (node) => {
@@ -214,4 +218,69 @@ test("unchanged layout reuses its classification without remeasuring hardened st
   const initialReads = reads;
   annotate([shell]);
   assert.equal(reads, initialReads);
+});
+
+test("external style invalidation remeasures an unchanged Composer path", () => {
+  const shell = new FakeNode("div", { className: "composer-surface-chrome" });
+  const editor = shell.append(new FakeNode("div", {
+    className: "editor",
+    nativeStyle: { overflowY: "visible", maxHeight: "none" },
+  }));
+  editor.append(new FakeNode("div", {
+    className: "ProseMirror",
+    attributes: { "data-codex-composer": "true" },
+  }));
+  let reads = 0;
+  const annotate = createComposerOverflowAnnotator({
+    overflowAttribute: OVERFLOW_ATTR,
+    modeAttribute: MODE_ATTR,
+    readStyle: (node) => {
+      reads += 1;
+      return node.nativeStyle;
+    },
+    viewportSignature: () => "1280x800",
+  });
+
+  annotate([shell]);
+  assert.equal(shell.getAttribute(MODE_ATTR), "single-line");
+  const initialReads = reads;
+
+  // Simulate a stylesheet or ancestor change: computed style changes while
+  // the Composer path, viewport, classes, and inline styles remain identical.
+  editor.nativeStyle = { overflowY: "auto", maxHeight: "160px" };
+  annotate([shell]);
+  assert.equal(reads, initialReads);
+  assert.equal(shell.getAttribute(MODE_ATTR), "single-line");
+
+  annotate.invalidate();
+  annotate([shell]);
+  assert.ok(reads > initialReads);
+  assert.equal(shell.getAttribute(MODE_ATTR), "scrolling");
+  assert.equal(editor.getAttribute(OVERFLOW_ATTR), "editor");
+});
+
+test("attribute-only Composer layout changes invalidate the cached scroll roles", () => {
+  const shell = new FakeNode("div", {
+    className: "_ComposerLayoutRoot_build_2 composer-surface-chrome",
+    attributes: { "data-composer-layout": "multiline", "data-composer-surface-overflow": "auto" },
+  });
+  const editor = shell.append(new FakeNode("div", {
+    nativeStyle: { overflowY: "auto", maxHeight: "160px" },
+  }));
+  editor.append(new FakeNode("div", { attributes: { "data-codex-composer": "true" } }));
+  const annotate = createComposerOverflowAnnotator({
+    overflowAttribute: OVERFLOW_ATTR,
+    modeAttribute: MODE_ATTR,
+    readStyle: (node) => node.nativeStyle,
+    viewportSignature: () => "1280x800",
+  });
+  annotate([shell]);
+  assert.equal(shell.getAttribute(MODE_ATTR), "scrolling");
+  // Codex reuses the CSS-module classes and changes only its data attributes.
+  shell.setAttribute("data-composer-layout", "single-line");
+  shell.setAttribute("data-composer-surface-overflow", "visible");
+  editor.nativeStyle = { overflowY: "hidden", maxHeight: "none" };
+  annotate([shell]);
+  assert.equal(shell.getAttribute(MODE_ATTR), "single-line");
+  assert.equal(editor.getAttribute(OVERFLOW_ATTR), null);
 });

@@ -2,20 +2,36 @@
 // theme CSS, config, chrome fragment and inlined assets substituted in.
 
 import fs from "node:fs/promises";
+import { readFileSync } from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
 import { fileURLToPath } from "node:url";
 import { loadTheme, inlineAssets } from "./theme.mjs";
-import {
-  createComposerOverflowAnnotator,
-  selectComposerSurfaces,
-} from "./composer-overflow.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 export const STUDIO_VERSION = "0.1.0";
-const RUNTIME_TEMPLATE = path.join(here, "runtime", "theme-runtime.js");
-const COMPOSER_ANNOTATOR_SOURCE = `(${createComposerOverflowAnnotator.toString()})`;
-const COMPOSER_SURFACE_SELECTOR_SOURCE = `(${selectComposerSurfaces.toString()})`;
+const RUNTIME_TEMPLATE_PATH = path.join(here, "runtime", "theme-runtime.js");
+// The runtime template and this module are both vendored/kept in lockstep
+// with codex-theme-engine's payload.rs (see studio/RUNTIME_SOURCE.json): the
+// composer-overflow module is embedded as source text — not via
+// Function.prototype.toString() on an imported function — and consumed
+// through a single __CTS_COMPOSER_OVERFLOW_HELPERS__ placeholder, exactly
+// like Rust's `composer_overflow_helpers_expression()`. This is required
+// because the vendored theme-runtime.js template only exposes that one
+// placeholder; Manager's older two-placeholder convention no longer exists
+// in the source runtime.
+const COMPOSER_OVERFLOW_MODULE_PATH = path.join(here, "composer-overflow.mjs");
+// Read once at module load (mirrors Rust's compile-time `include_str!`);
+// verifyExpression() stays synchronous and buildPayload() avoids re-reading
+// the same ~8KB file on every call.
+const COMPOSER_OVERFLOW_MODULE_SOURCE = readFileSync(COMPOSER_OVERFLOW_MODULE_PATH, "utf8");
+
+/** Builds the `(() => { ...; return { ... }; })()` expression the runtime
+ * template destructures its four composer-overflow helpers from. */
+function composerOverflowHelpersExpression(moduleSource) {
+  const body = moduleSource.replace(/export function /g, "function ");
+  return `(() => {\n${body}\nreturn { clearComposerSurfaceCompat, createComposerOverflowAnnotator, reconcileComposerSurfaces, selectComposerSurfaces };\n})()`;
+}
 
 // Runtime-owned composer overflow contract. Theme art is allowed to extend
 // beyond the shell without turning the shell into a scroll container; only the
@@ -41,7 +57,7 @@ html.codex-theme-studio [data-cts-composer-overflow="editor"] {
 export async function buildPayload(themeDir) {
   const theme = await loadTheme(themeDir);
   const [template, dataUrls] = await Promise.all([
-    fs.readFile(RUNTIME_TEMPLATE, "utf8"),
+    fs.readFile(RUNTIME_TEMPLATE_PATH, "utf8"),
     inlineAssets(theme),
   ]);
   // Motion assets skip the stylesheet: multi-megabyte videos blow past the
@@ -58,28 +74,42 @@ export async function buildPayload(themeDir) {
     .map(([key, url]) => `  --cts-asset-${key}: url("${url}");`)
     .join("\n");
   const cssWithAssets = `:root.codex-theme-studio {\n${assetVariables}\n}\n\n${theme.css}\n\n${RUNTIME_HARDENING_CSS}`;
+  const configJson = JSON.stringify(theme.config);
+  const chromeHtml = theme.chromeHtml ?? null;
+  const motionJson = JSON.stringify(motionDataUrls);
+
+  // Substitute the composer-overflow helpers first, matching payload.rs:
+  // the fingerprint below hashes the runtime template *with* the composer
+  // module already inlined, so a composer-overflow-only change still
+  // re-stamps even though it never touches theme-runtime.js itself.
+  const runtimeTemplate = template.replace(
+    "__CTS_COMPOSER_OVERFLOW_HELPERS__",
+    () => composerOverflowHelpersExpression(COMPOSER_OVERFLOW_MODULE_SOURCE),
+  );
+
   // Fingerprint the executable payload, including the renderer runtime and
   // packed CSS, so runtime-only compatibility fixes re-inject into renderers
   // that already carry the same theme.
-  const stamp = crypto.createHash("sha1")
-    .update(template).update(COMPOSER_ANNOTATOR_SOURCE)
-    .update(COMPOSER_SURFACE_SELECTOR_SOURCE)
-    .update(cssWithAssets).update(theme.chromeHtml ?? "")
-    .update(JSON.stringify(theme.config))
-    .update(JSON.stringify(motionDataUrls))
+  const short = crypto.createHash("sha1")
+    .update(runtimeTemplate)
+    .update(cssWithAssets)
+    .update(chromeHtml ?? "")
+    .update(configJson)
+    .update(motionJson)
     .digest("hex").slice(0, 12);
-  const payload = template
-    .replace("__CTS_CREATE_COMPOSER_OVERFLOW_ANNOTATOR__", () => COMPOSER_ANNOTATOR_SOURCE)
-    .replace("__CTS_SELECT_COMPOSER_SURFACES__", () => COMPOSER_SURFACE_SELECTOR_SOURCE)
+  const stamp = `${STUDIO_VERSION}:${theme.config.id}:${short}`;
+
+  const payload = runtimeTemplate
     .replace("__CTS_CSS_JSON__", () => JSON.stringify(cssWithAssets))
-    .replace("__CTS_THEME_JSON__", () => JSON.stringify(theme.config))
-    .replace("__CTS_CHROME_JSON__", () => JSON.stringify(theme.chromeHtml))
-    .replace("__CTS_MOTION_JSON__", () => JSON.stringify(motionDataUrls))
+    .replace("__CTS_THEME_JSON__", () => configJson)
+    .replace("__CTS_CHROME_JSON__", () => JSON.stringify(chromeHtml))
+    .replace("__CTS_MOTION_JSON__", () => motionJson)
     .replace("__CTS_VERSION_JSON__", () => JSON.stringify(STUDIO_VERSION))
-    .replace("__CTS_STAMP_JSON__", () => JSON.stringify(`${STUDIO_VERSION}:${theme.config.id}:${stamp}`));
+    .replace("__CTS_STAMP_JSON__", () => JSON.stringify(stamp));
   return {
     payload,
     theme: theme.config,
+    stamp,
     payloadBytes: Buffer.byteLength(payload),
     assetCount: Object.keys(dataUrls).length,
   };
@@ -92,10 +122,18 @@ export const REMOVE_EXPRESSION = `(() => {
   document.documentElement?.classList.remove('codex-theme-studio');
   document.documentElement?.removeAttribute('data-cts-theme');
   document.documentElement?.removeAttribute('data-cts-shell');
+  document.querySelectorAll('[data-cts-main-surface-compat]').forEach((node) => {
+    node.classList.remove('main-surface');
+    node.removeAttribute('data-cts-main-surface-compat');
+  });
   document.querySelectorAll('.cts-windows-menu-bar').forEach((node) => node.classList.remove('cts-windows-menu-bar'));
   document.querySelectorAll('[data-cts-menu-region]').forEach((node) => node.removeAttribute('data-cts-menu-region'));
   document.querySelectorAll('[data-cts-composer-overflow]').forEach((node) => node.removeAttribute('data-cts-composer-overflow'));
   document.querySelectorAll('[data-cts-composer-mode]').forEach((node) => node.removeAttribute('data-cts-composer-mode'));
+  document.querySelectorAll('[data-cts-composer-surface-compat]').forEach((node) => {
+    node.classList.remove('composer-surface-chrome');
+    node.removeAttribute('data-cts-composer-surface-compat');
+  });
   document.documentElement?.style.removeProperty('--cts-windows-menu-height');
   document.documentElement?.style.removeProperty('--cts-windows-sidebar-padding-top');
   document.documentElement?.style.removeProperty('--cts-windows-main-padding-top');
@@ -115,6 +153,7 @@ export const VERIFY_REMOVED_EXPRESSION = `(() =>
   !document.querySelector('[data-cts-menu-region]') &&
   !document.querySelector('[data-cts-composer-overflow]') &&
   !document.querySelector('[data-cts-composer-mode]') &&
+  !document.querySelector('[data-cts-composer-surface-compat]') &&
   !document.documentElement.style.getPropertyValue('--cts-windows-menu-height') &&
   !document.documentElement.style.getPropertyValue('--cts-windows-sidebar-padding-top') &&
   !document.documentElement.style.getPropertyValue('--cts-windows-main-padding-top') &&
@@ -124,10 +163,12 @@ export const VERIFY_REMOVED_EXPRESSION = `(() =>
   !document.getElementById('cts-chrome') &&
   !document.getElementById('cts-stage') &&
   !document.getElementById('cts-intro') &&
+  !document.querySelector('[data-cts-main-surface-compat]') &&
   !window.__CODEX_THEME_STUDIO__
 )()`;
 
 export function verifyExpression(expectedVersion = STUDIO_VERSION) {
+  const composerHelpers = composerOverflowHelpersExpression(COMPOSER_OVERFLOW_MODULE_SOURCE);
   return `(() => {
     const box = (node) => {
       if (!node) return null;
@@ -140,6 +181,9 @@ export function verifyExpression(expectedVersion = STUDIO_VERSION) {
       };
     };
     const chrome = document.getElementById('cts-chrome');
+    const stage = document.getElementById('cts-stage');
+    const mainSurfaceNode = document.querySelector('main[data-app-shell-main-surface], main.main-surface');
+    const mainSurface = box(mainSurfaceNode);
     const state = window.__CODEX_THEME_STUDIO__;
     const hostVersion = (() => {
       try {
@@ -153,8 +197,10 @@ export function verifyExpression(expectedVersion = STUDIO_VERSION) {
       ? { audited: true, profile: 'composer-three-layer', composerLanePolicy: 'required' }
       : hostVersion === '26.715.31925'
         ? { audited: true, profile: 'composer-two-or-three-layer', composerLanePolicy: 'optional' }
-        : { audited: false, profile: 'capability-adaptive', composerLanePolicy: 'optional' };
-    const selectComposerSurfaces = ${COMPOSER_SURFACE_SELECTOR_SOURCE};
+        : hostVersion === '26.727.51351'
+          ? { audited: true, profile: 'composer-current-multiline', composerLanePolicy: 'required' }
+          : { audited: false, profile: 'capability-adaptive', composerLanePolicy: 'optional' };
+    const { selectComposerSurfaces } = ${composerHelpers};
     const composerNodes = selectComposerSurfaces(document);
     const composerNode = composerNodes.find((node) => {
       const r = node.getBoundingClientRect();
@@ -198,7 +244,13 @@ export function verifyExpression(expectedVersion = STUDIO_VERSION) {
       stylePresent: Boolean(document.getElementById('cts-style')),
       chromePresent: Boolean(chrome),
       chromePointerEvents: chrome ? getComputedStyle(chrome).pointerEvents : null,
+      mainSurface,
+      mainSurfaceMode: mainSurfaceNode?.hasAttribute('data-app-shell-main-surface') ? 'current' : (mainSurfaceNode ? 'legacy' : null),
+      mainSurfaceCompatible: Boolean(mainSurfaceNode?.classList.contains('main-surface')),
+      stageAttachedToMainSurface: !stage || stage.parentElement === mainSurfaceNode,
       composer,
+      composerSurfaceMode: composerNode?.hasAttribute('data-composer-surface-variant') ? 'current' : (composerNode ? 'legacy' : null),
+      composerSurfaceCompatible: Boolean(composerNode?.classList.contains('composer-surface-chrome')),
       composerOverflow,
       sidebar,
       viewport: { width: innerWidth, height: innerHeight },
@@ -212,7 +264,11 @@ export function verifyExpression(expectedVersion = STUDIO_VERSION) {
       result.version === ${JSON.stringify(expectedVersion)} &&
       result.stylePresent &&
       (!result.chromePresent || result.chromePointerEvents === 'none') &&
+      Boolean(result.mainSurface?.visible) &&
+      result.mainSurfaceCompatible &&
+      result.stageAttachedToMainSurface &&
       Boolean(result.composer?.visible) &&
+      result.composerSurfaceCompatible &&
       result.composerOverflow?.shellRole === 'shell' &&
       result.composerOverflow?.shellOverflowY === 'clip' &&
       result.composerOverflow?.lanesValid === true &&

@@ -1,3 +1,14 @@
+// ---------------------------------------------------------------------------
+// GENERATED FILE — do not hand-edit.
+//
+// Vendored verbatim from Wangnov/Codex-App-Manager, the canonical
+// codex-theme-engine runtime implementation, at commit 1775548e547920ff6c207539057de9565a1e6e3d:
+//   crates/codex-theme-engine/src/runtime/theme-runtime.js
+//
+// To pick up a newer runtime, bump the commit in studio/RUNTIME_SOURCE.json
+// and run: node scripts/sync-runtime.mjs
+// ---------------------------------------------------------------------------
+
 // Renderer-side runtime. Injected via Runtime.evaluate — must be idempotent,
 // re-entrant and fully reversible. Placeholders are substituted by payload.mjs.
 //
@@ -15,12 +26,18 @@
   const ROOT_CLASS = "codex-theme-studio";
   const THEME_ATTR = "data-cts-theme";
   const SHELL_ATTR = "data-cts-shell";
+  const SHELL_MAIN_COMPAT_ATTR = "data-cts-main-surface-compat";
+  const LEGACY_SHELL_MAIN_CLASS = "main-surface";
   const WINDOWS_MENU_CLASS = "cts-windows-menu-bar";
   const WINDOWS_MENU_REGION_ATTR = "data-cts-menu-region";
   const COMPOSER_OVERFLOW_ATTR = "data-cts-composer-overflow";
   const COMPOSER_MODE_ATTR = "data-cts-composer-mode";
-  const createComposerOverflowAnnotator = __CTS_CREATE_COMPOSER_OVERFLOW_ANNOTATOR__;
-  const selectComposerSurfaces = __CTS_SELECT_COMPOSER_SURFACES__;
+  const {
+    clearComposerSurfaceCompat,
+    createComposerOverflowAnnotator,
+    reconcileComposerSurfaces,
+    selectComposerSurfaces,
+  } = __CTS_COMPOSER_OVERFLOW_HELPERS__;
   const RUNTIME_CSS = `
 html.codex-theme-studio .cts-windows-menu-bar {
   position: absolute !important;
@@ -43,8 +60,8 @@ html.codex-theme-studio .cts-windows-menu-bar [data-cts-menu-region="main"] {
 }`;
   const VERSION = __CTS_VERSION_JSON__;
   const STAMP = __CTS_STAMP_JSON__;
-  const MOTION = motionAssets && typeof motionAssets === "object" ? motionAssets : {};
   const THEME = themeConfig && typeof themeConfig === "object" ? themeConfig : {};
+  const MOTION = motionAssets && typeof motionAssets === "object" ? motionAssets : {};
 
   window[DISABLED_KEY] = false;
 
@@ -72,10 +89,17 @@ html.codex-theme-studio .cts-windows-menu-bar [data-cts-menu-region="main"] {
   // would also make the new theme's playIntro() bail out. Same-stamp
   // re-ensures leave the intro alone — reconciliation must never cut it.
   if (previous && previous.stamp !== STAMP) document.getElementById(INTRO_ID)?.remove();
+  // A hot theme switch reuses the live DOM. Clear semantic annotations from
+  // the previous payload before the new theme decides which glyphs it can
+  // actually render; otherwise partial icon sets inherit stale hidden paths.
+  document.querySelectorAll("[data-cts-glyph]").forEach((node) => node.removeAttribute("data-cts-glyph"));
+  document.querySelectorAll("[data-cts-icon]").forEach((node) => node.removeAttribute("data-cts-icon"));
+  document.querySelectorAll("[data-cts-logo]").forEach((node) => node.removeAttribute("data-cts-logo"));
   document.querySelectorAll(`[${COMPOSER_OVERFLOW_ATTR}]`)
     .forEach((node) => node.removeAttribute(COMPOSER_OVERFLOW_ATTR));
   document.querySelectorAll(`[${COMPOSER_MODE_ATTR}]`)
     .forEach((node) => node.removeAttribute(COMPOSER_MODE_ATTR));
+  clearComposerSurfaceCompat(document);
 
   // Split the chrome fragment into its layers: "overlay" floats above the UI
   // (fixed, z31), "stage" is scenery mounted inside main UNDER the content.
@@ -104,6 +128,31 @@ html.codex-theme-studio .cts-windows-menu-bar [data-cts-menu-region="main"] {
 
   const setClass = (node, name, on) => {
     if (node.classList.contains(name) !== on) node.classList.toggle(name, on);
+  };
+
+  // Codex <= 26.715 exposed the content surface as `main.main-surface`.
+  // Codex 26.727 replaced that class with the stable
+  // `data-app-shell-main-surface` attribute and also introduced an unrelated
+  // full-window <main> before it. Prefer the current semantic marker, keep the
+  // legacy selector for old clients, and add the legacy class only as a
+  // runtime-owned compatibility shim so existing theme packages keep working.
+  const releaseShellMainCompat = (node) => {
+    if (!node?.hasAttribute(SHELL_MAIN_COMPAT_ATTR)) return;
+    node.classList.remove(LEGACY_SHELL_MAIN_CLASS);
+    node.removeAttribute(SHELL_MAIN_COMPAT_ATTR);
+  };
+
+  const resolveShellMain = () => {
+    const shellMain = document.querySelector("main[data-app-shell-main-surface]") ||
+      document.querySelector(`main.${LEGACY_SHELL_MAIN_CLASS}`);
+    for (const candidate of document.querySelectorAll(`[${SHELL_MAIN_COMPAT_ATTR}]`)) {
+      if (candidate !== shellMain) releaseShellMainCompat(candidate);
+    }
+    if (shellMain && !shellMain.classList.contains(LEGACY_SHELL_MAIN_CLASS)) {
+      shellMain.classList.add(LEGACY_SHELL_MAIN_CLASS);
+      shellMain.setAttribute(SHELL_MAIN_COMPAT_ATTR, "true");
+    }
+    return shellMain;
   };
 
   const detectShellMode = () => {
@@ -137,34 +186,9 @@ html.codex-theme-studio .cts-windows-menu-bar [data-cts-menu-region="main"] {
 
   const chromeRectCache = { left: NaN, top: NaN, width: NaN, height: NaN };
 
-  // Semantic icon annotation: CSS cannot match by text, so tag well-known
-  // controls with data-cts-icon and let theme CSS attach bitmap icons.
-  // Idempotent — tagged nodes are skipped, and the attribute is not in the
-  // observer's attributeFilter, so tagging never re-triggers ensure().
-  const SIDEBAR_ICONS = [
-    { icon: "new-task", texts: ["新建任务", "New task"] },
-    { icon: "scheduled", texts: ["已安排", "Scheduled"] },
-    { icon: "plugins", texts: ["插件", "Plugins"] },
-    { icon: "sites", texts: ["站点", "Sites"] },
-    { icon: "pull-request", texts: ["拉取请求", "Pull request"] },
-    { icon: "chat", texts: ["聊天", "Chat"] },
-  ];
-  const CARD_ICONS = ["explore", "build", "review", "fix"];
-
-  // The glyph attribute lands on the FIRST svg inside the control, so sibling
-  // svgs (dropdown chevrons etc.) keep their native artwork.
-  const tagGlyph = (container, icon) => {
-    if (!container || container.dataset.ctsIcon) return;
-    const svg = container.querySelector("svg");
-    if (!svg) return;
-    container.dataset.ctsIcon = icon;
-    svg.dataset.ctsGlyph = icon;
-  };
-
-  // Codex 26.715.31251 introduced a scrollable composer shell, text lane and
-  // finite-height editor root. Later builds can switch the same nodes between
-  // single-line and multiline layouts. The shared helper measures native
-  // capabilities without letting our own hardening roles contaminate them.
+  // Codex 26.715+ can reuse the same Composer nodes across single-line and
+  // multiline layouts. Measure the current native scroll capabilities without
+  // letting our own hardening roles contaminate the next classification.
   const annotateComposerOverflow = createComposerOverflowAnnotator({
     overflowAttribute: COMPOSER_OVERFLOW_ATTR,
     modeAttribute: COMPOSER_MODE_ATTR,
@@ -172,33 +196,204 @@ html.codex-theme-studio .cts-windows-menu-bar [data-cts-menu-region="main"] {
     viewportSignature: () => `${innerWidth}x${innerHeight}`,
   });
 
+  // Semantic icon annotation: CSS cannot match by text, so tag well-known
+  // controls with data-cts-icon and let theme CSS attach bitmap icons.
+  // Idempotent — tagged nodes are skipped, and the attribute is not in the
+  // observer's attributeFilter, so tagging never re-triggers ensure().
+  const SIDEBAR_ICONS = [
+    { icon: "new-task", texts: ["新建任务", "New task"] },
+    { icon: "scheduled", texts: ["已安排", "Scheduled"] },
+    { icon: "plugins", texts: ["插件", "Plugins", "技能", "Skills"] },
+    { icon: "sites", texts: ["站点", "Sites"] },
+    { icon: "pull-request", texts: ["拉取请求", "Pull request"] },
+    { icon: "chat", texts: ["聊天", "Chat"] },
+    { icon: "settings", texts: ["设置", "Settings"] },
+  ];
+  const CARD_ICONS = ["explore", "build", "review", "fix"];
+  const EXTENDED_ICONS = new Set(["settings", "folder"]);
+  const PROJECT_ROW_SELECTOR = "[data-project-row], [data-app-action-sidebar-project-row]";
+
+  // ── Workspace wordmark → logo variant ─────────────────────────────────────
+  // Structural class names (app-shell-left-panel, main-surface, …) have held
+  // stable across releases, so the CSS layer is version-robust. What drifts is
+  // the workspace *wordmark* — the 2026-07 ChatGPT rebrand renamed it from
+  // "ChatGPT 工作" / "ChatGPT Work" (Codex ≤ 26.707) to a bare "ChatGPT"
+  // (26.715+). The styled logo art is baked with the words it shows, so the
+  // OLD art must keep serving old clients while regenerated art serves new
+  // ones. The choice is driven by the Codex *version*, not the wordmark text:
+  // the text is localized (工作/Work/…) but the version is not, so version is
+  // the robust, locale-independent signal for which art matches the shell.
+  // Text below only *locates* the workspace button and splits personal(Codex)
+  // vs work(ChatGPT) — it never selects the old/new art. Adapting to a future
+  // wordmark change = one more boundary here plus its regenerated art, never a
+  // per-user migration; the CSS falls `chatgpt` back to `chatgpt-work` art so
+  // a theme that hasn't shipped the new art yet degrades instead of blanking.
+  const codexVersion = () => {
+    try {
+      const v = window.electronBridge?.getSentryInitOptions?.()?.appVersion;
+      return typeof v === "string" && /^\d+\./.test(v) ? v : null;
+    } catch {
+      return null;
+    }
+  };
+  const versionAtLeast = (version, floor) => {
+    const a = String(version).split(".");
+    const b = floor.split(".");
+    for (let i = 0; i < b.length; i += 1) {
+      const d = (parseInt(a[i], 10) || 0) - (parseInt(b[i], 10) || 0);
+      if (d !== 0) return d > 0;
+    }
+    return true;
+  };
+  // The work-wordmark art for THIS Codex. Undetected version → current-
+  // generation art (`chatgpt`), which the CSS degrades to `chatgpt-work` when
+  // a theme hasn't shipped the regenerated asset.
+  const WORK_LOGO = (() => {
+    const version = codexVersion();
+    return version && !versionAtLeast(version, "26.715") ? "chatgpt-work" : "chatgpt";
+  })();
+  const workspaceLogo = (text) => {
+    if (/^Codex$/i.test(text)) return "codex";
+    if (/^ChatGPT( ?(工作|Work))?$/i.test(text)) return WORK_LOGO;
+    return null;
+  };
+  const isWorkspaceTitle = (text) => workspaceLogo(text) !== null;
+
+  // settings/folder annotation was added after the original 14-glyph runtime.
+  // Gate those two on an explicit theme rule so older themes that hide native
+  // paths without mapping the new glyphs never render blank controls.
+  const hasExplicitGlyphStyle = (icon) => {
+    const escaped = icon.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return new RegExp(`data-cts-glyph\\s*=\\s*["']${escaped}["']`).test(cssText);
+  };
+  const SUPPORTED_EXTENDED_ICONS = new Set(
+    [...EXTENDED_ICONS].filter((icon) => hasExplicitGlyphStyle(icon))
+  );
+
+  const glyphTarget = (container, icon) => {
+    if (!container) return null;
+    // Current Codex project rows expose a stable icon slot. Prefer it over the
+    // generic first-svg fallback so disclosure/menu glyphs are never themed.
+    if (icon === "folder") {
+      const projectGlyph = container.querySelector(
+        '[data-sidebar-project-drop-zone="project-icon"] svg'
+      );
+      if (projectGlyph) return projectGlyph;
+    }
+    return container.querySelector("svg");
+  };
+
+  // React may replace the svg inside an otherwise-stable control (project
+  // expand/collapse does exactly this). Treat the container annotation as a
+  // cache, not proof: repair it whenever the current glyph lost its marker.
+  const tagGlyph = (container, icon) => {
+    if (!container) return;
+    if (EXTENDED_ICONS.has(icon) && !SUPPORTED_EXTENDED_ICONS.has(icon)) return;
+    const svg = glyphTarget(container, icon);
+    if (!svg) return;
+    const tagged = [...container.querySelectorAll("svg[data-cts-glyph]")];
+    const healthy = container.dataset.ctsIcon === icon
+      && svg.dataset.ctsGlyph === icon
+      && tagged.every((candidate) => candidate === svg);
+    if (healthy) return;
+    for (const candidate of tagged) {
+      if (candidate !== svg) candidate.removeAttribute("data-cts-glyph");
+    }
+    if (container.dataset.ctsIcon !== icon) container.dataset.ctsIcon = icon;
+    if (svg.dataset.ctsGlyph !== icon) svg.dataset.ctsGlyph = icon;
+  };
+
+  const clearGlyph = (container) => {
+    if (!container) return;
+    if (container.dataset.ctsIcon) delete container.dataset.ctsIcon;
+    for (const svg of container.querySelectorAll("svg[data-cts-glyph]")) {
+      svg.removeAttribute("data-cts-glyph");
+    }
+  };
+
+  const projectSemantic = (control) => {
+    const className = typeof control?.className === "string" ? control.className : "";
+    return [
+      control?.getAttribute?.("aria-label") || "",
+      control?.getAttribute?.("data-testid") || "",
+      control?.getAttribute?.("title") || "",
+      className,
+    ].join(" ");
+  };
+
+  const isProjectControl = (control) => Boolean(
+    control?.matches?.(PROJECT_ROW_SELECTOR) ||
+    control?.closest?.(PROJECT_ROW_SELECTOR) ||
+    /(?:folder|project[-_\s]?(?:row|item|link|button)|文件夹)/i.test(projectSemantic(control))
+  );
+
+  // Project expand/collapse replaces its inner SVG during React's commit.
+  // MutationObserver callbacks run before Chromium paints that commit, so
+  // repair just this cheap annotation synchronously and avoid one native-icon
+  // frame. The full ensure() pass remains debounced below for heavier work.
+  const repairProjectGlyphs = (node) => {
+    const element = node?.nodeType === 1 ? node : node?.parentElement;
+    if (!element) return;
+    const rows = new Set();
+    const closest = element.closest?.(PROJECT_ROW_SELECTOR);
+    if (closest) rows.add(closest);
+    if (element.matches?.(PROJECT_ROW_SELECTOR)) rows.add(element);
+    for (const row of element.querySelectorAll?.(PROJECT_ROW_SELECTOR) || []) rows.add(row);
+    for (const row of rows) tagGlyph(row, "folder");
+  };
+
   const annotateIcons = () => {
     const aside = document.querySelector(".app-shell-left-panel");
     if (aside) {
       for (const button of aside.querySelectorAll("button:not([data-cts-icon])")) {
-        const text = button.textContent || "";
-        const rule = SIDEBAR_ICONS.find((entry) => entry.texts.some((t) => text.includes(t)));
+        const text = (button.textContent || "").replace(/\s+/g, " ").trim();
+        if (isWorkspaceTitle(text)) {
+          clearGlyph(button);
+          continue;
+        }
+        if (isProjectControl(button)) continue;
+        const rule = SIDEBAR_ICONS.find((entry) => entry.texts.some((t) =>
+          text === t || text.startsWith(`${t} `) || text.startsWith(`${t}⌘`)
+        ));
         if (rule) tagGlyph(button, rule.icon);
       }
-      const search = aside.querySelector('[aria-label="搜索"]:not([data-cts-icon]), [aria-label="Search"]:not([data-cts-icon])');
+      const search = [...aside.querySelectorAll(
+        '[aria-label="搜索"]:not([data-cts-icon]), [aria-label="Search"]:not([data-cts-icon])'
+      )].find((control) => !isProjectControl(control));
       if (search) tagGlyph(search, "search");
-      // Workspace title → tokusatsu logo. The title text is split across
-      // child spans ("ChatGPT" + "工作"), so match on the whole button and
-      // re-evaluate every pass (the same button swaps text on switch).
+      const settings = [...aside.querySelectorAll(
+        '[aria-label="设置"]:not([data-cts-icon]), [aria-label="Settings"]:not([data-cts-icon])'
+      )].find((control) => !isProjectControl(control));
+      if (settings) tagGlyph(settings, "settings");
+      // Project rows have changed element type across Codex releases (button,
+      // anchor and role=button have all shipped). Match their stable semantic
+      // attributes instead of project names or SVG path data, then decorate
+      // only the first glyph so disclosure chevrons remain native.
+      for (const control of aside.querySelectorAll(
+        'button, a, [role="button"], [data-project-row], [data-app-action-sidebar-project-row]'
+      )) {
+        const controlText = (control.textContent || "").replace(/\s+/g, " ").trim();
+        if (isWorkspaceTitle(controlText)) continue;
+        const row = control.closest(PROJECT_ROW_SELECTOR);
+        if (row && row !== control) continue;
+        if (isProjectControl(control)) tagGlyph(control, "folder");
+      }
+      // Workspace title → theme-specific logo. Text can be split across child
+      // spans and swaps on workspace switch, so match the whole button every
+      // pass. The active UI profile owns the text→variant mapping, absorbing
+      // wordmark drift (e.g. the 26.715 "ChatGPT 工作"→"ChatGPT" rebrand).
       for (const button of aside.querySelectorAll("button")) {
         const text = button.textContent.replace(/\s+/g, " ").trim();
-        const isCodex = text === "Codex";
-        const isWork = /^ChatGPT ?(工作|Work)$/i.test(text);
-        if (!isCodex && !isWork) {
+        const want = workspaceLogo(text);
+        if (!want) {
           if (button.dataset.ctsLogo) delete button.dataset.ctsLogo;
           continue;
         }
-        const want = isCodex ? "codex" : "chatgpt-work";
+        clearGlyph(button);
         if (button.dataset.ctsLogo !== want) button.dataset.ctsLogo = want;
       }
     }
-    const composer = document.querySelector(".composer-surface-chrome");
-    if (composer) {
+    for (const composer of selectComposerSurfaces(document)) {
       for (const button of composer.querySelectorAll("button:not([data-cts-icon])")) {
         const aria = button.getAttribute("aria-label") || "";
         const text = button.textContent || "";
@@ -286,7 +481,7 @@ html.codex-theme-studio .cts-windows-menu-bar [data-cts-menu-region="main"] {
       style.dataset.ctsStamp = STAMP;
     }
 
-    const shellMain = document.querySelector("main.main-surface") || document.querySelector("main");
+    const shellMain = resolveShellMain();
     integrateWindowsMenu(shellMain);
     const home = findHome(state?.homeSticky);
     if (state) state.homeSticky = home;
@@ -296,8 +491,9 @@ html.codex-theme-studio .cts-windows-menu-bar [data-cts-menu-region="main"] {
     if (home) setClass(home, "cts-home", true);
     if (shellMain) setClass(shellMain, "cts-home-shell", Boolean(home));
 
+    const composers = reconcileComposerSurfaces(document);
     annotateIcons();
-    annotateComposerOverflow(selectComposerSurfaces(document));
+    annotateComposerOverflow(composers);
 
     const fillTexts = (rootNode) => {
       for (const node of rootNode.querySelectorAll("[data-cts-text]")) {
@@ -393,12 +589,14 @@ html.codex-theme-studio .cts-windows-menu-bar [data-cts-menu-region="main"] {
     document.querySelectorAll("[data-cts-glyph]").forEach((node) => node.removeAttribute("data-cts-glyph"));
     document.querySelectorAll("[data-cts-icon]").forEach((node) => node.removeAttribute("data-cts-icon"));
     document.querySelectorAll("[data-cts-logo]").forEach((node) => node.removeAttribute("data-cts-logo"));
+    document.querySelectorAll(`[${SHELL_MAIN_COMPAT_ATTR}]`).forEach(releaseShellMainCompat);
     document.querySelectorAll(`.${WINDOWS_MENU_CLASS}`).forEach((node) => node.classList.remove(WINDOWS_MENU_CLASS));
     document.querySelectorAll(`[${WINDOWS_MENU_REGION_ATTR}]`).forEach((node) => node.removeAttribute(WINDOWS_MENU_REGION_ATTR));
     document.querySelectorAll(`[${COMPOSER_OVERFLOW_ATTR}]`)
       .forEach((node) => node.removeAttribute(COMPOSER_OVERFLOW_ATTR));
     document.querySelectorAll(`[${COMPOSER_MODE_ATTR}]`)
       .forEach((node) => node.removeAttribute(COMPOSER_MODE_ATTR));
+    clearComposerSurfaceCompat(document);
     document.getElementById(STYLE_ID)?.remove();
     document.getElementById(CHROME_ID)?.remove();
     document.getElementById(STAGE_ID)?.remove();
@@ -427,12 +625,37 @@ html.codex-theme-studio .cts-windows-menu-bar [data-cts-menu-region="main"] {
   // Ignore mutations we caused ourselves (chrome text/position, clock ticks,
   // root inline vars) — they must never re-trigger ensure().
   const chromeNode = () => document.getElementById(CHROME_ID);
+  const externalRootStyleSignature = () => Array.from(document.documentElement.style)
+    .filter((name) => !appliedVars.includes(name))
+    .sort()
+    .map((name) => `${name}:${document.documentElement.style.getPropertyValue(name)}!${
+      document.documentElement.style.getPropertyPriority(name)}`)
+    .join(";");
+  const styleMutationTouchesComposer = (target) => Boolean(
+    target.closest?.(".composer-surface-chrome, [data-composer-surface-variant][data-composer-layout]") ||
+    target.querySelector?.(
+      '[data-codex-composer], .ProseMirror[contenteditable="true"], ' +
+      '[contenteditable="true"], textarea',
+    )
+  );
+  let rootStyleSignature = externalRootStyleSignature();
   const observer = new MutationObserver((mutations) => {
     const chrome = chromeNode();
     for (const mutation of mutations) {
       const target = mutation.target;
       if (chrome && (target === chrome || chrome.contains(target))) continue;
-      if (target === document.documentElement && mutation.type === "attributes" && mutation.attributeName === "style") continue;
+      if (target === document.documentElement && mutation.type === "attributes" && mutation.attributeName === "style") {
+        const nextRootStyleSignature = externalRootStyleSignature();
+        if (nextRootStyleSignature === rootStyleSignature) continue;
+        rootStyleSignature = nextRootStyleSignature;
+      }
+      if (mutation.type === "attributes" && mutation.attributeName === "style" &&
+        target !== document.documentElement && !styleMutationTouchesComposer(target)) continue;
+      if (mutation.type === "childList") {
+        repairProjectGlyphs(target);
+        for (const added of mutation.addedNodes) repairProjectGlyphs(added);
+      }
+      annotateComposerOverflow.invalidate();
       scheduleEnsure();
       return;
     }
@@ -441,9 +664,17 @@ html.codex-theme-studio .cts-windows-menu-bar [data-cts-menu-region="main"] {
     childList: true,
     subtree: true,
     attributes: true,
-    attributeFilter: ["class", "data-theme", "data-appearance", "data-color-mode"],
+    attributeFilter: [
+      "class", "style", "data-theme", "data-appearance", "data-color-mode",
+      "data-composer-layout", "data-composer-surface-overflow",
+      "data-composer-surface-variant", "data-composer-radius-variant",
+      "data-composer-utility-bar-variant",
+    ],
   });
-  const timer = setInterval(ensure, 4000);
+  const timer = setInterval(() => {
+    annotateComposerOverflow.invalidate();
+    ensure();
+  }, 4000);
   const resizeHandler = scheduleEnsure;
   window.addEventListener("resize", resizeHandler, { passive: true });
 
@@ -462,7 +693,10 @@ html.codex-theme-studio .cts-windows-menu-bar [data-cts-menu-region="main"] {
   let mediaHandler = null;
   try {
     mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    mediaHandler = () => scheduleEnsure();
+    mediaHandler = () => {
+      annotateComposerOverflow.invalidate();
+      scheduleEnsure();
+    };
     mediaQuery.addEventListener("change", mediaHandler);
   } catch {}
 
