@@ -1,15 +1,23 @@
-// Golden-fixture parity test: builds a real payload through buildPayload()
-// (the exact code path `pack`/`verify`/`preview-shot` use) and executes it
-// against real DOM snapshots of the four host shapes the vendored runtime
-// must support — legacy and 26.727+ main-surface markup, each with a
-// legacy and a CSS-module (26.730.61309+) Composer surface, plus a decoy
-// <main> ahead of the real shell main (the exact upstream bug this port
-// fixes: studio used to fall through to that decoy).
+// DOM-behavior test: builds a real payload through buildPayload() (the exact
+// code path `pack`/`verify`/`preview-shot` use) and executes it against real
+// DOM snapshots of the four host shapes the vendored runtime must support —
+// legacy and 26.727+ main-surface markup, each with a legacy and a CSS-module
+// (26.730.61309+) Composer surface, plus a decoy <main> ahead of the real
+// shell main (the exact upstream bug this port fixes: studio used to fall
+// through to that decoy).
 //
-// This is the DOM-execution half of the golden-fixture mechanism described
-// in the single-theme-runtime plan; Codex-App-Manager's equivalent Rust
-// tests (payload.rs) only assert on generated payload *text*, so this file
-// is where the structural behavior is actually exercised end-to-end.
+// This file's own hand-written fixture (writeFixtureTheme(), below) is
+// deliberately NOT the shared golden fixture used across repos — it carries
+// no `assets`/`motionAssets` and its chrome.html has only a `stage` layer, so
+// it stays minimal and fast for the thing this file actually exercises: main-
+// surface/composer-surface *selection behavior* against a real DOM (Node has
+// no DOM, so this can't run in Rust). It never touches asset inlining or
+// motion-asset substitution — for that, see the separate
+// "golden fixture payload matches the shared structural contract" test in
+// payload.test.mjs, which builds from studio/test/fixtures/golden/, the same
+// fixture bytes as Manager's crates/codex-theme-engine/tests/fixtures/golden/,
+// and asserts on the same normalized structural contract as payload.rs's
+// golden_fixture_payload_matches_contract test.
 import assert from "node:assert/strict";
 import test from "node:test";
 import fs from "node:fs/promises";
