@@ -10,6 +10,11 @@ on:
     branches: [main]
     paths: ["skins/**", "studio/**", "scripts/**", ".github/workflows/**"]
   workflow_dispatch:
+  # runtime-smoke only: downloads and launches a real Codex build, which is
+  # far too slow (and too dependent on an external mirror's uptime) for the
+  # PR/push hot path. Runs unattended on a schedule instead; see that job.
+  schedule:
+    - cron: "17 5 * * *"
 
 permissions:
   contents: read
@@ -82,3 +87,64 @@ jobs:
           aws s3 sync dist-catalog/ s3://codex-skins/ \
             --endpoint-url "${{ secrets.R2_ENDPOINT }}" --only-show-errors
           echo "published $(date -u +%FT%TZ)"
+
+  # Real-renderer regression net for the injected theme runtime, not a
+  # replacement for a contributor's own `preview-shot`. The Codex home route
+  # needs a signed-in account (see SPEC.md §3 and Codex-App-Manager's
+  # docs/investigations/issue-343-portable-startup.md), this project accepts
+  # no credentials, and a logged-out launch is stuck on the sign-in page — so
+  # this job cannot produce or check cover screenshots. What it *can* still
+  # do unattended: download the real, notarized Codex build, launch it with a
+  # loopback-only CDP endpoint (same mechanism `codex-theme start` uses for a
+  # contributor locally), and drive every skin's actual `apply` -> `verify` ->
+  # `remove` cycle against the live renderer on whatever route that gets —
+  # asserting no uncaught renderer exception and complete removal either way.
+  # That's a real gap the `pack` gate's static checks and the jsdom-based
+  # unit tests can't cover: a skin whose payload is structurally valid but
+  # crashes once it's actually running against React (a selector that wedges
+  # layout into a render loop, a motion asset the real <video> element
+  # rejects, etc). Off the pull_request/push hot path on purpose: downloading
+  # a live desktop build from an external mirror and driving a real macOS
+  # app through 50 apply/remove cycles takes several minutes and depends on
+  # that mirror's uptime, neither of which a skin-content PR should be gated
+  # on. Runs on a daily schedule and on demand instead.
+  runtime-smoke:
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 22 # global WebSocket (studio/src/cdp.mjs) needs >=22, unlike the >=20 CLI floor
+      - name: Check smoke-test script syntax
+        working-directory: studio
+        run: node --check scripts/ci-runtime-smoke.mjs
+      - name: Download Codex (mac-arm64)
+        run: |
+          set -euo pipefail
+          curl -fL --retry 3 --retry-connrefused -o "$RUNNER_TEMP/Codex-mac-arm64.dmg" \
+            https://codexapp.agentsmirror.com/latest/mac-arm64
+      - name: Mount, verify signature, and extract the app
+        run: |
+          set -euo pipefail
+          mount_point="$(hdiutil attach -nobrowse -readonly -noautoopen "$RUNNER_TEMP/Codex-mac-arm64.dmg" \
+            | grep -Eo '/Volumes/.*' | tail -1)"
+          echo "mounted at $mount_point"
+          app_path="$(/bin/ls -d "$mount_point"/*.app | head -1)"
+          # Fail closed on anything unsigned, unnotarized, or not actually
+          # OpenAI's Codex bundle — codexapp.agentsmirror.com fronts the
+          # official GitHub release asset through a Cloudflare Worker/R2
+          # mirror (Wangnov/codex-app-mirror), so this is this job's own,
+          # independent check that what it downloaded is still the real,
+          # Apple-notarized OpenAI build and not a tampered or stale copy.
+          codesign --verify --deep --strict "$app_path"
+          spctl -a -vv -t execute "$app_path"
+          bundle_id="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$app_path/Contents/Info.plist")"
+          [ "$bundle_id" = "com.openai.codex" ] || { echo "::error::unexpected bundle id: $bundle_id"; exit 1; }
+          ditto "$app_path" "$RUNNER_TEMP/Codex.app"
+          hdiutil detach "$mount_point"
+          echo "CODEX_APP_PATH=$RUNNER_TEMP/Codex.app" >> "$GITHUB_ENV"
+      - name: Runtime smoke test — apply/verify/remove every skin against the live renderer
+        working-directory: studio
+        run: node scripts/ci-runtime-smoke.mjs

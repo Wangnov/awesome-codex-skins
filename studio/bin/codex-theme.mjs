@@ -11,6 +11,7 @@
 //   codex-theme verify [--screenshot <path>] [--timeout-ms <n>]
 //   codex-theme screenshot <path>
 //   codex-theme preview-shot <id> [--name home] [--width 1280] [--height 800]
+//                                  [--allow-visible-sidebar]
 //   codex-theme pack <id> [--out <dir>]
 
 import { spawn } from "node:child_process";
@@ -32,6 +33,7 @@ import {
 } from "../src/state.mjs";
 import { buildPayload, REMOVE_EXPRESSION, VERIFY_REMOVED_EXPRESSION, verifyExpression, STUDIO_VERSION } from "../src/payload.mjs";
 import { inspectPreviewPath, listThemes, resolveThemeDir, loadTheme } from "../src/theme.mjs";
+import { collapseSidebarPrivacyExpression } from "../src/sidebar-privacy.mjs";
 import { applyNativeTheme, restoreNativeTheme, hasBackup } from "../src/native-theme.mjs";
 import {
   CODEX_THEME_VARIANTS,
@@ -385,11 +387,21 @@ async function cmdScreenshot(argv) {
 // ------------------------------------------------------- delivery (P1.5 spec)
 
 // Standard preview screenshot: home route, intro gone, fixed 1280×800 frame,
-// WebP output registered in theme.json `previews`. The sidebar tidy-up
-// (collapse projects/tasks/pinned sections) is the CALLER's job before
-// running this — the DOM controls are too version-fragile to hard-code here.
+// WebP output registered in theme.json `previews`. By default the sidebar's
+// pinned/projects/tasks sections are collapsed through the app's own real UI
+// (real click events over CDP, driven by sidebar-privacy.mjs) and verified
+// clear of any visible private-list content before a frame is captured —
+// this is what lets a CI runner or a contributor's own machine produce the
+// cover safely without hand-editing DOM state first. `--allow-visible-sidebar`
+// is an explicit, loud opt-out for local iteration only: it must never be
+// used for a preview that ships in a PR, since the whole point of the
+// default is that ships previews cannot carry a contributor's real
+// pinned/project/task names.
 async function cmdPreviewShot(argv) {
-  const flags = parseFlags(argv, { name: String, width: asInt, height: asInt, "timeout-ms": asInt });
+  const flags = parseFlags(argv, {
+    name: String, width: asInt, height: asInt, "timeout-ms": asInt,
+    "allow-visible-sidebar": Boolean,
+  });
   const id = flags._[0];
   if (!id) throw new Error("Usage: codex-theme preview-shot <theme-id> [--name home]");
   const dir = await resolveThemeDir(THEMES_ROOT, id);
@@ -397,6 +409,7 @@ async function cmdPreviewShot(argv) {
   const height = flags.height ?? 800;
   const name = flags.name ?? "home";
   const timeoutMs = flags["timeout-ms"] ?? 20000;
+  const allowVisibleSidebar = flags["allow-visible-sidebar"] === true;
 
   const port = await activePort();
   if (!port) throw new Error("No live CDP endpoint. Run `codex-theme start --theme <id>` first.");
@@ -419,6 +432,26 @@ async function cmdPreviewShot(argv) {
       if (!state.home) throw new Error("Renderer is not on the home route — navigate home, tidy the sidebar, retry.");
       if (Date.now() > deadline) throw new Error("Intro overlay never settled.");
       await new Promise((resolve) => setTimeout(resolve, 400));
+    }
+
+    // Collapse pinned/projects/tasks through the real UI and verify nothing
+    // private-shaped is still visible — refuse to capture otherwise.
+    if (allowVisibleSidebar) {
+      process.stderr.write(
+        "codex-theme preview-shot: --allow-visible-sidebar set — skipping the sidebar privacy check. " +
+          "Do NOT submit a preview captured this way; it may show your real pinned chats, projects or tasks.\n",
+      );
+    } else {
+      const privacy = await session.evaluate(collapseSidebarPrivacyExpression({}));
+      if (!privacy?.ok) {
+        const detail = JSON.stringify({ sections: privacy?.sections, leaks: privacy?.leaks }, null, 2);
+        throw new Error(
+          `Refusing to capture: sidebar privacy check failed (${privacy?.reason ?? "unknown reason"}).\n` +
+            `Collapse the pinned/projects/tasks sections by hand and retry, or pass --allow-visible-sidebar ` +
+            "for local-only iteration (never for a submitted preview).\n" +
+            `Detail: ${detail}`,
+        );
+      }
     }
 
     // 2× capture, downscaled by Pillow for a crisp 1280×800 WebP.

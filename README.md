@@ -79,6 +79,8 @@ npx skills add wangnov/awesome-codex-skins --skill codex-theme-maker -g
 
 投稿即 PR：提交 `skins/<id>/` 源目录（非仅压缩包），CI 自动运行与本地一致的 `pack` 质量门——schema、素材预算、真机截图预览、`version`/`codexVerified` 齐备。
 
+**关于封面截图的隐私**：`node studio/bin/codex-theme.mjs preview-shot <id>` 默认会通过 Codex 真实 UI（真实点击事件，经 CDP）折叠侧边栏的置顶/项目/任务三个分组，并校验折叠后侧边栏内确实看不到任何列表内容，校验不过就拒绝出图——不需要你手工整理侧边栏，也不用担心自己的真实置顶对话/项目名混进 PR。校验是 DOM 启发式的，不是万能保证；出图后请你自己看一眼那张 WebP 再提交。这一步无法在 CI 上无人值守地完成：Codex 主页需要登录，本项目也不接受、不存储任何账号凭据，`preview-shot` 必须由投稿人在自己已登录的 Codex 上运行。
+
 | 分级 | 含义 |
 |---|---|
 | **Certified** | CI 绿 **+** 维护者真机验证 |
@@ -151,6 +153,8 @@ Then ask your agent: *"make me a Codex skin in the style of X"*. The skill drive
 ## Contributing
 
 Submissions are PRs adding `skins/<id>/` (source, not just the archive). The CI gate runs the same `pack` validation as local dev — schema, asset budgets, real-screenshot previews, `version`/`codexVerified` present.
+
+**About the cover screenshot and your privacy**: `node studio/bin/codex-theme.mjs preview-shot <id>` collapses the sidebar's pinned/projects/tasks sections through Codex's real UI (real click events, over CDP) by default, and verifies no private list content is still visible before it will save a frame — it refuses if it can't confirm that. You don't need to hand-tidy the sidebar, and your own pinned chats/projects/tasks should never end up in a submitted preview. The check is DOM-heuristic, not a hard guarantee against every future Codex UI change, so please still glance at the saved WebP before opening the PR. This can't run unattended in CI: the Codex home route requires signing in, and this project does not accept or store account credentials — run `preview-shot` yourself, on your own signed-in Codex.
 
 | Tier | Meaning |
 |---|---|
