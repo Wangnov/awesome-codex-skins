@@ -1,0 +1,36 @@
+<aside class="app-shell-left-panel">
+  <div class="nav-chrome">
+    <button class="new-chat">New chat</button>
+  </div>
+  <section>
+    <button aria-expanded="true" data-controls="pinned-list">Pinned</button>
+    <ul id="pinned-list">
+      <li>Q3 budget negotiation notes</li>
+    </ul>
+  </section>
+  <section>
+    <button aria-expanded="true" data-controls="projects-list">Projects</button>
+    <ul id="projects-list">
+      <li>Acme Corp acquisition due diligence</li>
+    </ul>
+  </section>
+  <section>
+    <button aria-expanded="true" data-controls="tasks-list">Tasks</button>
+    <ul id="tasks-list">
+      <li>Draft termination letter for contractor</li>
+    </ul>
+  </section>
+  <!--
+    A fourth, unnamed collapsible section using the exact same aria-expanded
+    convention as the three known ones. The named pass has no label for
+    "Recent" and would never find it; only the generic sweep (which looks for
+    any visible aria-expanded="true" toggle, not just the three known labels)
+    can discover and collapse it.
+  -->
+  <section>
+    <button aria-expanded="true" data-controls="recent-list">Recent</button>
+    <ul id="recent-list">
+      <li data-testid="thread-row-7">Confidential Q3 planning thread</li>
+    </ul>
+  </section>
+</aside>

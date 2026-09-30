@@ -1,0 +1,19 @@
+<aside class="app-shell-left-panel">
+  <div class="nav-chrome">
+    <button class="new-chat">New chat</button>
+  </div>
+  <!--
+    Collapse is implemented by clipping: the toggle sets height:0 and
+    overflow:hidden on the wrapper (data-collapse="clip"), so every <li>
+    inside keeps a non-zero box of its own. Only an ancestor-aware
+    visibility check can tell these rows are not on screen.
+  -->
+  <section>
+    <button aria-expanded="true" data-controls="pinned-wrap" data-collapse="clip">Pinned</button>
+    <div id="pinned-wrap"><ul><li>Q3 budget negotiation notes</li></ul></div>
+  </section>
+  <section>
+    <button aria-expanded="true" data-controls="projects-wrap" data-collapse="clip">Projects</button>
+    <div id="projects-wrap"><ul><li>Acme Corp acquisition due diligence</li></ul></div>
+  </section>
+</aside>
