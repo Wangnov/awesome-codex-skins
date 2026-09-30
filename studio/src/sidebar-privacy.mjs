@@ -89,9 +89,17 @@ export async function collapseAndVerifySidebarPrivacy(
   doc,
   {
     settleMs = 250, attempts = 8, mountAttempts = 20, scanOnly = false,
-    wait, labels, rowSelector, sidebarSelector,
+    budgetMs = Infinity, wait, labels, rowSelector, sidebarSelector,
   },
 ) {
+  // The whole check runs inside one Runtime.evaluate, and the CDP client aborts
+  // a command after 15s. `budgetMs` is a wall-clock budget for the mount wait
+  // and the clicking; once spent, no further toggle is clicked or waited on and
+  // the function still returns its full diagnostics (sections, leaks,
+  // visibleText) with `timedOut: true` — a failure the contributor can read,
+  // instead of a bare "CDP command timed out" with the page loop still running.
+  const startedAt = Date.now();
+  const outOfTime = () => Date.now() - startedAt > budgetMs;
   const sleep = wait ?? ((ms) => new Promise((resolve) => setTimeout(resolve, ms)));
   const view = doc.defaultView;
   const styleOf = (node) =>
@@ -164,7 +172,7 @@ export async function collapseAndVerifySidebarPrivacy(
   // ever appears the recognition check below refuses to call it safe.
   const anyRecognizable = () =>
     labels.some((label) => findNamedHeader(label)) || disclosureToggles().length > 0;
-  for (let i = 0; i < mountAttempts && !anyRecognizable(); i += 1) await sleep(settleMs);
+  for (let i = 0; i < mountAttempts && !anyRecognizable() && !outOfTime(); i += 1) await sleep(settleMs);
 
   // Dispatches the real pointer/mouse/click sequence at `toggle`, stopping as
   // soon as it reports collapsed — a handler bound to both pointerdown and
@@ -172,6 +180,7 @@ export async function collapseAndVerifySidebarPrivacy(
   // waits up to `attempts` settle rounds. In scanOnly mode nothing is clicked.
   const clickToggleAndWaitCollapsed = async (toggle) => {
     if (scanOnly || isCollapsed(toggle)) return Boolean(isCollapsed(toggle));
+    if (outOfTime()) return false; // budget spent: do not start another click sequence
     // `doc.defaultView` is `window` in both a real browser (this function
     // also ships stringified into the renderer, see below) and jsdom, so
     // this always constructs a real, dispatchable event for whichever DOM
@@ -189,7 +198,7 @@ export async function collapseAndVerifySidebarPrivacy(
       if (isCollapsed(toggle)) break;
     }
     let collapsed = isCollapsed(toggle);
-    for (let i = 0; i < attempts && !collapsed; i += 1) {
+    for (let i = 0; i < attempts && !collapsed && !outOfTime(); i += 1) {
       await sleep(settleMs);
       collapsed = isCollapsed(toggle);
     }
@@ -210,8 +219,18 @@ export async function collapseAndVerifySidebarPrivacy(
       (typeof headerNode.querySelector === "function" &&
         headerNode.querySelector('button,[role="button"],[aria-expanded]')) ||
       null;
-    if (!toggle) {
-      sections.push({ label, found: true, toggleFound: false, collapsed: false });
+    // Only a control that reports its own state via aria-expanded and does not
+    // open a popup is ever clicked. A popup trigger (account/workspace menu)
+    // would open a menu in the contributor's live app, and a plain button that
+    // carries no aria-expanded (e.g. a navigation link that happens to be
+    // labeled "Tasks") could navigate the renderer off the home route — and its
+    // collapse could not be verified anyway. Both fail closed as "no operable
+    // toggle" without being clicked.
+    if (!toggle || opensPopup(toggle) || !toggle.hasAttribute("aria-expanded")) {
+      sections.push({
+        label, found: true, toggleFound: false, collapsed: false,
+        why: !toggle ? "no-toggle" : opensPopup(toggle) ? "popup-trigger" : "no-aria-expanded",
+      });
       continue;
     }
     handledToggles.add(toggle);
@@ -262,7 +281,11 @@ export async function collapseAndVerifySidebarPrivacy(
   let reason = null;
   if (!ok) {
     if (collapseFailures.some((s) => !s.toggleFound)) {
-      reason = "a sidebar section header was found but has no discoverable toggle control";
+      reason =
+        "a sidebar section header was found but has no discoverable toggle control " +
+        "(none, no aria-expanded state to verify, or it opens a popup and is never clicked)";
+    } else if (collapseFailures.length > 0 && outOfTime()) {
+      reason = `the collapse check ran out of its ${budgetMs}ms time budget with a section still expanded`;
     } else if (collapseFailures.length > 0) {
       reason = scanOnly
         ? "a sidebar section is expanded again after the collapse pass"
@@ -275,18 +298,25 @@ export async function collapseAndVerifySidebarPrivacy(
         "refusing to assume the sidebar is empty";
     }
   }
-  return { ok, sidebarFound: true, sections, recognizedSections, leaks, visibleText, reason };
+  return { ok, sidebarFound: true, sections, recognizedSections, leaks, visibleText, timedOut: outOfTime(), reason };
 }
 
 // CDP-evaluated form: `collapseAndVerifySidebarPrivacy` stringified and
 // invoked against `document` with the canonical labels/selectors baked in as
 // JSON. Runs entirely inside the renderer via Runtime.evaluate — nothing
 // Node-specific crosses the boundary.
-export function collapseSidebarPrivacyExpression({ settleMs = 250, attempts = 8, scanOnly = false } = {}) {
+// Wall-clock budget for the in-page check; must stay well under CdpSession's
+// 15s per-command timeout so a slow sidebar yields diagnostics, not a timeout.
+export const SIDEBAR_CHECK_BUDGET_MS = 11000;
+
+export function collapseSidebarPrivacyExpression(
+  { settleMs = 250, attempts = 8, scanOnly = false, budgetMs = SIDEBAR_CHECK_BUDGET_MS } = {},
+) {
   const options = {
     settleMs,
     attempts,
     scanOnly,
+    budgetMs,
     labels: SIDEBAR_PRIVACY_SECTION_LABELS,
     rowSelector: PRIVATE_ROW_SELECTORS.join(","),
     sidebarSelector: SIDEBAR_SELECTOR,

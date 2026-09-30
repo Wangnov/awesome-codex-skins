@@ -455,7 +455,11 @@ async function cmdPreviewShot(argv) {
       } else {
         // Collapse the sidebar's sections through the real UI and verify no
         // private-shaped row is still visible — refuse to capture otherwise.
-        const privacy = await session.evaluate(collapseSidebarPrivacyExpression({}));
+        // The in-page collapse pass waits for the sidebar to mount and polls each
+        // toggle, so its worst case exceeds the default 15s CDP timeout; give it
+        // room so a slow sidebar reports its own diagnostics instead of a bare
+        // "CDP command timed out".
+        const privacy = await session.evaluate(collapseSidebarPrivacyExpression({}), { timeoutMs: 60000 });
         if (!privacy?.ok) {
           throw new Error(
             `Refusing to capture: sidebar privacy check failed before capture (${privacy?.reason ?? "unknown reason"}).\n` +

@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // CI-only runtime smoke test: injects and removes every skin against a real,
-// freshly downloaded Codex renderer over CDP, and fails if the renderer ever
-// throws an uncaught exception or ends up not fully removed.
+// freshly downloaded Codex renderer over CDP, and fails if the injected runtime
+// throws an uncaught exception, a skin does not install, or it ends up not
+// fully removed.
 //
 // What this does NOT do: sign in, reach the home route, or take any
 // screenshot. The Codex home route requires an account (see SPEC.md §3 and
@@ -20,7 +21,8 @@
 //
 // Usage: CODEX_APP_PATH=/path/to/ChatGPT.app node studio/scripts/ci-runtime-smoke.mjs
 // Exits non-zero if any skin fails to install (installed class, stylesheet,
-// theme id and runtime version), throws a renderer exception, or fails to
+// theme id and runtime version), throws a renderer exception attributable to
+// the injected runtime (see smoke-assert.mjs), or fails to
 // fully remove. The full verify().pass (needs the signed-in shell) is NOT
 // asserted; see runSkin.
 
@@ -33,7 +35,9 @@ import {
   quitCodex, DEFAULT_PORT,
 } from "../src/codex-app.mjs";
 import { buildPayload, REMOVE_EXPRESSION, VERIFY_REMOVED_EXPRESSION, verifyExpression } from "../src/payload.mjs";
-import { installedOk, pickInstallState } from "../src/smoke-assert.mjs";
+import {
+  installedOk, pickInstallState, summarizeException, exceptionKey, classifyExceptions,
+} from "../src/smoke-assert.mjs";
 import { listThemes } from "../src/theme.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -42,6 +46,7 @@ const SKINS_ROOT = process.env.CODEX_SKINS_ROOT?.trim() || path.join(PROJECT_ROO
 
 const SETTLE_MS = 800; // time given for an async exception to surface after an evaluate() resolves
 const PER_SKIN_TIMEOUT_MS = 20000;
+const BASELINE_MS = 6000; // watch the untouched app this long to learn its own exception noise
 
 function log(message) {
   process.stderr.write(`[ci-runtime-smoke] ${message}\n`);
@@ -56,15 +61,14 @@ function sleep(ms) {
 // e.g. from a MutationObserver callback or a later React render pass) are
 // caught too, not just synchronous errors inside the evaluated expression
 // itself (which `session.evaluate` already rejects on via `exceptionDetails`).
+// Attribution and baseline filtering live in smoke-assert.mjs: a logged-out
+// Codex throws app-side errors on its own, so raw "an exception fired" is not
+// evidence against a skin.
 function watchForExceptions(connected) {
   const caught = [];
   for (const { target, session } of connected) {
     session.on("Runtime.exceptionThrown", (params) => {
-      const detail = params?.exceptionDetails;
-      caught.push({
-        targetUrl: target.url,
-        text: detail?.exception?.description ?? detail?.text ?? "unknown renderer exception",
-      });
+      caught.push(summarizeException(params?.exceptionDetails, target.url));
     });
   }
   return caught;
@@ -72,7 +76,7 @@ function watchForExceptions(connected) {
 
 const shellReached = new Set();
 
-async function runSkin(id, dir, connected, exceptions) {
+async function runSkin(id, dir, connected, exceptions, baselineKeys) {
   const { payload } = await buildPayload(dir);
   exceptions.length = 0;
 
@@ -116,9 +120,17 @@ async function runSkin(id, dir, connected, exceptions) {
     }
   }
 
-  if (exceptions.length > 0) {
+  const { failures, warnings, ignored } = classifyExceptions(exceptions, baselineKeys);
+  if (warnings.length > 0) {
+    process.stderr.write(
+      `::warning::runtime-smoke ${id}: ${warnings.length} new renderer exception(s) not attributable to the ` +
+        `injected runtime (not failing): ${JSON.stringify(warnings.map((w) => w.text.split("\n")[0]))}\n`,
+    );
+  }
+  if (ignored.length > 0) log(`${id}: ignored ${ignored.length} exception(s) already seen in the pre-injection baseline`);
+  if (failures.length > 0) {
     throw new Error(
-      `skin '${id}' threw ${exceptions.length} renderer exception(s): ${JSON.stringify(exceptions)}`,
+      `skin '${id}' threw ${failures.length} renderer exception(s) from the injected runtime: ${JSON.stringify(failures)}`,
     );
   }
 }
@@ -129,20 +141,8 @@ async function main() {
     throw new Error("CODEX_APP_PATH must point at a Codex/ChatGPT.app bundle for this CI-only script.");
   }
 
-  const app = await discoverCodexApp();
-  log(`discovered ${app.bundle} (v${app.version})`);
-
-  const port = await selectAvailablePort(DEFAULT_PORT);
-  log(`launching with loopback CDP on 127.0.0.1:${port}`);
-  await launchCodexWithCdp(app.bundle, port);
-  if (!(await waitForCdp(port, 60000))) {
-    throw new Error(`Codex did not expose a loopback CDP endpoint on port ${port} within 60s`);
-  }
-
-  const connected = await connectCodexTargets(port, 30000);
-  log(`connected to ${connected.length} renderer target(s): ${connected.map((c) => c.target.url).join(", ")}`);
-  const exceptions = watchForExceptions(connected);
-
+  // Everything that can be checked without a running app is checked first, so
+  // a bad skin directory fails in milliseconds instead of after a full launch.
   const themes = await listThemes(SKINS_ROOT);
   if (themes.length === 0) throw new Error(`No skins found under ${SKINS_ROOT}`);
   // listThemes silently skips directories that fail to load; a smoke test that
@@ -151,23 +151,50 @@ async function main() {
   if (skinDirs.length !== themes.length) {
     throw new Error(`${skinDirs.length} skin dir(s) under ${SKINS_ROOT} but only ${themes.length} loaded`);
   }
-  log(`smoke-testing ${themes.length} skin(s) from ${SKINS_ROOT}`);
 
+  const app = await discoverCodexApp();
+  log(`discovered ${app.bundle} (v${app.version})`);
+
+  const port = await selectAvailablePort(DEFAULT_PORT);
+  log(`launching with loopback CDP on 127.0.0.1:${port}`);
+  let connected = [];
   const failures = [];
-  for (const theme of themes) {
-    process.stderr.write(`::group::runtime-smoke ${theme.id}\n`);
-    try {
-      await runSkin(theme.id, theme.dir, connected, exceptions);
-      process.stderr.write(`OK: ${theme.id}\n`);
-    } catch (error) {
-      process.stderr.write(`::error::runtime-smoke failed for ${theme.id}: ${error.message}\n`);
-      failures.push({ id: theme.id, message: error.message });
+  // From the launch onward, always close the CDP sockets (Node's global
+  // WebSocket would otherwise keep the process alive until the job timeout)
+  // and quit the app, whatever throws.
+  try {
+    await launchCodexWithCdp(app.bundle, port);
+    if (!(await waitForCdp(port, 60000))) {
+      throw new Error(`Codex did not expose a loopback CDP endpoint on port ${port} within 60s`);
     }
-    process.stderr.write("::endgroup::\n");
-  }
 
-  for (const { session } of connected) session.close();
-  await quitCodex(app, { force: true });
+    connected = await connectCodexTargets(port, 30000);
+    log(`connected to ${connected.length} renderer target(s): ${connected.map((c) => c.target.url).join(", ")}`);
+    const exceptions = watchForExceptions(connected);
+
+    log(`recording ${BASELINE_MS}ms of the app's own exception noise before injecting anything`);
+    await sleep(BASELINE_MS);
+    const baselineKeys = new Set(exceptions.map(exceptionKey));
+    log(`baseline: ${exceptions.length} exception(s), ${baselineKeys.size} distinct`);
+
+    log(`smoke-testing ${themes.length} skin(s) from ${SKINS_ROOT}`);
+    for (const theme of themes) {
+      process.stderr.write(`::group::runtime-smoke ${theme.id}\n`);
+      try {
+        await runSkin(theme.id, theme.dir, connected, exceptions, baselineKeys);
+        process.stderr.write(`OK: ${theme.id}\n`);
+      } catch (error) {
+        process.stderr.write(`::error::runtime-smoke failed for ${theme.id}: ${error.message}\n`);
+        failures.push({ id: theme.id, message: error.message });
+      }
+      process.stderr.write("::endgroup::\n");
+    }
+  } finally {
+    for (const { session } of connected) {
+      try { session.close(); } catch { /* already closed */ }
+    }
+    await quitCodex(app, { force: true }).catch((error) => log(`quitCodex failed: ${error.message}`));
+  }
 
   if (failures.length > 0) {
     log(`${failures.length}/${themes.length} skin(s) failed the runtime smoke test`);
@@ -175,12 +202,16 @@ async function main() {
     return;
   }
   log(
-    `all ${themes.length} skin(s) passed: install, remove, no renderer exceptions ` +
+    `all ${themes.length} skin(s) passed: install, remove, no runtime-attributed renderer exceptions ` +
       `(full signed-in shell reached on ${shellReached.size} target(s), informational only)`,
   );
 }
 
-main().catch((error) => {
-  process.stderr.write(`::error::${error.stack ?? error.message}\n`);
-  process.exitCode = 1;
-});
+main()
+  .catch((error) => {
+    process.stderr.write(`::error::${error.stack ?? error.message}\n`);
+    process.exitCode = 1;
+  })
+  // Belt and braces: never let a lingering socket or child handle hold a
+  // billed macOS runner until the job timeout.
+  .finally(() => process.exit(process.exitCode ?? 0));

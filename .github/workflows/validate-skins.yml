@@ -151,6 +151,11 @@ jobs:
           spctl -a -vv -t execute "$app_path"
           bundle_id="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$app_path/Contents/Info.plist")"
           [ "$bundle_id" = "com.openai.codex" ] || { echo "::error::unexpected bundle id: $bundle_id"; exit 1; }
+          # A valid Developer ID signature plus the bundle id alone would accept
+          # anyone's notarized app; pin OpenAI's Team ID (the same gate the
+          # mirror applies before publishing).
+          team_id="$(codesign -dv --verbose=4 "$app_path" 2>&1 | sed -n 's/^TeamIdentifier=//p')"
+          [ "$team_id" = "2DC432GLL2" ] || { echo "::error::unexpected Team ID: ${team_id:-none}"; exit 1; }
           ditto "$app_path" "$RUNNER_TEMP/Codex.app"
           hdiutil detach "$mount_point"
           echo "CODEX_APP_PATH=$RUNNER_TEMP/Codex.app" >> "$GITHUB_ENV"

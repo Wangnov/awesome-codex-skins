@@ -74,11 +74,16 @@ function wireToggles(document) {
   }
   // Popup triggers must never be clicked by the sweep.
   popupClicks.length = 0;
+  navClicks.length = 0;
+  for (const nav of document.querySelectorAll("[data-nav]")) {
+    nav.addEventListener("click", () => navClicks.push(nav.id));
+  }
   for (const popup of document.querySelectorAll("[aria-haspopup]")) {
     popup.addEventListener("click", () => popupClicks.push(popup.id));
   }
 }
 const popupClicks = [];
+const navClicks = [];
 
 async function loadFixture(name) {
   const html = await fs.readFile(path.join(FIXTURES, `${name}.html`), "utf8");
@@ -196,6 +201,28 @@ test("popup triggers (aria-haspopup) are never clicked by the generic sweep", as
   assert.ok(!result.sections.some((s) => s.label === "Account"));
 });
 
+test("a popup trigger whose label matches a named section is never clicked and fails closed", async () => {
+  const dom = await loadFixture("named-popup-toggle");
+  const result = await collapseAndVerifySidebarPrivacy(dom.window.document, defaultOptions());
+  assert.deepEqual(popupClicks, []);
+  assert.equal(dom.window.document.getElementById("projects-popup").getAttribute("aria-expanded"), "true");
+  assert.equal(result.ok, false);
+  assert.match(result.reason, /no discoverable toggle/);
+  const projects = result.sections.find((s) => s.label === "Projects");
+  assert.equal(projects.toggleFound, false);
+  assert.equal(projects.why, "popup-trigger");
+});
+
+test("a plain button without aria-expanded that is labeled like a section is never clicked (it could navigate)", async () => {
+  const dom = await loadFixture("named-nav-button");
+  const result = await collapseAndVerifySidebarPrivacy(dom.window.document, defaultOptions());
+  assert.deepEqual(navClicks, []);
+  assert.equal(result.ok, false);
+  const tasks = result.sections.find((s) => s.label === "Tasks");
+  assert.equal(tasks.toggleFound, false);
+  assert.equal(tasks.why, "no-aria-expanded");
+});
+
 test("scanOnly re-verifies without clicking, and catches a section that re-expanded after the collapse", async () => {
   const dom = await loadFixture("full-expanded");
   const document = dom.window.document;
@@ -291,6 +318,27 @@ test("a generic-sweep toggle that never reports collapsed fails closed instead o
   assert.ok(recent, "expected a 'Recent' entry from the generic sweep");
   assert.equal(recent.source, "generic");
   assert.equal(recent.collapsed, false);
+});
+
+test("a spent time budget stops clicking and still returns diagnostics instead of running on", async () => {
+  const dom = await loadFixture("stuck-generic-toggle");
+  const started = Date.now();
+  // Real timers here: 40ms settle, generous attempts, tiny budget.
+  const result = await collapseAndVerifySidebarPrivacy(
+    dom.window.document,
+    defaultOptions({ settleMs: 40, attempts: 500, budgetMs: 120, mountAttempts: 500 }),
+  );
+  assert.ok(Date.now() - started < 2000, "must return shortly after the budget, not after all attempts");
+  assert.equal(result.ok, false);
+  assert.equal(result.timedOut, true);
+  assert.match(result.reason, /ran out of its 120ms time budget/);
+  assert.ok(Array.isArray(result.sections) && Array.isArray(result.visibleText), "diagnostics still present");
+});
+
+test("the shipped expression carries a finite budget below the 15s CDP command timeout", () => {
+  const match = collapseSidebarPrivacyExpression().match(/"budgetMs":(\d+)/);
+  assert.ok(match, "budgetMs baked into the expression");
+  assert.ok(Number(match[1]) > 0 && Number(match[1]) <= 12000, match[1]);
 });
 
 test("the CDP-evaluated expression is a syntactically valid IIFE calling document directly", () => {
