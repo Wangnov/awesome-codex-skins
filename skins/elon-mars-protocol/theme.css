@@ -165,6 +165,8 @@ html.codex-theme-studio svg[data-cts-glyph] {
 }
 
 html.codex-theme-studio svg[data-cts-glyph="new-task"] { background-image: var(--cts-asset-icon-new-task); }
+html.codex-theme-studio svg[data-cts-glyph="home"] { background-image: var(--cts-asset-icon-home); }
+html.codex-theme-studio svg[data-cts-glyph="space"] { background-image: var(--cts-asset-icon-space); }
 html.codex-theme-studio svg[data-cts-glyph="scheduled"] { background-image: var(--cts-asset-icon-scheduled); }
 html.codex-theme-studio svg[data-cts-glyph="plugins"] { background-image: var(--cts-asset-icon-plugins); }
 html.codex-theme-studio svg[data-cts-glyph="sites"] { background-image: var(--cts-asset-icon-sites); }
@@ -485,22 +487,22 @@ html.codex-theme-studio .composer-surface-chrome button:hover {
   color: var(--cts-color-launch) !important;
 }
 
-/* Send button becomes a three-engine Starship ignition cluster. Native hit-area
-   stays untouched; the prop rides the wrapper so it cannot create overflow. */
-html.codex-theme-studio .composer-surface-chrome button[class*="size-token-button-composer"] {
+/* Only the send action becomes a Starship ignition cluster. Voice and stop
+   controls keep their native glyphs and hit areas. */
+html.codex-theme-studio .composer-surface-chrome button[data-cts-composer-action="send"] {
   background: none !important;
   box-shadow: none !important;
 }
 
-html.codex-theme-studio .composer-surface-chrome button[class*="size-token-button-composer"] svg {
+html.codex-theme-studio .composer-surface-chrome button[data-cts-composer-action="send"] svg {
   opacity: 0 !important;
 }
 
-html.codex-theme-studio .composer-surface-chrome button[class*="size-token-button-composer"]:hover {
+html.codex-theme-studio .composer-surface-chrome button[data-cts-composer-action="send"]:hover {
   background: none !important;
 }
 
-html.codex-theme-studio div:has(> .composer-surface-chrome)::after {
+html.codex-theme-studio div:has(> .composer-surface-chrome button[data-cts-composer-action="send"])::after {
   content: "LAUNCH";
   position: absolute;
   right: -1px;
@@ -522,17 +524,17 @@ html.codex-theme-studio div:has(> .composer-surface-chrome)::after {
   transition: transform .16s ease, filter .16s ease;
 }
 
-html.codex-theme-studio div:has(> .composer-surface-chrome:hover)::after {
+html.codex-theme-studio div:has(> .composer-surface-chrome:hover button[data-cts-composer-action="send"])::after {
   transform: translateY(-1px) scale(1.04);
 }
 
-html.codex-theme-studio div:has(.composer-surface-chrome button[class*="size-token-button-composer"]:hover)::after {
+html.codex-theme-studio div:has(> .composer-surface-chrome button[data-cts-composer-action="send"]:hover)::after {
   transform: translateY(-2px) scale(1.08);
   filter: brightness(1.16) drop-shadow(0 0 12px rgba(232, 33, 39, .70)) drop-shadow(0 7px 14px rgba(21, 23, 25, .32));
 }
 
 /* Disabled = an exact-geometry cold engine cluster. */
-html.codex-theme-studio div:has(.composer-surface-chrome button[class*="size-token-button-composer"]:disabled)::after {
+html.codex-theme-studio div:has(> .composer-surface-chrome button[data-cts-composer-action="send"]:is(:disabled, [aria-disabled="true"]))::after {
   background-image: var(--cts-asset-send-starship-off);
   color: rgba(239, 246, 233, .68);
   filter: opacity(.78) drop-shadow(0 2px 6px rgba(0, 0, 0, .38));
@@ -544,10 +546,11 @@ html.codex-theme-studio .app-shell-left-panel [data-cts-logo] {
   position: relative !important;
   display: flex !important;
   align-items: center;
-  inline-size: 100%;
+  flex: 1 1 0 !important;
+  inline-size: auto;
   min-inline-size: 0;
   min-height: 52px;
-  padding-right: 38px !important;
+  padding-right: 24px !important;
   color: transparent !important;
 }
 
@@ -556,13 +559,14 @@ html.codex-theme-studio .app-shell-left-panel [data-cts-logo] :is(span, div, b, 
   text-shadow: none !important;
 }
 
-/* The artwork lives on ::before because sidebar hover owns the button's
-   background shorthand. Keeping the image off the button prevents hover from
-   blanking it and leaves the native chevron available at the right edge. */
+/* Native ghost buttons also use ::before for their hover background. Keep
+   the wordmark visible in every state and leave room for the chevron. */
 html.codex-theme-studio .app-shell-left-panel [data-cts-logo]::before {
   content: "";
   position: absolute;
-  inset: 4px 38px 4px 0;
+  inset: 4px 24px 4px 0;
+  opacity: 1 !important;
+  background-color: transparent !important;
   pointer-events: none;
   background-position: left center;
   background-repeat: no-repeat;
@@ -576,8 +580,11 @@ html.codex-theme-studio .app-shell-left-panel [data-cts-logo="codex"]::before {
 }
 
 html.codex-theme-studio .app-shell-left-panel [data-cts-logo="chatgpt-work"]::before {
-html.codex-theme-studio .app-shell-left-panel [data-cts-logo="chatgpt"] { background-image: var(--cts-asset-logo-chatgpt, var(--cts-asset-logo-chatgpt-work)); }
   background-image: var(--cts-asset-logo-chatgpt-work);
+}
+
+html.codex-theme-studio .app-shell-left-panel [data-cts-logo="chatgpt"]::before {
+  background-image: var(--cts-asset-logo-chatgpt, var(--cts-asset-logo-chatgpt-work));
 }
 
 html.codex-theme-studio .app-shell-left-panel [data-cts-logo]:is(:hover, :focus-visible, [data-state="open"])::before {
@@ -1271,7 +1278,7 @@ html.codex-theme-studio main.main-surface:has(aside[data-app-shell-focus-area="r
   }
 
   html.codex-theme-studio .cts-home .group\/home-suggestions button,
-  html.codex-theme-studio div:has(> .composer-surface-chrome)::after {
+  html.codex-theme-studio div:has(> .composer-surface-chrome button[data-cts-composer-action="send"])::after {
     transition: none !important;
   }
 }

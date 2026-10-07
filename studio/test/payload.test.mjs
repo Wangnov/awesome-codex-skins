@@ -31,14 +31,34 @@ const evaluateVerify = ({
   lanes = [],
   hostVersion = "26.715.31925",
 }) => {
+  const computedStyle = (overrides = {}) => ({
+    display: "block",
+    visibility: "visible",
+    contentVisibility: "visible",
+    opacity: "1",
+    overflowY: "visible",
+    getPropertyValue(name) {
+      if (name === "content-visibility") return this.contentVisibility;
+      return "";
+    },
+    ...overrides,
+  });
+  const rect = (x, y, width, height) => ({
+    x, y, width, height,
+    left: x, top: y,
+    right: x + width, bottom: y + height,
+  });
   const commentCard = {
-    getBoundingClientRect: () => ({ x: 0, y: 0, width: 180, height: 80 }),
-    computedStyle: { display: "block", visibility: "visible", overflowY: "visible" },
+    getBoundingClientRect: () => rect(0, 0, 180, 80),
+    computedStyle: computedStyle(),
     // The vendored selectComposerSurfaces() only picks surfaces that own an
     // editor descendant — a static PR comment card must report none.
     querySelector: () => null,
   };
   const composer = {
+    isConnected: true,
+    hidden: false,
+    parentElement: null,
     getAttribute(name) {
       if (name === "data-cts-composer-overflow") return "shell";
       if (name === "data-cts-composer-mode") return mode;
@@ -57,39 +77,120 @@ const evaluateVerify = ({
       if (selector === '[data-cts-composer-overflow="editor"]') return editor ? [editor] : [];
       return [];
     },
-    getBoundingClientRect: () => ({ x: 240, y: 680, width: 640, height: 96 }),
-    computedStyle: { display: "block", visibility: "visible", overflowY: "clip" },
+    getBoundingClientRect: () => rect(240, 680, 640, 96),
+    computedStyle: computedStyle({ overflowY: "clip" }),
   };
   const marker = { closest: () => composer };
+  const cachedComposer = {
+    isConnected: true,
+    hidden: false,
+    parentElement: null,
+    getAttribute(name) {
+      if (name === "data-cts-composer-overflow") return "shell";
+      if (name === "data-cts-composer-mode") return "single-line";
+      return null;
+    },
+    hasAttribute: () => false,
+    classList: { contains: (name) => name === "composer-surface-chrome" },
+    querySelector(selector) {
+      if (selector.includes("data-codex-composer")) return { closest: null };
+      return null;
+    },
+    querySelectorAll: () => [],
+    getBoundingClientRect: () => rect(20, 620, 900, 120),
+    computedStyle: computedStyle({ overflowY: "clip" }),
+  };
+  const cachedMarker = { closest: () => cachedComposer };
+  const hiddenComposer = {
+    ...cachedComposer,
+    parentElement: null,
+    getBoundingClientRect: () => rect(100, 640, 800, 100),
+  };
+  const hiddenMarker = { closest: () => hiddenComposer };
   const sidebar = {
-    getBoundingClientRect: () => ({ x: 0, y: 0, width: 240, height: 800 }),
-    computedStyle: { display: "block", visibility: "visible", overflowY: "visible" },
+    getBoundingClientRect: () => rect(0, 0, 240, 800),
+    computedStyle: computedStyle(),
+  };
+  const hiddenWrapper = {
+    hidden: false,
+    parentElement: null,
+    hasAttribute: () => false,
+    getAttribute: (name) => name === "data-app-shell-active-page" ? "false" : null,
+    computedStyle: computedStyle(),
+  };
+  const hiddenComposerWrapper = {
+    hidden: false,
+    parentElement: null,
+    hasAttribute: () => false,
+    getAttribute: () => null,
+    computedStyle: computedStyle({ visibility: "hidden" }),
+  };
+  const cachedMainSurface = {
+    isConnected: true,
+    hidden: false,
+    parentElement: hiddenWrapper,
+    hasAttribute: (name) => name === "data-app-shell-main-surface",
+    getAttribute: () => null,
+    classList: { contains: () => false },
+    querySelectorAll(selector) {
+      if (selector === "[data-codex-composer]") return [cachedMarker];
+      return [];
+    },
+    getBoundingClientRect: () => rect(0, 0, 1280, 800),
+    computedStyle: computedStyle(),
   };
   const mainSurface = {
+    isConnected: true,
+    hidden: false,
+    parentElement: null,
     hasAttribute: (name) => name === "data-app-shell-main-surface",
+    getAttribute: () => null,
     classList: { contains: (name) => name === "main-surface" },
-    getBoundingClientRect: () => ({ x: 0, y: 0, width: 1024, height: 768 }),
-    computedStyle: { display: "block", visibility: "visible" },
+    querySelectorAll(selector) {
+      if (selector === "[data-codex-composer]") return [hiddenMarker, marker];
+      return [];
+    },
+    getBoundingClientRect: () => rect(240, 0, 1040, 800),
+    computedStyle: computedStyle(),
+  };
+  const modalIsolationWrapper = {
+    hidden: false,
+    parentElement: null,
+    hasAttribute: (name) => name === "inert",
+    getAttribute: (name) => name === "aria-hidden" ? "true" : null,
+    computedStyle: computedStyle(),
   };
   const documentElement = {
+    hidden: false,
+    parentElement: null,
+    hasAttribute: () => false,
     classList: { contains: (name) => name === "codex-theme-studio" },
     getAttribute: (name) => name === "data-cts-theme" ? "test-theme" : null,
     scrollWidth: 1280,
     clientWidth: 1280,
     scrollHeight: 800,
     clientHeight: 800,
+    computedStyle: computedStyle(),
   };
+  mainSurface.parentElement = modalIsolationWrapper;
+  modalIsolationWrapper.parentElement = documentElement;
+  composer.parentElement = mainSurface;
+  hiddenComposer.parentElement = hiddenComposerWrapper;
+  hiddenComposerWrapper.parentElement = mainSurface;
+  hiddenWrapper.parentElement = documentElement;
+  cachedComposer.parentElement = cachedMainSurface;
   const document = {
     documentElement,
     querySelectorAll(selector) {
-      if (selector === "[data-codex-composer]") return [marker];
+      if (selector === "[data-codex-composer]") return [cachedMarker, hiddenMarker, marker];
       if (selector === "[data-codex-composer-root] .composer-surface-chrome") return [];
       if (selector === ".composer-surface-chrome") return [commentCard, composer];
+      if (selector === "main[data-app-shell-main-surface]") return [cachedMainSurface, mainSurface];
+      if (selector === "main.main-surface") return [mainSurface];
       return [];
     },
     querySelector: (selector) => {
       if (selector === "aside.app-shell-left-panel") return sidebar;
-      if (selector === "main[data-app-shell-main-surface], main.main-surface") return mainSurface;
       return null;
     },
     getElementById: (id) => id === "cts-style" ? {} : null,
@@ -132,6 +233,17 @@ test("verification selects the audited composer policy for each Codex build", ()
   assert.match(expression, /mainSurfaceMode/);
   assert.match(expression, /mainSurfaceCompatible/);
   assert.match(expression, /stageAttachedToMainSurface/);
+  assert.match(expression, /hiddenByAncestor/);
+  assert.match(expression, /data-app-shell-active-page/);
+  assert.doesNotMatch(expression, /hasAttribute\?\.\('inert'\)/);
+  assert.doesNotMatch(expression, /getAttribute\?\.\('aria-hidden'\)/);
+  assert.match(expression, /visibleSurfaceScore/);
+  assert.match(expression, /currentMainSurfaces/);
+  assert.match(expression, /legacyMainSurfaces/);
+  assert.match(expression, /mainSurfaceNode \? selectComposerSurfaces\(mainSurfaceNode\) : \[\]/);
+  assert.match(expression, /composerNodes\.find\(\(node\) => visibleSurfaceScore\(node\) >= 0\)/);
+  assert.doesNotMatch(expression, /selectComposerSurfaces\(document\)/);
+  assert.doesNotMatch(expression, /composerNodes\[0\]/);
   assert.match(expression, /composerSurfaceMode/);
   assert.match(expression, /composerSurfaceCompatible/);
   assert.doesNotMatch(expression, /laneCount >= 1/);
@@ -147,8 +259,25 @@ test("verification accepts a correctly hardened single-line Composer", () => {
   // The main-surface bug this port fixes: studio must find the real shell
   // main (compat-tagged with .main-surface), not an unrelated decoy <main>.
   assert.equal(result.mainSurfaceCompatible, true);
+  assert.equal(result.mainSurface.x, 240, "the retained hidden main must not become the verify target");
   assert.equal(result.stageAttachedToMainSurface, true);
   assert.equal(result.composerSurfaceCompatible, true);
+});
+
+test("verification ignores cached and ancestor-hidden Composers before the active one", () => {
+  const result = evaluateVerify({ mode: "single-line" });
+  assert.equal(result.pass, true);
+  assert.equal(result.mainSurface.x, 240);
+  assert.equal(result.composer.x, 240);
+  assert.equal(result.composer.width, 640);
+});
+
+test("verification keeps a visible active main under modal accessibility isolation", () => {
+  const result = evaluateVerify({ mode: "single-line" });
+  assert.equal(result.pass, true);
+  assert.equal(result.mainSurface.visible, true);
+  assert.equal(result.mainSurface.x, 240);
+  assert.equal(result.composer.x, 240);
 });
 
 test("verification still requires the scrolling editor contract in multiline mode", () => {
@@ -192,8 +321,10 @@ test("26.715.31251 requires a lane only for scrolling Composer layouts", () => {
 test("removal expressions cover Composer runtime annotations", () => {
   assert.match(REMOVE_EXPRESSION, /data-cts-composer-overflow/);
   assert.match(REMOVE_EXPRESSION, /data-cts-composer-mode/);
+  assert.match(REMOVE_EXPRESSION, /data-cts-composer-action/);
   assert.match(VERIFY_REMOVED_EXPRESSION, /data-cts-composer-overflow/);
   assert.match(VERIFY_REMOVED_EXPRESSION, /data-cts-composer-mode/);
+  assert.match(VERIFY_REMOVED_EXPRESSION, /data-cts-composer-action/);
 });
 
 // Golden-fixture structural parity: builds a payload from the same fixture
@@ -243,13 +374,13 @@ test("golden fixture payload matches the shared structural contract", async () =
   assert.ok(built.payload.includes(jsonEscaped('data-cts-layer="overlay"')));
   assert.ok(built.payload.includes(jsonEscaped('data-cts-layer="stage"')));
 
-  // Main-surface compatibility shim: current selector present, legacy
-  // template-literal fallback present, and the compat marker exists. (The
-  // executed selector-*ordering* behavior — that the current selector wins
-  // over an unrelated decoy `<main>` — is exercised against a real DOM by
-  // runtime-golden.test.mjs, not here.)
-  assert.ok(built.payload.includes('document.querySelector("main[data-app-shell-main-surface]")'));
-  assert.ok(built.payload.includes("document.querySelector(`main.${LEGACY_SHELL_MAIN_CLASS}`)"));
+  // Main-surface compatibility shim: current and legacy candidate lists,
+  // visibility scoring, and the compat marker all survive substitution. The
+  // executed selection and navigation behavior is exercised against a real
+  // DOM by runtime-golden.test.mjs.
+  assert.ok(built.payload.includes('document.querySelectorAll("main[data-app-shell-main-surface]")'));
+  assert.ok(built.payload.includes("document.querySelectorAll(`main.${LEGACY_SHELL_MAIN_CLASS}`)"));
+  assert.ok(built.payload.includes("visibleSurfaceScore"));
   assert.ok(built.payload.includes('"data-cts-main-surface-compat"'));
 
   // Composer-surface compatibility shim: both the current CSS-module
