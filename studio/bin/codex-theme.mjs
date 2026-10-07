@@ -19,7 +19,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   connectCodexTargets, listAppTargets, connectTarget, probeSession, captureScreenshot,
-  isThemeExcludedTarget,
+  isThemeExcludedTarget, summarizeVerifyResults, waitForVerifyTargets,
 } from "../src/cdp.mjs";
 import {
   discoverCodexAppForStop, discoverManagedCodexApp, findRunningCodexApps,
@@ -340,11 +340,18 @@ async function cmdVerify(argv) {
   const port = await activePort();
   if (!port) throw new Error("No live CDP endpoint. Run `codex-theme start` first.");
   const timeoutMs = flags["timeout-ms"] ?? 20000;
+  const discoveryDeadline = Date.now() + timeoutMs;
 
   await withSessions(port, timeoutMs, async (connected) => {
+    const {
+      targets: verifiableTargets,
+      skippedTargets,
+      unreadyTargets,
+      primaryCandidateCount,
+    } = await waitForVerifyTargets(connected, Math.max(0, discoveryDeadline - Date.now()));
     const results = [];
     let screenshotSaved = null;
-    for (const { target, session } of connected) {
+    for (const { target, session } of verifiableTargets) {
       const deadline = Date.now() + timeoutMs;
       let result;
       while (Date.now() < deadline) {
@@ -361,10 +368,18 @@ async function cmdVerify(argv) {
         screenshotSaved = target_path;
       }
     }
-    const pass = results.length > 0 && results.every((item) => item.result?.pass);
-    out({ pass, expectedTheme: state?.currentTheme ?? null, screenshot: screenshotSaved, targets: results });
+    const { pass, error } = summarizeVerifyResults(results, { primaryCandidateCount, unreadyTargets });
+    out({
+      pass,
+      expectedTheme: state?.currentTheme ?? null,
+      screenshot: screenshotSaved,
+      targets: results,
+      skippedTargets,
+      unreadyTargets,
+      ...(error ? { error } : {}),
+    });
     if (!pass) process.exitCode = 2;
-  });
+  }, { requireVerifyPrimary: true });
 }
 
 async function cmdScreenshot(argv) {
