@@ -17,6 +17,12 @@ const repoRoot = path.resolve(studioRoot, "..");
 const skinsRoot = path.join(repoRoot, "skins");
 const fixtureUrl = pathToFileURL(path.join(here, "fixtures", "browser-shell.html")).href;
 const defaultChrome = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
+const workspaceLabels = {
+  codex: "Codex",
+  chatgpt: "ChatGPT",
+  "chatgpt-work": "ChatGPT Work",
+};
+let workspaceLogoSyncSequence = 0;
 
 function parseArguments(argv) {
   const options = {
@@ -175,25 +181,6 @@ async function auditBaseSurface(page, themeId) {
       actual: logo?.dataset.ctsLogo || null,
     });
 
-    const logoCases = [];
-    for (const mode of ["dark", "light"]) {
-      document.documentElement.setAttribute("data-theme", mode);
-      runtime?.ensure();
-      await tick();
-      for (const width of [240, 280, 340, 420]) {
-        document.documentElement.style.setProperty("--fixture-sidebar-width", `${width}px`);
-        await tick();
-        for (const variant of ["codex", "chatgpt", "chatgpt-work"]) {
-          logo.dataset.ctsLogo = variant;
-          const result = await window.__CTS_BROWSER_FIXTURE__.measureLogo({
-            mode, width, variant, state: "normal",
-          });
-          logoCases.push(result);
-          add(`logo ${variant} ${mode} ${width}px normal`, result.pass, result);
-        }
-      }
-    }
-
     document.documentElement.style.setProperty("--fixture-sidebar-width", "340px");
     document.documentElement.setAttribute("data-theme", "dark");
     runtime?.ensure();
@@ -342,7 +329,6 @@ async function auditBaseSurface(page, themeId) {
     return {
       pass: checks.every((check) => check.pass),
       checks,
-      logoCases,
       glyphs,
       layers: layerDetails,
       background: backgroundBefore,
@@ -368,14 +354,47 @@ async function settleWorkspaceLogo(page) {
 }
 
 async function configureWorkspaceLogo(page, { mode, width, variant }) {
-  return page.evaluate(async ({ nextMode, nextWidth, nextVariant }) => {
+  const expectedLabel = workspaceLabels[variant];
+  const syncToken = `${variant}:${mode}:${width}:${workspaceLogoSyncSequence += 1}`;
+  await page.evaluate(async ({ nextMode, nextWidth, nextVariant, nextSyncToken }) => {
     document.documentElement.setAttribute("data-theme", nextMode);
     document.documentElement.style.setProperty("--fixture-sidebar-width", `${nextWidth}px`);
     document.activeElement?.blur();
-    const annotated = window.__CTS_BROWSER_FIXTURE__.setWorkspaceVariant(nextVariant);
+    window.__CTS_BROWSER_FIXTURE__.setWorkspaceVariant(nextVariant);
+    window.__CTS_BROWSER_FIXTURE__.lastDelayedLogoEnsure = null;
+    window.setTimeout(() => {
+      window.__CODEX_THEME_STUDIO__?.ensure();
+      window.__CTS_BROWSER_FIXTURE__.lastDelayedLogoEnsure = nextSyncToken;
+    }, 220);
     await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-    return annotated;
-  }, { nextMode: mode, nextWidth: width, nextVariant: variant });
+  }, {
+    nextMode: mode,
+    nextWidth: width,
+    nextVariant: variant,
+    nextSyncToken: syncToken,
+  });
+
+  // The runtime's mutation observer reconciles semantics after 180ms. The
+  // controlled ensure above runs beyond that boundary and reproduces the old
+  // CI race deterministically. Wait on the real wordmark and marker together,
+  // with a deadline, instead of assuming a fixed sleep means they are stable.
+  const handle = await page.waitForFunction(({ nextLabel, nextVariant, nextSyncToken }) => {
+    const logo = document.querySelector(".qa-workspace-switcher");
+    const label = logo?.querySelector(".qa-button-inner > span")?.textContent?.trim() || null;
+    const annotatedVariant = logo?.getAttribute("data-cts-logo") || null;
+    const delayedEnsureCompleted = window.__CTS_BROWSER_FIXTURE__.lastDelayedLogoEnsure === nextSyncToken;
+    if (!delayedEnsureCompleted || label !== nextLabel || annotatedVariant !== nextVariant) return false;
+    return { label, annotatedVariant, delayedEnsureCompleted };
+  }, {
+    nextLabel: expectedLabel,
+    nextVariant: variant,
+    nextSyncToken: syncToken,
+  }, { timeout: 2_000 });
+  try {
+    return await handle.jsonValue();
+  } finally {
+    await handle.dispose();
+  }
 }
 
 async function focusWorkspaceLogoWithKeyboard(page) {
@@ -393,7 +412,14 @@ async function auditLogoInteractions(page, variants) {
     for (const width of [240, 280, 340, 420]) {
       for (const variant of variants) {
         await page.mouse.move(1276, 796);
-        await configureWorkspaceLogo(page, { mode, width, variant });
+        const semanticSync = await configureWorkspaceLogo(page, { mode, width, variant });
+
+        const normal = await page.evaluate((metadata) =>
+          window.__CTS_BROWSER_FIXTURE__.measureLogo(metadata), {
+          mode, width, variant, state: "normal",
+        });
+        normal.semanticSync = semanticSync;
+        checks.push({ name: `logo ${variant} ${mode} ${width}px normal`, pass: normal.pass, details: normal });
 
         await page.hover(".qa-workspace-switcher");
         await settleWorkspaceLogo(page);
