@@ -3,7 +3,7 @@
   "id": "naraka-wanxiang-five-aspects",
   "name": "万象 · 五相征神",
   "description": "《永劫无间》征神之路万象五行首领全覆盖主题：狱炎、魁石、烁金、溟祸与苍帝组成首页五相列阵和任务页轮值图谱，并完整覆盖建议卡、输入框、品牌、16 类功能图标及五类 Retina 鼠标指针。",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "wangnov",
   "codexVerified": "26.715.21425",
   "category": "games",
@@ -122,7 +122,8 @@
     "icon-mic": "assets/icon-mic.webp",
     "icon-model": "assets/icon-model.webp",
     "icon-settings": "assets/icon-settings.webp",
-    "icon-folder": "assets/icon-folder.webp"
+    "icon-folder": "assets/icon-folder.webp",
+    "logo-chatgpt": "assets/logo-chatgpt-work.webp"
   },
   "chrome": "chrome.html",
   "css": "theme.css"

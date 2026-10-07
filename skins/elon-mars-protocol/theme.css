@@ -550,7 +550,7 @@ html.codex-theme-studio .app-shell-left-panel [data-cts-logo] {
   inline-size: auto;
   min-inline-size: 0;
   min-height: 52px;
-  padding-right: 24px !important;
+  padding-right: 4px !important;
   color: transparent !important;
 }
 
@@ -564,7 +564,7 @@ html.codex-theme-studio .app-shell-left-panel [data-cts-logo] :is(span, div, b, 
 html.codex-theme-studio .app-shell-left-panel [data-cts-logo]::before {
   content: "";
   position: absolute;
-  inset: 4px 24px 4px 0;
+  inset: 4px 36px 4px 0;
   opacity: 1 !important;
   background-color: transparent !important;
   pointer-events: none;

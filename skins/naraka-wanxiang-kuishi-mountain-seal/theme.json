@@ -3,7 +3,7 @@
   "id": "naraka-wanxiang-kuishi-mountain-seal",
   "name": "魁石 · 镇岳山门",
   "description": "《永劫无间》征神之路土万象·魁石专属全覆盖主题：以层岩甲、镇岳巨拳、峡谷断层与地脉压力为核心，完整覆盖主页、任务页、建议卡、16 类功能图标及六类 Retina 鼠标指针。",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "wangnov",
   "codexVerified": "26.715.31925",
   "category": "games",
@@ -123,7 +123,8 @@
     "icon-mic": "assets/icon-mic.webp",
     "icon-model": "assets/icon-model.webp",
     "icon-settings": "assets/icon-settings.webp",
-    "icon-folder": "assets/icon-folder.webp"
+    "icon-folder": "assets/icon-folder.webp",
+    "logo-chatgpt": "assets/logo-chatgpt-work.webp"
   },
   "chrome": "chrome.html",
   "css": "theme.css"
