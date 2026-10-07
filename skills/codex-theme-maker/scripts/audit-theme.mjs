@@ -153,7 +153,9 @@ async function main() {
   const braces = checkBraces(css);
   if (braces.depth !== 0 || braces.minDepth < 0) errors.push(`CSS braces are unbalanced (depth=${braces.depth}, minDepth=${braces.minDepth})`);
   if (css && !css.includes("html.codex-theme-studio")) errors.push("CSS has no html.codex-theme-studio scope");
-  if (css.includes("#cts-intro") && !("intro" in assets)) errors.push("CSS defines #cts-intro but assets.intro is missing");
+  if (css.includes("#cts-intro") && !("intro" in assets) && !("tiga-punch" in assets)) {
+    errors.push("CSS defines #cts-intro but neither assets.intro nor legacy assets.tiga-punch is present");
+  }
 
   const staleText = `${JSON.stringify(raw, null, 2)}\n${css}`.toLowerCase();
   const staleTokens = unique(args.forbid.filter((token) => staleText.includes(token.toLowerCase())));

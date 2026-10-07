@@ -30,6 +30,19 @@ jobs:
         run: |
           npm run check
           npm test
+      - name: Install pinned Chromium for skin regression
+        working-directory: studio
+        run: npm exec -- playwright install --with-deps chromium
+      - name: Run every skin in the browser regression fixture
+        working-directory: studio
+        run: npm run test:browser -- --report-dir /tmp/skin-batch-browser-ci
+      - name: Upload browser regression failures
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: skin-browser-regression-failures
+          path: /tmp/skin-batch-browser-ci
+          if-no-files-found: warn
       - name: Pack every skin through the delivery gate
         run: |
           set -euo pipefail

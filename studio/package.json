@@ -10,13 +10,15 @@
     "node": ">=20"
   },
   "scripts": {
-    "check": "npm run sync-runtime:check && node --check bin/codex-theme.mjs && node --check src/cdp.mjs && node --check src/codex-app.mjs && node --check src/codex-theme-schema.mjs && node --check src/composer-overflow.mjs && node --check src/theme.mjs && node --check src/payload.mjs && node --check src/state.mjs",
+    "check": "npm run sync-runtime:check && node --check bin/codex-theme.mjs && node --check src/cdp.mjs && node --check src/codex-app.mjs && node --check src/codex-theme-schema.mjs && node --check src/composer-overflow.mjs && node --check src/theme.mjs && node --check src/payload.mjs && node --check src/state.mjs && node --check ../skills/codex-theme-maker/scripts/audit-theme.mjs && node --check test/browser-theme-regression.mjs && node --check test/fixtures/browser-shell-helper.js && node --check test/theme-asset-contract.test.mjs && node --check test/theme-audit.test.mjs",
     "test": "node --test test/*.test.mjs",
+    "test:browser": "node test/browser-theme-regression.mjs",
     "sync-runtime": "node ../scripts/sync-runtime.mjs",
     "sync-runtime:check": "node ../scripts/sync-runtime.mjs --check"
   },
   "license": "MIT",
   "devDependencies": {
-    "jsdom": "^25.0.1"
+    "jsdom": "^25.0.1",
+    "playwright": "1.63.0"
   }
 }
