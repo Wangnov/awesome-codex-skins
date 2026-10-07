@@ -1,10 +1,10 @@
 {
   "description": "Pin manifest for the vendored renderer runtime. codex-theme-engine (Codex-App-Manager) is the single authored source; the files below are generated copies. Do not hand-edit them — edit the source repo and run `node scripts/sync-runtime.mjs` instead.",
   "repo": "Wangnov/Codex-App-Manager",
-  "commit": "c738e655b59604515a7d79e8c389500287dec9e8",
+  "commit": "4dc6660b953464aa5d51f70866867912c66f53b5",
   "paths": {
     "crates/codex-theme-engine/src/runtime/theme-runtime.js": "studio/src/runtime/theme-runtime.js",
     "crates/codex-theme-engine/src/runtime/composer-overflow.mjs": "studio/src/composer-overflow.mjs"
   },
-  "lastSyncedAt": "2026-10-07T05:01:40.197Z"
+  "lastSyncedAt": "2026-10-07T05:16:02.838Z"
 }
