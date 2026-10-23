@@ -3,7 +3,7 @@
   "id": "gundam-rx78",
   "name": "White Base — RX-78-2 Launch Deck",
   "description": "机动战士高达 RX-78-2 陪伴主题：White Base 发进甲板、月神钛合金、联邦蓝红黄信号和哈罗双状态构成主页全身与任务页半身的双姿态工作台。",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "author": "wangnov",
   "codexVerified": "26.707.91948",
   "category": "anime",
@@ -106,7 +106,8 @@
     "icon-mic": "assets/icon-mic.webp",
     "icon-model": "assets/icon-model.webp",
     "icon-settings": "assets/icon-settings.webp",
-    "icon-folder": "assets/icon-folder.webp"
+    "icon-folder": "assets/icon-folder.webp",
+    "logo-chatgpt": "assets/logo-chatgpt-work.webp"
   },
   "chrome": "chrome.html",
   "css": "theme.css"

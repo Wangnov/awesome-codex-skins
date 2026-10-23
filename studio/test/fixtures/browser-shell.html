@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Codex skin browser regression fixture</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --fixture-sidebar-width: 340px;
+      }
+
+      * { box-sizing: border-box; }
+
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        overflow: hidden;
+        font-family: system-ui, sans-serif;
+      }
+
+      body {
+        color: #f7f8fa;
+        background: #151719;
+      }
+
+      button {
+        color: inherit;
+        font: inherit;
+      }
+
+      .qa-sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+      }
+
+      [data-app-shell-active-page="false"] { display: none !important; }
+
+      .qa-app {
+        display: grid;
+        grid-template-columns: var(--fixture-sidebar-width) minmax(0, 1fr);
+        width: 100vw;
+        height: 100vh;
+      }
+
+      .app-shell-left-panel {
+        position: relative;
+        display: grid;
+        grid-template-columns: 52px minmax(0, 1fr);
+        min-width: 0;
+        width: var(--fixture-sidebar-width);
+        height: 100vh;
+        overflow: visible;
+        background: rgba(24, 26, 29, .92);
+      }
+
+      .qa-rail,
+      .qa-sidebar-content,
+      .qa-workspace-row,
+      .qa-sidebar-actions,
+      .qa-composer-footer,
+      .qa-composer-neighbours,
+      .qa-composer-actions {
+        display: flex;
+        align-items: center;
+      }
+
+      .qa-rail {
+        flex-direction: column;
+        gap: 8px;
+        padding: 12px 8px;
+      }
+
+      .qa-sidebar-content {
+        min-width: 0;
+        flex-direction: column;
+        align-items: stretch;
+        padding: 8px;
+      }
+
+      .qa-workspace-row {
+        min-width: 0;
+        width: 100%;
+        height: 60px;
+        gap: 4px;
+      }
+
+      .qa-workspace-switcher {
+        position: relative;
+        display: flex;
+        flex: 1 1 auto;
+        align-items: center;
+        min-width: 0;
+        width: auto;
+        height: 52px;
+        padding: 0 20px 0 4px;
+        overflow: hidden;
+        border: 0;
+        background: transparent;
+      }
+
+      /* Current native ghost buttons paint a hover plate with ::before and
+         keep it transparent until hover. A skin-owned wordmark must explicitly
+         escape that opacity without depending on pointer position. */
+      .qa-workspace-switcher::before {
+        content: "";
+        position: absolute;
+        inset: 4px;
+        opacity: 0;
+        background: rgba(255, 255, 255, .08);
+      }
+
+      .qa-workspace-switcher:hover::before { opacity: 1; }
+
+      .qa-workspace-switcher > .qa-button-inner {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        min-width: 0;
+        width: 100%;
+      }
+
+      .qa-workspace-switcher > .qa-button-inner > svg {
+        flex: 0 0 16px;
+        width: 16px;
+        height: 16px;
+      }
+
+      .qa-sidebar-actions {
+        flex: 0 0 auto;
+        gap: 4px;
+      }
+
+      .qa-icon-button,
+      .qa-composer-button {
+        display: inline-flex;
+        flex: 0 0 auto;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        border: 0;
+        border-radius: 8px;
+        background: transparent;
+      }
+
+      .qa-icon-button svg,
+      .qa-composer-button svg {
+        display: block;
+        width: 20px;
+        height: 20px;
+      }
+
+      .qa-project-row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        min-width: 0;
+        height: 36px;
+        margin-top: 10px;
+        border: 0;
+        background: transparent;
+      }
+
+      .qa-project-row [data-sidebar-project-drop-zone="project-icon"] {
+        display: inline-flex;
+        flex: 0 0 20px;
+        width: 20px;
+        height: 20px;
+      }
+
+      .qa-project-row [data-sidebar-project-drop-zone="project-icon"] svg {
+        display: block;
+        width: 20px;
+        height: 20px;
+      }
+
+      .qa-main-wrapper {
+        position: relative;
+        min-width: 0;
+        height: 100vh;
+      }
+
+      main[data-app-shell-main-surface] {
+        position: relative;
+        isolation: isolate;
+        width: 100%;
+        height: 100%;
+        min-width: 0;
+        overflow: hidden;
+        background: rgba(28, 30, 33, .82);
+      }
+
+      .qa-route {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        height: 100%;
+        padding: 48px 36px 180px;
+      }
+
+      .qa-home-icon {
+        width: 24px;
+        height: 24px;
+      }
+
+      .group\/home-suggestions .grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 8px;
+        width: min(760px, 100%);
+        margin-top: 24px;
+      }
+
+      .group\/home-suggestions button {
+        width: 100%;
+        min-width: 0;
+        height: 54px;
+      }
+
+      .qa-composer-wrap {
+        position: absolute;
+        z-index: 3;
+        left: 50%;
+        bottom: 42px;
+        width: 640px;
+        max-width: calc(100% - 48px);
+        transform: translateX(-50%);
+      }
+
+      .qa-composer-surface {
+        position: relative;
+        width: 100%;
+        min-width: 0;
+        height: 112px;
+        padding: 12px;
+        overflow: auto;
+        border: 1px solid rgba(255, 255, 255, .16);
+        border-radius: 18px;
+        background: #25282d;
+      }
+
+      .qa-editor-lane {
+        width: 100%;
+        height: 48px;
+        overflow: hidden;
+      }
+
+      .ProseMirror {
+        min-height: 32px;
+        outline: none;
+      }
+
+      .qa-composer-footer {
+        position: absolute;
+        right: 10px;
+        bottom: 8px;
+        left: 10px;
+        justify-content: space-between;
+        min-width: 0;
+        height: 34px;
+      }
+
+      .qa-composer-neighbours,
+      .qa-composer-actions { gap: 6px; }
+
+      .qa-model-button { width: 92px; }
+      .qa-approval-button { width: 72px; }
+
+      .qa-modal-root {
+        position: fixed;
+        z-index: 80;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        background: rgba(0, 0, 0, .25);
+      }
+
+      .qa-modal-root[hidden] { display: none; }
+
+      .qa-dialog {
+        width: 320px;
+        padding: 20px;
+        border: 1px solid rgba(255, 255, 255, .25);
+        border-radius: 14px;
+        background: #24272c;
+      }
+
+      .qa-dialog button {
+        width: 110px;
+        height: 36px;
+      }
+
+      .qa-portal-menu {
+        position: fixed;
+        z-index: 70;
+        top: 80px;
+        right: 40px;
+        width: 180px;
+        padding: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="qa-app app-theme">
+      <aside class="app-shell-left-panel" aria-label="Theme regression sidebar">
+        <nav class="qa-rail" aria-label="Primary navigation">
+          <button class="qa-icon-button" aria-label="New task"><span class="qa-sr-only">New task</span>
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 3v14M3 10h14"></path></svg>
+          </button>
+          <button class="qa-icon-button" data-sidebar-destination="builtin:home" aria-label="Home">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M2 9 10 2l8 7v9H2Z"></path></svg>
+          </button>
+          <button class="qa-icon-button" data-sidebar-destination="builtin:space" aria-label="Space">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 3h14v14H3Z"></path></svg>
+          </button>
+          <button class="qa-icon-button" data-sidebar-destination="builtin:automations"><span class="qa-sr-only">Scheduled</span>
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 2v8l5 3"></path></svg>
+          </button>
+          <button class="qa-icon-button" data-sidebar-destination="builtin:customize"><span class="qa-sr-only">Plugins</span>
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 4h12v12H4Z"></path></svg>
+          </button>
+          <button class="qa-icon-button" data-sidebar-destination="builtin:pull-requests"><span class="qa-sr-only">Pull request</span>
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 3v14m10-14v14"></path></svg>
+          </button>
+          <button class="qa-icon-button"><span class="qa-sr-only">Sites</span>
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 4h14v12H3Z"></path></svg>
+          </button>
+          <button class="qa-icon-button"><span class="qa-sr-only">Chat</span>
+            <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 3h14v11H8l-4 3Z"></path></svg>
+          </button>
+          <button class="qa-icon-button" aria-label="Settings">
+            <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="6"></circle></svg>
+          </button>
+        </nav>
+
+        <div class="qa-sidebar-content">
+          <div class="qa-workspace-row">
+            <button class="qa-workspace-switcher" type="button" aria-label="Switch workspace">
+              <span class="qa-button-inner"><span>Codex</span><svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="m4 6 4 4 4-4"></path></svg></span>
+            </button>
+            <div class="qa-sidebar-actions">
+              <button class="qa-icon-button" type="button" aria-label="Activity">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="7"></circle></svg>
+              </button>
+              <button class="qa-icon-button" type="button" aria-label="Search">
+                <svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="8" cy="8" r="5"></circle><path d="m12 12 5 5"></path></svg>
+              </button>
+            </div>
+          </div>
+
+          <button class="qa-project-row" type="button" data-project-row data-app-action-sidebar-project-row>
+            <span data-sidebar-project-drop-zone="project-icon">
+              <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M2 5h6l2 2h8v10H2Z"></path></svg>
+            </span>
+            <span>Sample project</span>
+          </button>
+        </div>
+      </aside>
+
+      <div class="qa-main-wrapper" id="qa-home-wrapper" data-app-shell-active-page="true">
+        <main id="qa-home-main" data-app-shell-main-surface>
+          <section class="qa-route" role="main" aria-label="Home route">
+            <div class="qa-home-icon" data-testid="home-icon" aria-hidden="true"></div>
+            <h1>Build something</h1>
+            <div class="group/home-suggestions">
+              <div class="grid">
+                <div><button type="button"><svg viewBox="0 0 20 20"><path d="M2 10h16"></path></svg><span>Explore</span></button></div>
+                <div><button type="button"><svg viewBox="0 0 20 20"><path d="M3 3h14v14H3Z"></path></svg><span>Build</span></button></div>
+                <div><button type="button"><svg viewBox="0 0 20 20"><path d="m3 10 4 4 10-10"></path></svg><span>Review</span></button></div>
+                <div><button type="button"><svg viewBox="0 0 20 20"><path d="M4 4h12v12H4Z"></path></svg><span>Fix</span></button></div>
+              </div>
+            </div>
+            <div class="qa-composer-wrap relative" data-qa-composer-wrap>
+              <div class="qa-composer-surface" data-composer-layout="single-line" data-composer-surface-variant="default" data-composer-surface-overflow="visible">
+                <div class="qa-editor-lane"><div class="ProseMirror" data-codex-composer contenteditable="true" aria-label="Prompt"></div></div>
+                <div class="qa-composer-footer">
+                  <div class="qa-composer-neighbours">
+                    <button class="qa-composer-button" type="button" data-qa-neighbour="attachment" aria-label="Add file"><svg viewBox="0 0 20 20"><path d="M5 10h10"></path></svg></button>
+                    <button class="qa-composer-button qa-model-button" type="button" data-qa-neighbour="model"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="7"></circle></svg><span>GPT-6.1</span></button>
+                    <button class="qa-composer-button qa-approval-button" type="button" data-qa-neighbour="approval"><svg viewBox="0 0 20 20"><path d="m3 10 4 4 10-10"></path></svg><span>Approval</span></button>
+                  </div>
+                  <div class="qa-composer-actions" data-qa-composer-actions></div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </main>
+      </div>
+
+      <div class="qa-main-wrapper" id="qa-task-wrapper" data-app-shell-active-page="false">
+        <main id="qa-task-main" data-app-shell-main-surface>
+          <section class="qa-route" role="main" aria-label="Task route"><h1>Task</h1></section>
+        </main>
+      </div>
+    </div>
+
+    <div class="qa-modal-root" id="qa-modal-root" hidden>
+      <div class="qa-dialog" role="dialog" aria-modal="true" aria-label="Confirmation">
+        <p>Confirm action</p>
+        <button type="button" id="qa-modal-action">Confirm</button>
+      </div>
+    </div>
+
+    <script>
+      const fixtureAppVersion = new URLSearchParams(location.search).get("appVersion") || "26.1002.51308";
+      window.electronBridge = {
+        getSentryInitOptions: () => ({ appVersion: fixtureAppVersion }),
+      };
+
+      const actionSpec = {
+        send: { label: "Send", type: "submit" },
+        voice: { label: "Voice", type: "button" },
+        stop: { label: "Stop", type: "button" },
+      };
+
+      window.__CTS_BROWSER_FIXTURE__ = {
+        setWorkspaceVariant(variant) {
+          const labels = {
+            codex: "Codex",
+            chatgpt: "ChatGPT",
+            "chatgpt-work": "ChatGPT Work",
+          };
+          const label = labels[variant];
+          if (!label) throw new Error(`Unknown workspace variant: ${variant}`);
+          const button = document.querySelector(".qa-workspace-switcher");
+          button.querySelector(".qa-button-inner > span").textContent = label;
+          button.setAttribute("aria-label", `Switch workspace: ${label}`);
+          button.title = label;
+          window.__CODEX_THEME_STUDIO__?.ensure();
+          return button.getAttribute("data-cts-logo");
+        },
+        setComposerState(action, width, disabled = false) {
+          const host = document.querySelector("[data-qa-composer-actions]");
+          const spec = actionSpec[action];
+          const button = document.createElement("button");
+          button.className = "qa-composer-button size-token-button-composer";
+          button.type = spec.type;
+          button.setAttribute("aria-label", spec.label);
+          button.dataset.qaComposerAction = action;
+          button.disabled = disabled;
+          button.innerHTML = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 3 17 10 3 17Z"></path></svg>';
+          host.replaceChildren(button);
+          document.querySelector("[data-qa-composer-wrap]").style.width = `${width}px`;
+          window.__CODEX_THEME_STUDIO__?.ensure();
+          return button.getAttribute("data-cts-composer-action");
+        },
+        showRoute(route) {
+          const home = document.getElementById("qa-home-wrapper");
+          const task = document.getElementById("qa-task-wrapper");
+          home.setAttribute("data-app-shell-active-page", route === "home" ? "true" : "false");
+          task.setAttribute("data-app-shell-active-page", route === "task" ? "true" : "false");
+          window.__CODEX_THEME_STUDIO__?.ensure();
+        },
+      };
+    </script>
+    <script src="./browser-shell-helper.js"></script>
+  </body>
+</html>

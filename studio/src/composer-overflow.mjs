@@ -2,7 +2,7 @@
 // GENERATED FILE — do not hand-edit.
 //
 // Vendored verbatim from Wangnov/Codex-App-Manager, the canonical
-// codex-theme-engine runtime implementation, at commit 1775548e547920ff6c207539057de9565a1e6e3d:
+// codex-theme-engine runtime implementation, at commit 4dc6660b953464aa5d51f70866867912c66f53b5:
 //   crates/codex-theme-engine/src/runtime/composer-overflow.mjs
 //
 // To pick up a newer runtime, bump the commit in studio/RUNTIME_SOURCE.json

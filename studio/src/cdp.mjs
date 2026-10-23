@@ -157,24 +157,160 @@ export async function probeSession(session) {
   })()`);
 }
 
+export function hasVerifiableShellMarkers(probe) {
+  const markers = probe?.markers;
+  return Boolean(markers?.shell && markers.sidebar && (markers.composer || markers.main));
+}
+
+export function isVerifyAuxiliaryTarget(target) {
+  try {
+    const url = new URL(target.url);
+    if (url.protocol !== "app:") return false;
+    const initialRoute = url.searchParams.get("initialRoute") ?? "";
+    const routePath = initialRoute.split(/[?#]/, 1)[0];
+    if (
+      url.pathname === "/detached-window.html" ||
+      routePath === "/detached-window" ||
+      routePath.startsWith("/detached-window/")
+    ) {
+      return true;
+    }
+    const routeQuery = initialRoute.includes("?") ? initialRoute.slice(initialRoute.indexOf("?") + 1) : "";
+    return (
+      routePath === "/quick-chat" ||
+      routePath.startsWith("/quick-chat/") ||
+      url.searchParams.get("prewarm") === "1" ||
+      new URLSearchParams(routeQuery).get("prewarm") === "1"
+    );
+  } catch {
+    return false;
+  }
+}
+
+function verificationTargetSummary(entry, reason) {
+  return {
+    targetId: entry.target.id,
+    url: entry.target.url,
+    title: entry.probe?.title ?? entry.target.title ?? null,
+    href: entry.probe?.href ?? null,
+    markers: entry.probe?.markers ?? null,
+    reason,
+  };
+}
+
+// Verification is stricter than connection. Known prewarm/detached renderers
+// are reported but skipped even if they mount shell-like DOM. Every other
+// renderer is a primary candidate and must expose enough structure to prove
+// that its theme is healthy.
+export function partitionVerifyTargets(connected) {
+  const targets = [];
+  const skippedTargets = [];
+  const unreadyTargets = [];
+  let primaryCandidateCount = 0;
+
+  for (const entry of connected) {
+    if (isVerifyAuxiliaryTarget(entry.target)) {
+      skippedTargets.push(verificationTargetSummary(entry, "known-auxiliary-renderer"));
+      continue;
+    }
+    primaryCandidateCount += 1;
+    if (hasVerifiableShellMarkers(entry.probe)) {
+      targets.push(entry);
+      continue;
+    }
+    unreadyTargets.push(verificationTargetSummary(entry, "primary-shell-not-ready"));
+  }
+
+  return { targets, skippedTargets, unreadyTargets, primaryCandidateCount };
+}
+
+export async function waitForVerifyTargets(
+  connected,
+  timeoutMs,
+  {
+    pollIntervalMs = 350,
+    probe = probeSession,
+    now = Date.now,
+    wait = (delayMs) => new Promise((resolve) => setTimeout(resolve, delayMs)),
+  } = {},
+) {
+  let entries = connected;
+  let partition = partitionVerifyTargets(entries);
+  if (partition.primaryCandidateCount === 0 || partition.unreadyTargets.length === 0) return partition;
+
+  const deadline = now() + Math.max(0, timeoutMs);
+  while (now() < deadline) {
+    await wait(Math.min(pollIntervalMs, Math.max(0, deadline - now())));
+    entries = await Promise.all(entries.map(async (entry) => {
+      if (isVerifyAuxiliaryTarget(entry.target) || hasVerifiableShellMarkers(entry.probe)) return entry;
+      try {
+        return { ...entry, probe: await probe(entry.session) };
+      } catch {
+        return entry;
+      }
+    }));
+    partition = partitionVerifyTargets(entries);
+    if (partition.unreadyTargets.length === 0) return partition;
+  }
+
+  return partition;
+}
+
+export function summarizeVerifyResults(
+  results,
+  { primaryCandidateCount = results.length, unreadyTargets = [] } = {},
+) {
+  if (primaryCandidateCount === 0) {
+    return {
+      pass: false,
+      error: "No primary Codex window candidate was found; only auxiliary renderers were connected.",
+    };
+  }
+  if (unreadyTargets.length > 0) {
+    return {
+      pass: false,
+      error: `${unreadyTargets.length} primary Codex window candidate(s) did not expose verifiable shell markers before timeout.`,
+    };
+  }
+  if (results.length === 0) {
+    return {
+      pass: false,
+      error: "No structurally verifiable primary Codex window was found.",
+    };
+  }
+  return {
+    pass: results.every((item) => item.result?.pass === true),
+    error: null,
+  };
+}
+
 export async function connectTarget(target, port) {
   return new CdpSession(target, port).open();
 }
 
-export async function connectCodexTargets(port, timeoutMs, { includeExcluded = false } = {}) {
-  const deadline = Date.now() + timeoutMs;
+export async function connectCodexTargets(port, timeoutMs, {
+  includeExcluded = false,
+  requireVerifyPrimary = false,
+  listTargets = listAppTargets,
+  openTarget = connectTarget,
+  inspectSession = probeSession,
+  now = Date.now,
+  wait = (delayMs) => new Promise((resolve) => setTimeout(resolve, delayMs)),
+} = {}) {
+  const deadline = now() + timeoutMs;
   let lastError;
-  while (Date.now() < deadline) {
+  let pendingAuxiliary = null;
+  while (now() < deadline) {
     try {
-      const targets = await listAppTargets(port);
+      const targets = await listTargets(port);
       const connected = [];
       for (const target of targets) {
         const excluded = isThemeExcludedTarget(target);
         if (excluded && !includeExcluded) continue;
         let session;
         try {
-          session = await connectTarget(target, port);
-          const probe = await probeSession(session);
+          session = await openTarget(target, port);
+          const probe = await inspectSession(session);
           if (!probe?.codex) {
             session.close();
             continue;
@@ -189,13 +325,23 @@ export async function connectCodexTargets(port, timeoutMs, { includeExcluded = f
           lastError = error;
         }
       }
-      if (connected.length) return connected;
-      lastError = new Error("No page matched the expected Codex shell markers");
+      if (connected.length) {
+        if (!requireVerifyPrimary || connected.some((entry) => !isVerifyAuxiliaryTarget(entry.target))) {
+          for (const { session } of pendingAuxiliary ?? []) session.close();
+          return connected;
+        }
+        for (const { session } of pendingAuxiliary ?? []) session.close();
+        pendingAuxiliary = connected;
+        lastError = new Error("Only auxiliary Codex renderers were available");
+      } else {
+        lastError = new Error("No page matched the expected Codex shell markers");
+      }
     } catch (error) {
       lastError = error;
     }
-    await new Promise((resolve) => setTimeout(resolve, 350));
+    await wait(Math.min(350, Math.max(0, deadline - now())));
   }
+  if (pendingAuxiliary) return pendingAuxiliary;
   throw new Error(`No verified Codex renderer on 127.0.0.1:${port}: ${lastError?.message ?? "timed out"}`);
 }
 

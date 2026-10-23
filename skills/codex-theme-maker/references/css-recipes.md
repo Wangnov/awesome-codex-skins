@@ -1,4 +1,6 @@
-# 注入端技术手册（Codex 26.707.x 实测）
+# 注入端技术手册
+
+以下 DOM 地图保留 Codex 26.707.x 的历史结构；新版兼容依赖 runtime 的语义标注与活动主区域探测。素材 CSS 应使用 `data-cts-logo`、`data-cts-glyph` 和 `data-cts-composer-action`，不要仅凭按钮尺寸推断操作类型。整库浏览器回归用 `cd studio && npm run test:browser` 执行；夹具验证不能替代真实 Codex 截图。
 
 写任何 CSS 前先通读本文。组织顺序 = 新手做主题的顺序：DOM 地图 → 核心机制 → 逐部件配方 → 深色变体 → 铁律 → 调试方法论。
 
@@ -17,7 +19,7 @@
 | 输入框包裹层 | `div:has(> .composer-surface-chrome)` | 同尺寸、overflow visible——deck/神光棒素材都画这里 |
 | 选择器胶囊排 | `main button:has([class*="_dropdownLabel"])` | 项目/环境/分支/模型等全部下拉触发器 |
 | 胶囊滚动行 | `[class*="horizontal-scroll-fade-mask"]` | 有 overflow 裁剪——见胶囊配方 |
-| 发送按钮 | `button[class*="size-token-button-composer"]` | 无 aria-label/testid，此 class 是唯一稳定特征 |
+| 发送按钮 | `button[data-cts-composer-action="send"]` | runtime 按操作语义标注；尺寸 class 同时用于语音和停止按钮 |
 | 首页滚动容器 | `.thread-scroll-container` 与 `[class*="container-type"]` | home 锁滚动要锁后者 |
 | 平色面板 token | `[class~="bg-token-main-surface-primary"]` | 右栏/底栏/设置内容的实底——透明化放氛围进来 |
 | 浮层 | `[role="menu"], [role="listbox"], [data-radix-popper-content-wrapper] > div, [data-radix-menu-content]` | **禁用 `[data-side][data-align]`**——Radix 把这对属性也打在浮层内部子元素上，会在菜单中间制造色带 |
@@ -116,12 +118,16 @@ runtime 扫描（按钮文本/aria-label/nth 位置）打 `data-cts-glyph="<name
 html.codex-theme-studio svg[data-cts-glyph] > * { opacity: 0 !important; }
 html.codex-theme-studio svg[data-cts-glyph] { background: center / contain no-repeat; }
 html.codex-theme-studio svg[data-cts-glyph="new-task"] { background-image: var(--cts-asset-icon-new-task); }
+html.codex-theme-studio svg[data-cts-glyph="home"] { background-image: var(--cts-asset-icon-folder); }
+html.codex-theme-studio svg[data-cts-glyph="space"] { background-image: var(--cts-asset-icon-sites); }
 ```
 零布局位移。模型按钮靠文本正则标注（/sol|spark|codex|gpt/i）。
 
 ### 5. 品牌 Logo（工作区标题）
 
-标题文本拆在多个 span——标注打在**整个 button**（textContent 聚合匹配，每轮 ensure 重算以支持工作区切换）。CSS 用 `.app-shell-left-panel [data-cts-logo]` 级 specificity 压过侧栏通用文字规则；`min-height: 56px` 给两行艺术字留高。
+标题文本拆在多个 span——标注打在**整个 button**（textContent 聚合匹配，每轮 ensure 重算以支持工作区切换）。CSS 用 `.app-shell-left-panel [data-cts-logo]` 级 specificity 压过侧栏通用文字规则。标志按钮用 `flex: 1 1 0` 与 `min-inline-size: 0` 留出相邻控件空间；艺术字画在 `::before` 并强制 `opacity: 1`，覆盖原生 ghost button 非悬停时的伪元素隐藏规则。`codex`、`chatgpt-work`、`chatgpt` 均需独立的 `::before` 图像映射，缺专用 ChatGPT 图像时可回退 Work 素材。保留主题自己的标志高度和右侧 chevron 留白。
+
+原生 chevron 在按钮内容盒内，不能把 `padding-right` 与艺术字的右侧 inset 设成同一个值，否则箭头仍会落在素材区。本轮夹具中使用按钮 `padding-right: 4px`、伪元素右侧 `36px`；有固定宽度的铭牌还需将宽度限制为 `min(素材目标宽度, calc(100% - 36px))`。用正常、真实悬停和键盘聚焦状态的可见绘制矩形核查箭头与相邻按钮，不能只检查按钮盒是否溢出。
 
 ### 6. 选择器胶囊（素材化小胶囊三连修）
 
@@ -155,15 +161,16 @@ html.codex-theme-studio div.z-0:has([class*="_dropdownLabel"]) { z-index: 12 !im
 
 按钮保持**原生盒**（改盒尺寸/负 margin 必撑破 footer 行 → composer 出现滚动）；道具画在 **wrapper 的 ::after**（滚动容器之外，探出不产生滚动区），状态用 `:has()` 中继：
 ```css
-html.codex-theme-studio div:has(> .composer-surface-chrome)::after {
+html.codex-theme-studio div:has(> .composer-surface-chrome button[data-cts-composer-action="send"])::after {
   content: ""; position: absolute; right: 2px; bottom: 2px; width: 46px; height: 46px;
   z-index: 11; pointer-events: none;
   background: var(--cts-asset-spark-lence) center / contain no-repeat; transform: rotate(-24deg);
 }
-html.codex-theme-studio div:has(.composer-surface-chrome button[class*="size-token-button-composer"]:hover)::after { /* 焰光+转正 */ }
-html.codex-theme-studio div:has(... button:disabled)::after { background-image: var(--cts-asset-spark-lence-closed); }
+html.codex-theme-studio div:has(> .composer-surface-chrome button[data-cts-composer-action="send"]:hover)::after { /* 焰光+转正 */ }
+html.codex-theme-studio div:has(> .composer-surface-chrome button[data-cts-composer-action="send"]:is(:disabled, [aria-disabled="true"]))::after { background-image: var(--cts-asset-spark-lence-closed); }
 ```
 双态素材（开壳=可发送/收拢=禁用）是最出彩的叙事细节。
+发送按钮的原生 SVG 隐藏、道具伪元素、hover/disabled/reduced-motion 规则都必须限定到 `send`；只有 voice 或 stop 的输入框不能生成发送道具，也不能隐藏它们的原生图标。
 **默认安全范围是 42-54px**，悬停 scale 建议 ≤1.10。`pointer-events:none` 只保证不拦点击，不能证明视觉上没有遮住相邻按钮；80px 盒即使不制造滚动，也很容易盖住模型、审批或附件控件。
 
 **细长形道具**（枪/杖/插入栓）存在感偏弱时，优先在素材层收紧透明 bbox、调整素材内部角度、增强亮度/描边/阴影；不要先放大 CSS 盒。确需超过 54px 时必须同时满足：
