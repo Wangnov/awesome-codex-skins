@@ -1,0 +1,16 @@
+<aside class="app-shell-left-panel">
+  <div class="nav-chrome">
+    <button class="new-chat">新对话</button>
+  </div>
+  <!--
+    Chinese labels, no aria-expanded on anything, and rows are plain divs that
+    match none of the private-row patterns. Nothing here is recognizable, so
+    the old "section not found means nothing to leak" logic reported ok while
+    the rows below were fully visible.
+  -->
+  <section>
+    <div class="section-title">置顶</div>
+    <div class="row">季度预算谈判笔记</div>
+    <div class="row">私人健康问题跟进</div>
+  </section>
+</aside>

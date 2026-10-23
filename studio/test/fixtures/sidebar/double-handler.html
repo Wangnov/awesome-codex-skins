@@ -1,0 +1,14 @@
+<aside class="app-shell-left-panel">
+  <div class="nav-chrome">
+    <button class="new-chat">New chat</button>
+  </div>
+  <!--
+    The toggle reacts to BOTH pointerdown and click (data-double), so a
+    blind pointerdown+mousedown+mouseup+click sequence would toggle it twice
+    and leave the section expanded.
+  -->
+  <section>
+    <button aria-expanded="true" data-controls="pinned-list" data-double="true">Pinned</button>
+    <ul id="pinned-list"><li>Q3 budget negotiation notes</li></ul>
+  </section>
+</aside>

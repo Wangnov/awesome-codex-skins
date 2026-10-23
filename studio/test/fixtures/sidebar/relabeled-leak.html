@@ -1,0 +1,19 @@
+<aside class="app-shell-left-panel">
+  <div class="nav-chrome">
+    <button class="new-chat">New chat</button>
+  </div>
+  <section>
+    <!--
+      No aria-expanded toggle anywhere on this section: it models a private
+      list with a relabeled header AND no discoverable collapse mechanism at
+      all (neither the named pass, which only knows Pinned/Projects/Tasks,
+      nor the generic aria-expanded sweep, which has nothing to click here,
+      can do anything about it). This is the case where failing closed is
+      the only correct outcome — there is no real-UI action left to try.
+    -->
+    <span class="header-label">Favorites</span>
+    <ul id="favorites-list">
+      <li data-testid="thread-row-42">Confidential merger discussion</li>
+    </ul>
+  </section>
+</aside>
